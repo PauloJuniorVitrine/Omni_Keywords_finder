@@ -1,0 +1,538 @@
+# 📊 SLOs (Service Level Objectives) - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: IMP005_SLOS_DEFINITION_2025_001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Definição completa dos SLOs para monitoramento de qualidade de serviço
+# Baseado no checklist de revisão definitiva - IMP005
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: omni-keywords-slos
+  namespace: monitoring
+  labels:
+    app: omni-keywords-finder
+    component: slos
+    environment: production
+    version: "1.0"
+spec:
+  groups:
+    # ============================================================================
+    # 🎯 SLOs DE DISPONIBILIDADE (99.9%)
+    # ============================================================================
+    - name: availability_slos
+      rules:
+        # SLO: Disponibilidade da API
+        - record: slo:api:availability:ratio
+          expr: |
+            sum(rate(http_requests_total{job="omni-keywords-api", status!~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:api:availability:target
+          expr: 0.999  # 99.9%
+        
+        - record: slo:api:availability:window
+          expr: 5m
+        
+        - record: slo:api:availability:error_budget
+          expr: 1 - slo:api:availability:ratio
+        
+        - record: slo:api:availability:error_budget_remaining
+          expr: 1 - slo:api:availability:target - slo:api:availability:error_budget
+        
+        # SLO: Disponibilidade do Frontend
+        - record: slo:frontend:availability:ratio
+          expr: |
+            sum(rate(http_requests_total{job="omni-frontend", status!~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="omni-frontend"}[5m]))
+        
+        - record: slo:frontend:availability:target
+          expr: 0.999  # 99.9%
+        
+        - record: slo:frontend:availability:error_budget
+          expr: 1 - slo:frontend:availability:ratio
+        
+        # SLO: Disponibilidade do Database
+        - record: slo:database:availability:ratio
+          expr: |
+            sum(rate(database_connections{job="database", status="active"}[5m]))
+            /
+            sum(rate(database_connections{job="database"}[5m]))
+        
+        - record: slo:database:availability:target
+          expr: 0.999  # 99.9%
+        
+        - record: slo:database:availability:error_budget
+          expr: 1 - slo:database:availability:ratio
+        
+        # SLO: Disponibilidade do Cache
+        - record: slo:cache:availability:ratio
+          expr: |
+            sum(rate(cache_operations_total{job="redis", status="success"}[5m]))
+            /
+            sum(rate(cache_operations_total{job="redis"}[5m]))
+        
+        - record: slo:cache:availability:target
+          expr: 0.999  # 99.9%
+        
+        - record: slo:cache:availability:error_budget
+          expr: 1 - slo:cache:availability:ratio
+
+    # ============================================================================
+    # ⚡ SLOs DE LATÊNCIA (P95 < 200ms)
+    # ============================================================================
+    - name: latency_slos
+      rules:
+        # SLO: Latência da API (P95)
+        - record: slo:api:latency:p95
+          expr: |
+            histogram_quantile(0.95, 
+              sum(rate(http_request_duration_seconds_bucket{job="omni-keywords-api"}[5m])) by (le)
+            )
+        
+        - record: slo:api:latency:target
+          expr: 0.2  # 200ms
+        
+        - record: slo:api:latency:ratio
+          expr: |
+            sum(rate(http_request_duration_seconds_bucket{job="omni-keywords-api", le="0.2"}[5m]))
+            /
+            sum(rate(http_request_duration_seconds_count{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:api:latency:error_budget
+          expr: 1 - slo:api:latency:ratio
+        
+        # SLO: Latência do Database (P95)
+        - record: slo:database:latency:p95
+          expr: |
+            histogram_quantile(0.95, 
+              sum(rate(database_query_duration_seconds_bucket{job="database"}[5m])) by (le)
+            )
+        
+        - record: slo:database:latency:target
+          expr: 0.1  # 100ms
+        
+        - record: slo:database:latency:ratio
+          expr: |
+            sum(rate(database_query_duration_seconds_bucket{job="database", le="0.1"}[5m]))
+            /
+            sum(rate(database_query_duration_seconds_count{job="database"}[5m]))
+        
+        - record: slo:database:latency:error_budget
+          expr: 1 - slo:database:latency:ratio
+        
+        # SLO: Latência do Cache (P95)
+        - record: slo:cache:latency:p95
+          expr: |
+            histogram_quantile(0.95, 
+              sum(rate(cache_operation_duration_seconds_bucket{job="redis"}[5m])) by (le)
+            )
+        
+        - record: slo:cache:latency:target
+          expr: 0.005  # 5ms
+        
+        - record: slo:cache:latency:ratio
+          expr: |
+            sum(rate(cache_operation_duration_seconds_bucket{job="redis", le="0.005"}[5m]))
+            /
+            sum(rate(cache_operation_duration_seconds_count{job="redis"}[5m]))
+        
+        - record: slo:cache:latency:error_budget
+          expr: 1 - slo:cache:latency:ratio
+        
+        # SLO: Latência de Processamento de Keywords (P95)
+        - record: slo:processing:latency:p95
+          expr: |
+            histogram_quantile(0.95, 
+              sum(rate(keyword_processing_duration_seconds_bucket{job="omni-keywords-api"}[5m])) by (le)
+            )
+        
+        - record: slo:processing:latency:target
+          expr: 5  # 5 segundos
+        
+        - record: slo:processing:latency:ratio
+          expr: |
+            sum(rate(keyword_processing_duration_seconds_bucket{job="omni-keywords-api", le="5"}[5m]))
+            /
+            sum(rate(keyword_processing_duration_seconds_count{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:processing:latency:error_budget
+          expr: 1 - slo:processing:latency:ratio
+
+    # ============================================================================
+    # ❌ SLOs DE TAXA DE ERRO (< 0.1%)
+    # ============================================================================
+    - name: error_rate_slos
+      rules:
+        # SLO: Taxa de Erro da API
+        - record: slo:api:error_rate:ratio
+          expr: |
+            sum(rate(http_requests_total{job="omni-keywords-api", status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:api:error_rate:target
+          expr: 0.001  # 0.1%
+        
+        - record: slo:api:error_rate:error_budget
+          expr: slo:api:error_rate:target - slo:api:error_rate:ratio
+        
+        # SLO: Taxa de Erro do Frontend
+        - record: slo:frontend:error_rate:ratio
+          expr: |
+            sum(rate(http_requests_total{job="omni-frontend", status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="omni-frontend"}[5m]))
+        
+        - record: slo:frontend:error_rate:target
+          expr: 0.001  # 0.1%
+        
+        - record: slo:frontend:error_rate:error_budget
+          expr: slo:frontend:error_rate:target - slo:frontend:error_rate:ratio
+        
+        # SLO: Taxa de Erro do Database
+        - record: slo:database:error_rate:ratio
+          expr: |
+            sum(rate(database_queries_total{job="database", status="error"}[5m]))
+            /
+            sum(rate(database_queries_total{job="database"}[5m]))
+        
+        - record: slo:database:error_rate:target
+          expr: 0.001  # 0.1%
+        
+        - record: slo:database:error_rate:error_budget
+          expr: slo:database:error_rate:target - slo:database:error_rate:ratio
+        
+        # SLO: Taxa de Erro de Coleta de Keywords
+        - record: slo:collection:error_rate:ratio
+          expr: |
+            sum(rate(keyword_collection_total{job="omni-keywords-api", status="error"}[5m]))
+            /
+            sum(rate(keyword_collection_total{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:collection:error_rate:target
+          expr: 0.01  # 1%
+        
+        - record: slo:collection:error_rate:error_budget
+          expr: slo:collection:error_rate:target - slo:collection:error_rate:ratio
+
+    # ============================================================================
+    # 📊 SLOs DE THROUGHPUT
+    # ============================================================================
+    - name: throughput_slos
+      rules:
+        # SLO: Throughput da API (RPS)
+        - record: slo:api:throughput:rps
+          expr: |
+            sum(rate(http_requests_total{job="omni-keywords-api"}[5m]))
+        
+        - record: slo:api:throughput:target
+          expr: 1000  # 1000 RPS
+        
+        - record: slo:api:throughput:ratio
+          expr: |
+            slo:api:throughput:rps / slo:api:throughput:target
+        
+        # SLO: Throughput de Processamento de Keywords
+        - record: slo:processing:throughput:keywords_per_minute
+          expr: |
+            sum(rate(keyword_processing_total{job="omni-keywords-api", status="success"}[5m])) * 60
+        
+        - record: slo:processing:throughput:target
+          expr: 10000  # 10k keywords/minuto
+        
+        - record: slo:processing:throughput:ratio
+          expr: |
+            slo:processing:throughput:keywords_per_minute / slo:processing:throughput:target
+
+    # ============================================================================
+    # 🔄 SLOs DE RESILIÊNCIA
+    # ============================================================================
+    - name: resilience_slos
+      rules:
+        # SLO: Circuit Breaker Success Rate
+        - record: slo:circuit_breaker:success_rate:ratio
+          expr: |
+            sum(rate(circuit_breaker_requests_total{status="success"}[5m]))
+            /
+            sum(rate(circuit_breaker_requests_total[5m]))
+        
+        - record: slo:circuit_breaker:success_rate:target
+          expr: 0.95  # 95%
+        
+        - record: slo:circuit_breaker:success_rate:error_budget
+          expr: 1 - slo:circuit_breaker:success_rate:ratio
+        
+        # SLO: Cache Hit Ratio
+        - record: slo:cache:hit_ratio:ratio
+          expr: |
+            sum(rate(cache_operations_total{operation="get", status="hit"}[5m]))
+            /
+            sum(rate(cache_operations_total{operation="get"}[5m]))
+        
+        - record: slo:cache:hit_ratio:target
+          expr: 0.9  # 90%
+        
+        - record: slo:cache:hit_ratio:error_budget
+          expr: 1 - slo:cache:hit_ratio:ratio
+        
+        # SLO: Queue Processing Rate
+        - record: slo:queue:processing_rate:ratio
+          expr: |
+            sum(rate(queue_processed_total[5m]))
+            /
+            sum(rate(queue_received_total[5m]))
+        
+        - record: slo:queue:processing_rate:target
+          expr: 0.99  # 99%
+        
+        - record: slo:queue:processing_rate:error_budget
+          expr: 1 - slo:queue:processing_rate:ratio
+
+    # ============================================================================
+    # 🚨 ALERTAS BASEADOS EM SLOs
+    # ============================================================================
+    - name: slo_alerts
+      rules:
+        # Alerta: Violação de SLO de Disponibilidade da API
+        - alert: SLOCriticalAPIAvailability
+          expr: slo:api:availability:error_budget < 0
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+            component: api
+            slo: availability
+          annotations:
+            summary: "SLO de disponibilidade da API violado"
+            description: "A API está abaixo do SLO de 99.9% de disponibilidade"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-api-availability"
+        
+        # Alerta: Violação de SLO de Latência da API
+        - alert: SLOCriticalAPILatency
+          expr: slo:api:latency:error_budget < 0
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+            component: api
+            slo: latency
+          annotations:
+            summary: "SLO de latência da API violado"
+            description: "A API está acima do SLO de 200ms (P95)"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-api-latency"
+        
+        # Alerta: Violação de SLO de Taxa de Erro da API
+        - alert: SLOCriticalAPIErrorRate
+          expr: slo:api:error_rate:error_budget < 0
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+            component: api
+            slo: error_rate
+          annotations:
+            summary: "SLO de taxa de erro da API violado"
+            description: "A API está acima do SLO de 0.1% de taxa de erro"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-api-error-rate"
+        
+        # Alerta: Error Budget Baixo (Aviso)
+        - alert: SLOWarningAPIErrorBudget
+          expr: slo:api:availability:error_budget < 0.01
+          for: 10m
+          labels:
+            severity: warning
+            team: backend
+            component: api
+            slo: error_budget
+          annotations:
+            summary: "Error budget da API baixo"
+            description: "Error budget da API está abaixo de 1%"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-error-budget"
+        
+        # Alerta: Violação de SLO de Database
+        - alert: SLOCriticalDatabaseAvailability
+          expr: slo:database:availability:error_budget < 0
+          for: 5m
+          labels:
+            severity: critical
+            team: backend
+            component: database
+            slo: availability
+          annotations:
+            summary: "SLO de disponibilidade do database violado"
+            description: "O database está abaixo do SLO de 99.9% de disponibilidade"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-database-availability"
+        
+        # Alerta: Violação de SLO de Cache
+        - alert: SLOCriticalCacheHitRatio
+          expr: slo:cache:hit_ratio:error_budget < 0
+          for: 10m
+          labels:
+            severity: warning
+            team: backend
+            component: cache
+            slo: hit_ratio
+          annotations:
+            summary: "SLO de hit ratio do cache violado"
+            description: "O cache está abaixo do SLO de 90% de hit ratio"
+            runbook_url: "https://docs.omni-keywords.com/runbooks/slo-cache-hit-ratio"
+
+# ============================================================================
+# 📈 CONFIGURAÇÃO DE DASHBOARDS SLO
+# ============================================================================
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: slo-dashboard-config
+  namespace: monitoring
+  labels:
+    app: omni-keywords-finder
+    component: slo-dashboard
+data:
+  slo-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Omni Keywords Finder - SLOs Dashboard",
+        "tags": ["slo", "omni-keywords", "production"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "API Availability SLO",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "slo:api:availability:ratio * 100",
+                "legendFormat": "Availability %"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": null},
+                    {"color": "yellow", "value": 99.5},
+                    {"color": "green", "value": 99.9}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 2,
+            "title": "API Latency SLO (P95)",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "slo:api:latency:p95 * 1000",
+                "legendFormat": "Latency (ms)"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "ms",
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 150},
+                    {"color": "red", "value": 200}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 3,
+            "title": "API Error Rate SLO",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "slo:api:error_rate:ratio * 100",
+                "legendFormat": "Error Rate %"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "thresholds": {
+                  "steps": [
+                    {"color": "green", "value": null},
+                    {"color": "yellow", "value": 0.05},
+                    {"color": "red", "value": 0.1}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 4,
+            "title": "Error Budget Remaining",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "slo:api:availability:error_budget_remaining",
+                "legendFormat": "API Availability"
+              },
+              {
+                "expr": "slo:api:latency:error_budget",
+                "legendFormat": "API Latency"
+              },
+              {
+                "expr": "slo:api:error_rate:error_budget",
+                "legendFormat": "API Error Rate"
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+# ============================================================================
+# 📊 CONFIGURAÇÃO DE REPORTING AUTOMÁTICO
+# ============================================================================
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: slo-reporting
+  namespace: monitoring
+  labels:
+    app: omni-keywords-finder
+    component: slo-reporting
+spec:
+  schedule: "0 9 * * 1"  # Toda segunda-feira às 9h
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: slo-reporter
+              image: omni-keywords/slo-reporter:latest
+              env:
+                - name: PROMETHEUS_URL
+                  value: "http://prometheus:9090"
+                - name: SLACK_WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: slack-webhook
+                      key: url
+                - name: EMAIL_RECIPIENTS
+                  value: "devops@omni-keywords.com,management@omni-keywords.com"
+              resources:
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+          restartPolicy: OnFailure 

@@ -1,0 +1,44 @@
+[
+  {
+    "jornada": "Processamento Completo de Keywords",
+    "main": "/screenshots/canary_vs_main/processamento_main.png",
+    "canary": "/screenshots/canary_vs_main/processamento_canary.png",
+    "pixel_diff_percent": 0.2,
+    "status": "OK"
+  },
+  {
+    "jornada": "Exportação de Keywords",
+    "main": "/screenshots/canary_vs_main/exportacao_main.png",
+    "canary": "/screenshots/canary_vs_main/exportacao_canary.png",
+    "pixel_diff_percent": 0.1,
+    "status": "OK"
+  },
+  {
+    "jornada": "Gerenciamento de Regras de Governança",
+    "main": "/screenshots/canary_vs_main/governanca_main.png",
+    "canary": "/screenshots/canary_vs_main/governanca_canary.png",
+    "pixel_diff_percent": 0.3,
+    "status": "OK"
+  },
+  {
+    "jornada": "Consulta de Logs/Auditoria",
+    "main": "/screenshots/canary_vs_main/logs_main.png",
+    "canary": "/screenshots/canary_vs_main/logs_canary.png",
+    "pixel_diff_percent": 0.2,
+    "status": "OK"
+  },
+  {
+    "jornada": "Consulta de Tendências Externas",
+    "main": "/screenshots/canary_vs_main/tendencias_main.png",
+    "canary": "/screenshots/canary_vs_main/tendencias_canary.png",
+    "pixel_diff_percent": 0.4,
+    "status": "OK"
+  },
+  {
+    "jornada": "Dashboard e Métricas",
+    "main": "/screenshots/canary_vs_main/dashboard_main.png",
+    "canary": "/screenshots/canary_vs_main/dashboard_canary.png",
+    "pixel_diff_percent": 0.1,
+    "status": "OK"
+  }
+] 

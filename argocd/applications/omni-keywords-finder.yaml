@@ -1,0 +1,256 @@
+# argocd/applications/omni-keywords-finder.yaml
+# Tracing ID: GITOPS_IMPLEMENTATION_20241219_001
+# Prompt: Configuração ArgoCD para GitOps
+# Ruleset: enterprise_control_layer.yaml
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: omni-keywords-finder
+  namespace: argocd
+  labels:
+    app: omni-keywords-finder
+    environment: production
+    project: omni-keywords-finder
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-options: PrunePropagationPolicy=foreground
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/your-org/omni_keywords_finder.git
+    targetRevision: HEAD
+    path: k8s/production
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-production.yaml
+      parameters:
+        - name: image.tag
+          value: "{{.Values.image.tag}}"
+        - name: replicaCount
+          value: "{{.Values.replicaCount}}"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: omni-keywords-finder
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  revisionHistoryLimit: 10
+  
+  # Health checks
+  healthChecks:
+    - type: HealthCheckTypeRollout
+      name: omni-keywords-finder
+      namespace: omni-keywords-finder
+    - type: HealthCheckTypeService
+      name: omni-keywords-finder
+      namespace: omni-keywords-finder
+    - type: HealthCheckTypeIngress
+      name: omni-keywords-finder
+      namespace: omni-keywords-finder
+
+---
+# Application for staging environment
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: omni-keywords-finder-staging
+  namespace: argocd
+  labels:
+    app: omni-keywords-finder
+    environment: staging
+    project: omni-keywords-finder
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-options: PrunePropagationPolicy=foreground
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/your-org/omni_keywords_finder.git
+    targetRevision: develop
+    path: k8s/staging
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
+      parameters:
+        - name: image.tag
+          value: "{{.Values.image.tag}}"
+        - name: replicaCount
+          value: "{{.Values.replicaCount}}"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: omni-keywords-finder-staging
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+  
+  revisionHistoryLimit: 5
+
+---
+# Application for development environment
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: omni-keywords-finder-development
+  namespace: argocd
+  labels:
+    app: omni-keywords-finder
+    environment: development
+    project: omni-keywords-finder
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-options: Prune=true
+    argocd.argoproj.io/sync-options: PrunePropagationPolicy=foreground
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/your-org/omni_keywords_finder.git
+    targetRevision: develop
+    path: k8s/development
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-development.yaml
+      parameters:
+        - name: image.tag
+          value: "{{.Values.image.tag}}"
+        - name: replicaCount
+          value: "{{.Values.replicaCount}}"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: omni-keywords-finder-development
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 30s
+  
+  revisionHistoryLimit: 3
+
+---
+# Application for monitoring stack
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-stack
+  namespace: argocd
+  labels:
+    app: monitoring
+    environment: production
+    project: omni-keywords-finder
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/your-org/omni_keywords_finder.git
+    targetRevision: HEAD
+    path: k8s/monitoring
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m
+  
+  revisionHistoryLimit: 5
+
+---
+# Application for security scanning
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: security-scanning
+  namespace: argocd
+  labels:
+    app: security
+    environment: production
+    project: omni-keywords-finder
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/your-org/omni_keywords_finder.git
+    targetRevision: HEAD
+    path: k8s/security
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: security-scanning
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 1m
+  
+  revisionHistoryLimit: 3 

@@ -1,0 +1,398 @@
+# 🧪 INT-011: Cenários de Advanced Load Testing - Omni Keywords Finder
+#
+# Tracing ID: INT_011_LOAD_SCENARIOS_001
+# Data/Hora: 2025-01-27 17:00:00 UTC
+# Versão: 1.0
+# Status: 🚀 EM IMPLEMENTAÇÃO
+#
+# Objetivo: Cenários de carga realistas para testar performance
+# e escalabilidade do sistema Omni Keywords Finder.
+
+scenarios:
+  # ========================================
+  # TESTES DE STRESS
+  # ========================================
+  
+  - name: "Stress Test - Low Load"
+    test_type: "stress"
+    load_pattern: "ramp_up"
+    duration: 300
+    timeout: 600
+    description: "Teste de stress com carga baixa a média"
+    initial_users: 10
+    max_users: 100
+    ramp_up_time: 60
+    requests_per_second: 50
+    concurrent_requests: 25
+    think_time: 1.0
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 2000
+    error_rate_threshold: 0.05
+    throughput_threshold: 50
+    
+  - name: "Stress Test - High Load"
+    test_type: "stress"
+    load_pattern: "ramp_up"
+    duration: 600
+    timeout: 1200
+    description: "Teste de stress com carga alta"
+    initial_users: 50
+    max_users: 500
+    ramp_up_time: 120
+    requests_per_second: 200
+    concurrent_requests: 100
+    think_time: 0.5
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+      - "/api/v1/reports"
+    response_time_threshold: 3000
+    error_rate_threshold: 0.1
+    throughput_threshold: 150
+    
+  # ========================================
+  # TESTES DE SPIKE
+  # ========================================
+  
+  - name: "Spike Test - Sudden Load"
+    test_type: "spike"
+    load_pattern: "spike"
+    duration: 180
+    timeout: 360
+    description: "Teste de spike com carga súbita"
+    initial_users: 20
+    max_users: 1000
+    ramp_up_time: 30
+    requests_per_second: 500
+    concurrent_requests: 200
+    think_time: 0.2
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 5000
+    error_rate_threshold: 0.15
+    throughput_threshold: 300
+    
+  # ========================================
+  # TESTES DE ENDURANCE
+  # ========================================
+  
+  - name: "Endurance Test - Long Duration"
+    test_type: "endurance"
+    load_pattern: "constant"
+    duration: 3600
+    timeout: 7200
+    description: "Teste de endurance por 1 hora"
+    initial_users: 100
+    max_users: 100
+    ramp_up_time: 60
+    requests_per_second: 100
+    concurrent_requests: 50
+    think_time: 1.0
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+      - "/api/v1/reports"
+    response_time_threshold: 2000
+    error_rate_threshold: 0.05
+    throughput_threshold: 80
+    
+  # ========================================
+  # TESTES DE VOLUME
+  # ========================================
+  
+  - name: "Volume Test - High Throughput"
+    test_type: "volume"
+    load_pattern: "step"
+    duration: 900
+    timeout: 1800
+    description: "Teste de volume com throughput alto"
+    initial_users: 50
+    max_users: 2000
+    ramp_up_time: 300
+    requests_per_second: 1000
+    concurrent_requests: 500
+    think_time: 0.1
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 3000
+    error_rate_threshold: 0.1
+    throughput_threshold: 800
+    
+  # ========================================
+  # TESTES DE ESCALABILIDADE
+  # ========================================
+  
+  - name: "Scalability Test - Auto Scaling"
+    test_type: "scalability"
+    load_pattern: "ramp_up"
+    duration: 1200
+    timeout: 2400
+    description: "Teste de escalabilidade com auto-scaling"
+    initial_users: 10
+    max_users: 5000
+    ramp_up_time: 600
+    requests_per_second: 2000
+    concurrent_requests: 1000
+    think_time: 0.5
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+      - "/api/v1/reports"
+    response_time_threshold: 2000
+    error_rate_threshold: 0.05
+    throughput_threshold: 1500
+    auto_scaling_enabled: true
+    scaling_threshold: 0.8
+    scaling_cooldown: 300
+    
+  # ========================================
+  # TESTES DE BREAKPOINT
+  # ========================================
+  
+  - name: "Breakpoint Test - Find Limits"
+    test_type: "breakpoint"
+    load_pattern: "step"
+    duration: 1800
+    timeout: 3600
+    description: "Teste para encontrar ponto de quebra"
+    initial_users: 10
+    max_users: 10000
+    ramp_up_time: 900
+    requests_per_second: 5000
+    concurrent_requests: 2000
+    think_time: 0.1
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 10000
+    error_rate_threshold: 0.2
+    throughput_threshold: 3000
+    
+  # ========================================
+  # TESTES DE SOAK
+  # ========================================
+  
+  - name: "Soak Test - Memory Leak Detection"
+    test_type: "soak"
+    load_pattern: "constant"
+    duration: 7200
+    timeout: 14400
+    description: "Teste de soak para detectar vazamentos de memória"
+    initial_users: 50
+    max_users: 50
+    ramp_up_time: 120
+    requests_per_second: 50
+    concurrent_requests: 25
+    think_time: 2.0
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 3000
+    error_rate_threshold: 0.05
+    throughput_threshold: 40
+    
+  # ========================================
+  # TESTES DE BURST
+  # ========================================
+  
+  - name: "Burst Test - Short High Load"
+    test_type: "burst"
+    load_pattern: "spike"
+    duration: 300
+    timeout: 600
+    description: "Teste de burst com cargas curtas e altas"
+    initial_users: 10
+    max_users: 2000
+    ramp_up_time: 10
+    requests_per_second: 2000
+    concurrent_requests: 1000
+    think_time: 0.05
+    base_url: "http://localhost:8000"
+    endpoints:
+      - "/api/v1/keywords"
+      - "/api/v1/analytics"
+    response_time_threshold: 5000
+    error_rate_threshold: 0.15
+    throughput_threshold: 1500
+
+# ========================================
+# CONFIGURAÇÕES GLOBAIS
+# ========================================
+
+global_config:
+  # Configurações de monitoramento
+  monitoring_enabled: true
+  metrics_collection: true
+  real_time_monitoring: true
+  
+  # Configurações de relatórios
+  report_enabled: true
+  report_format: "json"  # json, yaml, html
+  report_path: "load_test_reports"
+  generate_charts: true
+  
+  # Configurações de segurança
+  safety_checks_enabled: true
+  max_concurrent_tests: 1
+  cooldown_period: 300  # segundos entre testes
+  
+  # Configurações de notificação
+  notification_enabled: true
+  notification_channels:
+    - "slack"
+    - "email"
+    - "webhook"
+  
+  # Configurações de dados de teste
+  test_data:
+    keywords: "test_keyword"
+    user_id: "test_user_001"
+    search_query: "digital marketing"
+    filters:
+      language: "pt-BR"
+      region: "BR"
+      date_range: "last_30_days"
+  data_variation: true
+
+# ========================================
+# MÉTRICAS DE SUCESSO
+# ========================================
+
+success_criteria:
+  # Critérios de performance
+  response_time_threshold: 2000  # ms
+  error_rate_threshold: 0.05  # 5%
+  throughput_threshold: 100  # req/s
+  
+  # Critérios de escalabilidade
+  auto_scaling_success_rate: 0.9  # 90%
+  scaling_response_time: 300  # segundos
+  
+  # Critérios de estabilidade
+  memory_leak_threshold: 0.1  # 10% por hora
+  cpu_stability_threshold: 0.2  # 20% variação
+
+# ========================================
+# ALERTAS E NOTIFICAÇÕES
+# ========================================
+
+alerts:
+  - name: "High Response Time"
+    condition: "avg_response_time > 3000"
+    severity: "high"
+    notification_channels: ["slack", "email"]
+    
+  - name: "High Error Rate"
+    condition: "error_rate > 0.1"
+    severity: "critical"
+    notification_channels: ["slack", "email", "webhook"]
+    
+  - name: "Low Throughput"
+    condition: "requests_per_second < 50"
+    severity: "medium"
+    notification_channels: ["slack"]
+    
+  - name: "Auto-Scaling Failed"
+    condition: "scaling_success_rate < 0.8"
+    severity: "high"
+    notification_channels: ["slack", "email"]
+    
+  - name: "Memory Leak Detected"
+    condition: "memory_usage_increase > 0.1"
+    severity: "critical"
+    notification_channels: ["slack", "email", "webhook"]
+
+# ========================================
+# SCHEDULE DE TESTES
+# ========================================
+
+schedule:
+  # Testes diários (baixa carga)
+  daily:
+    time: "03:00"
+    scenarios:
+      - "Stress Test - Low Load"
+      - "Endurance Test - Long Duration"
+  
+  # Testes semanais (média carga)
+  weekly:
+    day: "saturday"
+    time: "04:00"
+    scenarios:
+      - "Stress Test - High Load"
+      - "Spike Test - Sudden Load"
+      - "Volume Test - High Throughput"
+  
+  # Testes mensais (alta carga)
+  monthly:
+    day: "first_saturday"
+    time: "05:00"
+    scenarios:
+      - "Scalability Test - Auto Scaling"
+      - "Breakpoint Test - Find Limits"
+      - "Soak Test - Memory Leak Detection"
+
+# ========================================
+# CONFIGURAÇÕES DE AMBIENTE
+# ========================================
+
+environments:
+  development:
+    base_url: "http://localhost:8000"
+    max_users: 100
+    duration: 300
+    
+  staging:
+    base_url: "https://staging.omni-keywords-finder.com"
+    max_users: 500
+    duration: 600
+    
+  production:
+    base_url: "https://api.omni-keywords-finder.com"
+    max_users: 1000
+    duration: 900
+
+# ========================================
+# CONFIGURAÇÕES DE ENDPOINTS
+# ========================================
+
+endpoints:
+  keywords:
+    path: "/api/v1/keywords"
+    method: "POST"
+    description: "Busca de keywords"
+    expected_response_time: 1000
+    success_rate_threshold: 0.95
+    
+  analytics:
+    path: "/api/v1/analytics"
+    method: "GET"
+    description: "Análise de dados"
+    expected_response_time: 2000
+    success_rate_threshold: 0.90
+    
+  reports:
+    path: "/api/v1/reports"
+    method: "POST"
+    description: "Geração de relatórios"
+    expected_response_time: 5000
+    success_rate_threshold: 0.85
+    
+  health:
+    path: "/health"
+    method: "GET"
+    description: "Health check"
+    expected_response_time: 100
+    success_rate_threshold: 0.99 

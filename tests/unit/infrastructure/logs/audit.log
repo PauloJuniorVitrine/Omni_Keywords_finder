@@ -1,0 +1,30 @@
+{"log_dir": "logs", "log_level": "INFO", "enable_json": true, "enable_console": true, "enable_file": true, "enable_elk": true, "category": "<LogCategory.SYSTEM: 'system'>", "event": "Sistema de logging estruturado avan\u00e7ado inicializado", "logger": "infrastructure.logging.advanced_structured_logger", "level": "info", "timestamp": "2025-08-11T13:52:09.267598Z", "service": "omni_keywords_finder", "environment": "development", "version": "1.0.0", "hostname": "unknown", "memory_usage_mb": 81.87890625, "cpu_usage_percent": 0.0}
+{"message": "Sistema de logging completo inicializado", "category": "system", "advanced_logging": true, "log_rotation": true, "elk_integration": true, "event": "Sistema de logging completo inicializado", "logger": "infrastructure.logging.advanced_structured_logger", "level": "info", "timestamp": "2025-08-11T13:52:10.252100Z", "service": "omni_keywords_finder", "environment": "development", "version": "1.0.0", "hostname": "unknown", "memory_usage_mb": 82.65234375, "cpu_usage_percent": 0.0}
+Sistema de unificação de placeholders aprimorado inicializado
+RegexLacunaDetector aprimorado inicializado
+BasicValidator aprimorado inicializado
+FallbackSystem aprimorado inicializado
+Sistema de unificação de placeholders aprimorado inicializado
+HybridLacunaDetector aprimorado inicializado
+OpenTelemetry not available. Using fallback tracing.
+OpenTelemetry not available. Using fallback tracing.
+Tracing metrics initialized
+ProgressTracker inicializado em: logs\progress
+ErrorHandler inicializado
+FluxoCompletoOrchestrator inicializado
+Sistema backend não disponível - usando modo simulado
+{"log_dir": "logs", "log_level": "INFO", "enable_json": true, "enable_console": true, "enable_file": true, "enable_elk": true, "category": "<LogCategory.SYSTEM: 'system'>", "event": "Sistema de logging estruturado avan\u00e7ado inicializado", "logger": "infrastructure.logging.advanced_structured_logger", "level": "info", "timestamp": "2025-08-11T13:56:39.349093Z", "service": "omni_keywords_finder", "environment": "development", "version": "1.0.0", "hostname": "unknown", "memory_usage_mb": 82.98046875, "cpu_usage_percent": 0.0}
+{"message": "Sistema de logging completo inicializado", "category": "system", "advanced_logging": true, "log_rotation": true, "elk_integration": true, "event": "Sistema de logging completo inicializado", "logger": "infrastructure.logging.advanced_structured_logger", "level": "info", "timestamp": "2025-08-11T13:56:39.433789Z", "service": "omni_keywords_finder", "environment": "development", "version": "1.0.0", "hostname": "unknown", "memory_usage_mb": 84.2578125, "cpu_usage_percent": 0.0}
+Sistema de unificação de placeholders aprimorado inicializado
+RegexLacunaDetector aprimorado inicializado
+BasicValidator aprimorado inicializado
+FallbackSystem aprimorado inicializado
+Sistema de unificação de placeholders aprimorado inicializado
+HybridLacunaDetector aprimorado inicializado
+OpenTelemetry not available. Using fallback tracing.
+OpenTelemetry not available. Using fallback tracing.
+Tracing metrics initialized
+ProgressTracker inicializado em: logs\progress
+ErrorHandler inicializado
+FluxoCompletoOrchestrator inicializado
+Sistema backend não disponível - usando modo simulado

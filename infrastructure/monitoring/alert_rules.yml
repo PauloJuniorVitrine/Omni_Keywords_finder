@@ -1,0 +1,516 @@
+# 🚨 PROMETHEUS ALERT RULES - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: alert-rules-2025-01-27-001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Regras de alerta para monitoramento proativo do sistema
+# com diferentes níveis de severidade e condições específicas
+
+groups:
+  # ============================================================================
+  # 🔴 ALERTAS CRÍTICOS - Requer ação imediata
+  # ============================================================================
+  - name: critical_alerts
+    rules:
+      # API Down
+      - alert: OmniKeywordsAPIDown
+        expr: up{job="omni-keywords-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+          component: api
+        annotations:
+          summary: "Omni Keywords API is down"
+          description: "The Omni Keywords Finder API has been down for more than 1 minute"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/api-down"
+
+      # Database Down
+      - alert: DatabaseDown
+        expr: up{job="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+          component: database
+        annotations:
+          summary: "Database is down"
+          description: "The database has been down for more than 1 minute"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/database-down"
+
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job="omni-keywords-api", status=~"5.."}[5m]) / rate(http_requests_total{job="omni-keywords-api"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+          component: api
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/high-error-rate"
+
+      # Service Mesh Failure
+      - alert: ServiceMeshFailure
+        expr: rate(linkerd_proxy_request_total{response_class="5xx"}[5m]) / rate(linkerd_proxy_request_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          team: devops
+          component: service-mesh
+        annotations:
+          summary: "Service mesh failure rate high"
+          description: "Service mesh failure rate is above 10%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/service-mesh-failure"
+
+      # Circuit Breaker Open
+      - alert: CircuitBreakerOpen
+        expr: circuit_breaker_state{state="open"} > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+          component: circuit-breaker
+        annotations:
+          summary: "Circuit breaker is open"
+          description: "Circuit breaker is open for external service"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/circuit-breaker-open"
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/high-memory-usage"
+
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 90%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/high-cpu-usage"
+
+      # Disk Space Critical
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.95
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "Disk space critical"
+          description: "Disk usage is above 95%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/disk-space-critical"
+
+  # ============================================================================
+  # 🟠 ALERTAS DE ALTA PRIORIDADE - Requer atenção rápida
+  # ============================================================================
+  - name: high_priority_alerts
+    rules:
+      # API Response Time High
+      - alert: APIResponseTimeHigh
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="omni-keywords-api"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: api
+        annotations:
+          summary: "API response time is high"
+          description: "95th percentile of API response time is above 2 seconds"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/api-response-time-high"
+
+      # Low Cache Hit Ratio
+      - alert: LowCacheHitRatio
+        expr: rate(cache_hits_total[5m]) / rate(cache_requests_total[5m]) < 0.7
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+          component: cache
+        annotations:
+          summary: "Low cache hit ratio"
+          description: "Cache hit ratio is below 70%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/low-cache-hit-ratio"
+
+      # High Queue Length
+      - alert: HighQueueLength
+        expr: celery_queue_length > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: queue
+        annotations:
+          summary: "High queue length"
+          description: "Queue length is above 1000 items"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/high-queue-length"
+
+      # Rate Limit Violations
+      - alert: RateLimitViolations
+        expr: rate(rate_limit_violations_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: rate-limiting
+        annotations:
+          summary: "High rate limit violations"
+          description: "Rate limit violations are above 10 per minute"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/rate-limit-violations"
+
+      # Collector Failure Rate
+      - alert: CollectorFailureRate
+        expr: rate(collector_requests_total{status="error"}[5m]) / rate(collector_requests_total[5m]) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+          component: collectors
+        annotations:
+          summary: "High collector failure rate"
+          description: "Collector failure rate is above 20%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/collector-failure-rate"
+
+      # Service Mesh Latency
+      - alert: ServiceMeshLatency
+        expr: histogram_quantile(0.95, rate(linkerd_proxy_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+          component: service-mesh
+        annotations:
+          summary: "Service mesh latency high"
+          description: "95th percentile of service mesh latency is above 1 second"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/service-mesh-latency"
+
+      # Database Connections High
+      - alert: DatabaseConnectionsHigh
+        expr: database_connections > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: database
+        annotations:
+          summary: "High database connections"
+          description: "Database connections are above 80"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/database-connections-high"
+
+      # Memory Usage Warning
+      - alert: MemoryUsageWarning
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "Memory usage warning"
+          description: "Memory usage is above 80%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/memory-usage-warning"
+
+      # CPU Usage Warning
+      - alert: CPUUsageWarning
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "CPU usage warning"
+          description: "CPU usage is above 80%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/cpu-usage-warning"
+
+      # Disk Space Warning
+      - alert: DiskSpaceWarning
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          team: devops
+          component: infrastructure
+        annotations:
+          summary: "Disk space warning"
+          description: "Disk usage is above 85%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/disk-space-warning"
+
+  # ============================================================================
+  # 🟡 ALERTAS DE MÉDIA PRIORIDADE - Monitoramento
+  # ============================================================================
+  - name: medium_priority_alerts
+    rules:
+      # API Request Rate Low
+      - alert: APIRequestRateLow
+        expr: rate(http_requests_total{job="omni-keywords-api"}[5m]) < 1
+        for: 15m
+        labels:
+          severity: info
+          team: backend
+          component: api
+        annotations:
+          summary: "Low API request rate"
+          description: "API request rate is below 1 request per second"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/api-request-rate-low"
+
+      # Keyword Collection Rate Low
+      - alert: KeywordCollectionRateLow
+        expr: rate(omni_keywords_collected_total[5m]) < 10
+        for: 30m
+        labels:
+          severity: info
+          team: backend
+          component: collectors
+        annotations:
+          summary: "Low keyword collection rate"
+          description: "Keyword collection rate is below 10 per minute"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/keyword-collection-rate-low"
+
+      # Quality Score Low
+      - alert: QualityScoreLow
+        expr: omni_keywords_quality_score < 0.7
+        for: 1h
+        labels:
+          severity: info
+          team: backend
+          component: quality
+        annotations:
+          summary: "Low keyword quality score"
+          description: "Keyword quality score is below 0.7"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/quality-score-low"
+
+      # Processing Time Increasing
+      - alert: ProcessingTimeIncreasing
+        expr: rate(omni_keywords_processing_duration_seconds_sum[5m]) / rate(omni_keywords_processing_duration_seconds_count[5m]) > 5
+        for: 10m
+        labels:
+          severity: info
+          team: backend
+          component: processing
+        annotations:
+          summary: "Processing time increasing"
+          description: "Average processing time is above 5 seconds"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/processing-time-increasing"
+
+      # Cache Size Warning
+      - alert: CacheSizeWarning
+        expr: omni_keywords_cache_size_bytes > 1073741824  # 1GB
+        for: 10m
+        labels:
+          severity: info
+          team: backend
+          component: cache
+        annotations:
+          summary: "Cache size warning"
+          description: "Cache size is above 1GB"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/cache-size-warning"
+
+      # Service Mesh Connections
+      - alert: ServiceMeshConnections
+        expr: omni_keywords_service_mesh_active_connections > 1000
+        for: 10m
+        labels:
+          severity: info
+          team: devops
+          component: service-mesh
+        annotations:
+          summary: "High service mesh connections"
+          description: "Active service mesh connections are above 1000"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/service-mesh-connections"
+
+  # ============================================================================
+  # 🔵 ALERTAS DE BAIXA PRIORIDADE - Informativos
+  # ============================================================================
+  - name: low_priority_alerts
+    rules:
+      # Prometheus Target Down
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: info
+          team: devops
+          component: monitoring
+        annotations:
+          summary: "Prometheus target down"
+          description: "A Prometheus target is down"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/prometheus-target-down"
+
+      # Alert Manager Down
+      - alert: AlertManagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: info
+          team: devops
+          component: monitoring
+        annotations:
+          summary: "Alert Manager down"
+          description: "Alert Manager is down"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/alert-manager-down"
+
+      # Grafana Down
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 5m
+        labels:
+          severity: info
+          team: devops
+          component: monitoring
+        annotations:
+          summary: "Grafana down"
+          description: "Grafana is down"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/grafana-down"
+
+      # Jaeger Down
+      - alert: JaegerDown
+        expr: up{job="jaeger"} == 0
+        for: 5m
+        labels:
+          severity: info
+          team: devops
+          component: monitoring
+        annotations:
+          summary: "Jaeger down"
+          description: "Jaeger is down"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/jaeger-down"
+
+  # ============================================================================
+  # 📊 ALERTAS DE BUSINESS - Métricas de negócio
+  # ============================================================================
+  - name: business_alerts
+    rules:
+      # Keyword Collection Success Rate
+      - alert: KeywordCollectionSuccessRate
+        expr: rate(omni_keywords_collected_total{status="success"}[1h]) / rate(omni_keywords_collected_total[1h]) < 0.8
+        for: 1h
+        labels:
+          severity: warning
+          team: business
+          component: keywords
+        annotations:
+          summary: "Low keyword collection success rate"
+          description: "Keyword collection success rate is below 80%"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/keyword-collection-success-rate"
+
+      # API Availability
+      - alert: APIAvailability
+        expr: (up{job="omni-keywords-api"} == 0) or (rate(http_requests_total{job="omni-keywords-api", status=~"5.."}[5m]) / rate(http_requests_total{job="omni-keywords-api"}[5m]) > 0.1)
+        for: 5m
+        labels:
+          severity: critical
+          team: business
+          component: api
+        annotations:
+          summary: "API availability issue"
+          description: "API is down or has high error rate"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/api-availability"
+
+      # Processing Pipeline Health
+      - alert: ProcessingPipelineHealth
+        expr: rate(omni_keywords_processing_duration_seconds_count[5m]) < 1
+        for: 15m
+        labels:
+          severity: warning
+          team: business
+          component: processing
+        annotations:
+          summary: "Processing pipeline health issue"
+          description: "No keywords are being processed"
+          runbook_url: "https://docs.omni-keywords.com/runbooks/processing-pipeline-health"
+
+# ============================================================================
+# 📋 CONFIGURAÇÕES DE ALERTA
+# ============================================================================
+
+# Configurações globais
+global:
+  resolve_timeout: 5m
+  group_by: ['alertname', 'severity', 'team']
+
+# Configurações de notificação
+notifications:
+  # Slack
+  slack:
+    channel: "#omni-keywords-alerts"
+    username: "Prometheus Alert Manager"
+    icon_emoji: ":warning:"
+    title: "{{ .GroupLabels.alertname }}"
+    text: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"
+
+  # Email
+  email:
+    to: "alerts@omni-keywords.com"
+    subject: "{{ .GroupLabels.alertname }} - {{ .GroupLabels.severity }}"
+    body: |
+      Alert: {{ .GroupLabels.alertname }}
+      Severity: {{ .GroupLabels.severity }}
+      Team: {{ .GroupLabels.team }}
+      
+      {{ range .Alerts }}
+      Summary: {{ .Annotations.summary }}
+      Description: {{ .Annotations.description }}
+      Runbook: {{ .Annotations.runbook_url }}
+      {{ end }}
+
+  # PagerDuty
+  pagerduty:
+    service_key: "your-pagerduty-service-key"
+    description: "{{ .GroupLabels.alertname }} - {{ .GroupLabels.severity }}"
+    client: "Prometheus Alert Manager"
+    client_url: "{{ .CommonAnnotations.runbook_url }}"
+
+# Configurações de agrupamento
+grouping:
+  # Agrupar alertas críticos por 30 segundos
+  critical:
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+
+  # Agrupar alertas de warning por 1 minuto
+  warning:
+    group_wait: 1m
+    group_interval: 10m
+    repeat_interval: 1h
+
+  # Agrupar alertas info por 5 minutos
+  info:
+    group_wait: 5m
+    group_interval: 30m
+    repeat_interval: 6h
+
+# Configurações de silenciamento
+silence:
+  # Silenciar alertas de manutenção
+  maintenance:
+    matchers:
+      - alertname =~ ".*"
+    starts_at: "2025-01-27T02:00:00Z"
+    ends_at: "2025-01-27T04:00:00Z"
+    comment: "Scheduled maintenance window"
+
+# Documentação
+documentation:
+  version: "1.0"
+  last_updated: "2025-01-27"
+  maintainer: "DevOps Team"
+  description: "Alert rules for Omni Keywords Finder monitoring"
+  contact: "devops@omni-keywords.com" 

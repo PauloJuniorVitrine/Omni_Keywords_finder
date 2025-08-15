@@ -1,0 +1,73 @@
+{
+  "timestamp": "2025-07-02T08:25:48.160913",
+  "overall_status": "FAIL",
+  "checks": {
+    "github_workflows": {
+      "status": "PASS",
+      "workflows_found": 6,
+      "workflows_valid": 6,
+      "issues": []
+    },
+    "docker_configuration": {
+      "status": "PASS",
+      "files_found": 3,
+      "files_valid": 3,
+      "issues": []
+    },
+    "kubernetes_configuration": {
+      "status": "FAIL",
+      "files_found": 0,
+      "files_valid": 0,
+      "issues": [
+        "Diretório k8s não encontrado"
+      ]
+    },
+    "terraform_configuration": {
+      "status": "FAIL",
+      "files_found": 3,
+      "files_valid": 1,
+      "issues": [
+        "terraform/variables.tf: Provider definido ausente",
+        "Arquivo Terraform não encontrado: terraform/outputs.tf",
+        "terraform/iam.tf: Provider definido ausente"
+      ]
+    },
+    "monitoring_configuration": {
+      "status": "FAIL",
+      "components_found": 1,
+      "components_valid": 1,
+      "issues": [
+        "Componente de monitoramento não encontrado: config/telemetry/grafana/",
+        "Componente de monitoramento não encontrado: config/telemetry/alertmanager.yml",
+        "Componente de monitoramento não encontrado: config/telemetry/promtail.yml"
+      ]
+    },
+    "security_configuration": {
+      "status": "FAIL",
+      "security_files_found": 2,
+      "security_files_valid": 2,
+      "issues": [
+        "Arquivo de segurança não encontrado: scripts/security_scan.py"
+      ]
+    },
+    "documentation": {
+      "status": "PASS",
+      "docs_found": 5,
+      "docs_valid": 5,
+      "issues": []
+    }
+  },
+  "metrics": {
+    "total_checks": 7,
+    "passed_checks": 3,
+    "failed_checks": 4,
+    "coverage_percentage": 42.857142857142854,
+    "build_time_target": "< 10 min",
+    "deploy_time_target": "< 5 min",
+    "rollback_time_target": "< 2 min"
+  },
+  "recommendations": [
+    "❌ Corrigir 4 verificações falhadas: kubernetes_configuration, terraform_configuration, monitoring_configuration, security_configuration",
+    "☸️ Completar configuração Kubernetes"
+  ]
+}

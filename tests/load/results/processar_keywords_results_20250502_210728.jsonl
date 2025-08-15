@@ -1,0 +1,1 @@
+{"timestamp": 1746230848.5938516, "type": "POST", "endpoint": "/api/processar_keywords", "status_code": 200, "response_time_ms": 11.936999995668884, "response_length": 472, "exception": null, "url": "http://127.0.0.1:5000/api/processar_keywords"}

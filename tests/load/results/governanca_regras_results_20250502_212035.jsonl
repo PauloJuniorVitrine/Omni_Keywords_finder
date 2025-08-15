@@ -1,0 +1,3 @@
+{"timestamp": 1746231635.0200644, "type": "POST", "endpoint": "/api/governanca/regras/editar", "status_code": 200, "response_time_ms": 8.043800000450574, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/editar"}
+{"timestamp": 1746231635.719899, "type": "POST", "endpoint": "/api/governanca/regras/upload", "status_code": 200, "response_time_ms": 4.806100005225744, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/upload"}
+{"timestamp": 1746231635.7218914, "type": "POST", "endpoint": "/api/governanca/regras/upload", "status_code": 200, "response_time_ms": 8.4322999973665, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/upload"}

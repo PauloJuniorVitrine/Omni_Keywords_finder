@@ -1,0 +1,254 @@
+{
+  "info": {
+    "name": "Omni Keywords Finder API",
+    "description": "Collection completa para testar todos os endpoints da API Omni Keywords Finder",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.omnikeywords.com/v2",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Verificar saúde do sistema"
+      },
+      "response": []
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access_token);",
+                  "    pm.collectionVariables.set('refresh_token', response.refresh_token);",
+                  "    console.log('Login successful, tokens saved');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Realizar login e obter token de acesso"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Keywords",
+      "item": [
+        {
+          "name": "Analyze Keyword",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keyword\": \"marketing digital\",\n  \"language\": \"pt-BR\",\n  \"market\": \"BR\",\n  \"include_competitors\": true,\n  \"include_trends\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/keywords/analyze",
+              "host": ["{{base_url}}"],
+              "path": ["keywords", "analyze"]
+            },
+            "description": "Analisar palavra-chave específica"
+          },
+          "response": []
+        },
+        {
+          "name": "Discover Keywords",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seed_keywords\": [\"marketing digital\", \"seo\"],\n  \"language\": \"pt-BR\",\n  \"market\": \"BR\",\n  \"max_results\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/keywords/discover",
+              "host": ["{{base_url}}"],
+              "path": ["keywords", "discover"]
+            },
+            "description": "Descobrir novas palavras-chave relacionadas"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Content Analysis",
+      "item": [
+        {
+          "name": "Optimize Content",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Este é um artigo sobre marketing digital e estratégias de SEO. Vamos explorar as melhores práticas para otimização de sites e aumento de tráfego orgânico.\",\n  \"target_keywords\": [\"marketing digital\", \"seo\", \"otimização\"],\n  \"content_type\": \"blog\",\n  \"language\": \"pt-BR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/content/optimize",
+              "host": ["{{base_url}}"],
+              "path": ["content", "optimize"]
+            },
+            "description": "Otimizar conteúdo para SEO"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Performance Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/performance?start_date=2024-01-01&end_date=2024-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "performance"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-12-31"
+                }
+              ]
+            },
+            "description": "Obter métricas de performance do sistema"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Log request details",
+          "console.log('Request:', pm.request.method, pm.request.url);",
+          "console.log('Headers:', pm.request.headers.toObject());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Common test script",
+          "pm.test('Status code is 200', function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has required headers', function () {",
+          "    pm.response.to.have.header('Content-Type');",
+          "    pm.response.to.have.header('Content-Type', 'application/json');",
+          "});"
+        ]
+      }
+    }
+  ]
+} 

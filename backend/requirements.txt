@@ -1,0 +1,16 @@
+Flask>=2.3.0
+flask_sqlalchemy>=3.1.0
+SQLAlchemy>=2.0.0
+alembic>=1.11.0
+python-dotenv>=1.0.0
+psycopg2-binary>=2.9.0 # Para PostgreSQL, pode ser removido se usar SQLite 
+flask-babel>=3.1.0
+flask-cors>=4.0.0  # Para configuração CORS segura
+# FastAPI Dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+# GraphQL Dependencies
+graphene>=3.3.0
+flask-graphql>=2.0.0
+graphql-core>=3.2.0 

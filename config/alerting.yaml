@@ -1,0 +1,365 @@
+# Configuração de Alerting
+# Criado em: 2025-01-27
+# Tracing ID: COMPLETUDE_CHECKLIST_20250127_001
+
+# Configuração global de alerting
+global:
+  default_group_wait: "30s"
+  default_group_interval: "5m"
+  default_repeat_interval: "4h"
+  default_resolve_timeout: "5m"
+  max_alerts_per_group: 10
+
+# Configuração de roteamento de alertas
+route:
+  group_by: ['alertname', 'service', 'severity']
+  group_wait: "30s"
+  group_interval: "5m"
+  repeat_interval: "4h"
+  receiver: 'default'
+  
+  routes:
+    # Alertas críticos - PagerDuty
+    - match:
+        severity: critical
+      receiver: 'pagerduty-critical'
+      group_wait: "10s"
+      group_interval: "1m"
+      repeat_interval: "1h"
+      
+    # Alertas de alta severidade - Slack + Email
+    - match:
+        severity: high
+      receiver: 'slack-high'
+      group_wait: "30s"
+      group_interval: "2m"
+      repeat_interval: "2h"
+      
+    # Alertas de média severidade - Slack
+    - match:
+        severity: medium
+      receiver: 'slack-medium'
+      group_wait: "1m"
+      group_interval: "5m"
+      repeat_interval: "4h"
+      
+    # Alertas de baixa severidade - Email
+    - match:
+        severity: low
+      receiver: 'email-low'
+      group_wait: "5m"
+      group_interval: "10m"
+      repeat_interval: "8h"
+
+# Configuração de receivers
+receivers:
+  # Receiver padrão
+  - name: 'default'
+    email_configs:
+      - to: 'team@company.com'
+        send_resolved: true
+        
+  # PagerDuty para alertas críticos
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - routing_key: '${PAGERDUTY_CRITICAL_KEY}'
+        description: '{{ .GroupLabels.alertname }}'
+        severity: '{{ if eq .GroupLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
+        client: 'AlertManager'
+        client_url: '{{ template "pagerduty.default.clientURL" . }}'
+        details:
+          firing: '{{ template "pagerduty.default.firing" . }}'
+          num_firing: '{{ .Alerts.Firing | len }}'
+          num_resolved: '{{ .Alerts.Resolved | len }}'
+          resolved: '{{ template "pagerduty.default.resolved" . }}'
+          
+  # Slack para alertas de alta severidade
+  - name: 'slack-high'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-critical'
+        username: 'AlertManager'
+        icon_emoji: ':warning:'
+        title: '{{ template "slack.default.title" . }}'
+        text: '{{ template "slack.default.text" . }}'
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: '{{ template "slack.default.grafanaURL" . }}'
+        send_resolved: true
+        
+  # Slack para alertas de média severidade
+  - name: 'slack-medium'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts'
+        username: 'AlertManager'
+        icon_emoji: ':information_source:'
+        title: '{{ template "slack.default.title" . }}'
+        text: '{{ template "slack.default.text" . }}'
+        send_resolved: true
+        
+  # Email para alertas de baixa severidade
+  - name: 'email-low'
+    email_configs:
+      - to: 'team@company.com'
+        subject: '{{ template "email.default.subject" . }}'
+        html: '{{ template "email.default.html" . }}'
+        send_resolved: true
+
+# Configuração de templates
+templates:
+  - '/etc/alertmanager/template/*.tmpl'
+
+# Configuração de inibição
+inhibit_rules:
+  # Inibe alertas de baixa severidade quando há alertas críticos do mesmo serviço
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'low'
+    equal: ['service']
+      
+  # Inibe alertas de média severidade quando há alertas de alta severidade
+  - source_match:
+      severity: 'high'
+    target_match:
+      severity: 'medium'
+    equal: ['service', 'alertname']
+
+# Configuração de timeouts
+time_intervals:
+  - name: 'workdays'
+    time_intervals:
+      - weekdays: ['monday:friday']
+        times:
+          - start_time: '09:00'
+            end_time: '18:00'
+            
+  - name: 'weekends'
+    time_intervals:
+      - weekdays: ['saturday', 'sunday']
+        
+  - name: 'holidays'
+    time_intervals:
+      - location: 'America/Sao_Paulo'
+        holidays:
+          - '2025-01-01'  # Ano Novo
+          - '2025-04-21'  # Tiradentes
+          - '2025-05-01'  # Dia do Trabalho
+          - '2025-09-07'  # Independência
+          - '2025-10-12'  # Nossa Senhora
+          - '2025-11-02'  # Finados
+          - '2025-11-15'  # Proclamação da República
+          - '2025-12-25'  # Natal
+
+# Configuração de regras de alerta específicas
+alert_rules:
+  # Alertas de disponibilidade
+  availability:
+    - name: 'service_down'
+      condition: 'up == 0'
+      severity: 'critical'
+      summary: 'Service {{ $labels.service }} is down'
+      description: 'Service {{ $labels.service }} has been down for more than 5 minutes'
+      for: '5m'
+      
+    - name: 'high_error_rate'
+      condition: 'rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05'
+      severity: 'high'
+      summary: 'High error rate for {{ $labels.service }}'
+      description: 'Error rate is {{ $value | humanizePercentage }} for {{ $labels.service }}'
+      for: '2m'
+      
+  # Alertas de performance
+  performance:
+    - name: 'high_latency'
+      condition: 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1'
+      severity: 'medium'
+      summary: 'High latency for {{ $labels.service }}'
+      description: '95th percentile latency is {{ $value }}s for {{ $labels.service }}'
+      for: '5m'
+      
+    - name: 'high_cpu_usage'
+      condition: '100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80'
+      severity: 'medium'
+      summary: 'High CPU usage on {{ $labels.instance }}'
+      description: 'CPU usage is {{ $value }}% on {{ $labels.instance }}'
+      for: '5m'
+      
+    - name: 'high_memory_usage'
+      condition: '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85'
+      severity: 'medium'
+      summary: 'High memory usage on {{ $labels.instance }}'
+      description: 'Memory usage is {{ $value }}% on {{ $labels.instance }}'
+      for: '5m'
+      
+  # Alertas de disco
+  disk:
+    - name: 'disk_usage_high'
+      condition: '(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85'
+      severity: 'medium'
+      summary: 'High disk usage on {{ $labels.instance }}'
+      description: 'Disk usage is {{ $value }}% on {{ $labels.instance }}'
+      for: '5m'
+      
+    - name: 'disk_usage_critical'
+      condition: '(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 95'
+      severity: 'high'
+      summary: 'Critical disk usage on {{ $labels.instance }}'
+      description: 'Disk usage is {{ $value }}% on {{ $labels.instance }}'
+      for: '2m'
+      
+  # Alertas de rede
+  network:
+    - name: 'network_errors'
+      condition: 'rate(node_network_receive_errs_total[5m]) > 0'
+      severity: 'medium'
+      summary: 'Network errors on {{ $labels.instance }}'
+      description: 'Network interface {{ $labels.device }} is experiencing errors'
+      for: '5m'
+      
+  # Alertas de banco de dados
+  database:
+    - name: 'database_connections_high'
+      condition: 'pg_stat_database_numbackends > 80'
+      severity: 'medium'
+      summary: 'High database connections'
+      description: 'Database has {{ $value }} active connections'
+      for: '5m'
+      
+    - name: 'database_slow_queries'
+      condition: 'rate(pg_stat_activity_max_tx_duration[5m]) > 30'
+      severity: 'medium'
+      summary: 'Slow database queries detected'
+      description: 'Queries taking longer than 30 seconds detected'
+      for: '2m'
+      
+  # Alertas de cache
+  cache:
+    - name: 'cache_hit_rate_low'
+      condition: 'rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.7'
+      severity: 'medium'
+      summary: 'Low cache hit rate'
+      description: 'Cache hit rate is {{ $value | humanizePercentage }}'
+      for: '5m'
+      
+  # Alertas de segurança
+  security:
+    - name: 'failed_login_attempts'
+      condition: 'rate(auth_failed_logins_total[5m]) > 10'
+      severity: 'high'
+      summary: 'High number of failed login attempts'
+      description: '{{ $value }} failed login attempts per second detected'
+      for: '2m'
+      
+    - name: 'suspicious_activity'
+      condition: 'rate(security_suspicious_events_total[5m]) > 5'
+      severity: 'high'
+      summary: 'Suspicious activity detected'
+      description: '{{ $value }} suspicious events per second detected'
+      for: '1m'
+      
+  # Alertas de negócio
+  business:
+    - name: 'api_rate_limit_exceeded'
+      condition: 'rate(api_rate_limit_exceeded_total[5m]) > 0'
+      severity: 'medium'
+      summary: 'API rate limit exceeded'
+      description: 'API rate limits are being exceeded'
+      for: '2m'
+      
+    - name: 'user_satisfaction_low'
+      condition: 'user_satisfaction_score < 4.0'
+      severity: 'medium'
+      summary: 'Low user satisfaction score'
+      description: 'User satisfaction score is {{ $value }}'
+      for: '1h'
+
+# Configuração de escalação
+escalation:
+  levels:
+    - level: 1
+      timeout: "5m"
+      receivers: ['pagerduty-critical']
+      conditions:
+        - severity: 'critical'
+        
+    - level: 2
+      timeout: "15m"
+      receivers: ['slack-high', 'email-escalation']
+      conditions:
+        - severity: 'high'
+        - duration: '> 10m'
+        
+    - level: 3
+      timeout: "30m"
+      receivers: ['pagerduty-critical', 'email-management']
+      conditions:
+        - severity: 'critical'
+        - duration: '> 20m'
+
+# Configuração de notificações
+notifications:
+  # Configuração de PagerDuty
+  pagerduty:
+    service_key: '${PAGERDUTY_SERVICE_KEY}'
+    escalation_policy: 'critical'
+    auto_resolve: true
+    
+  # Configuração de Slack
+  slack:
+    webhook_url: '${SLACK_WEBHOOK_URL}'
+    channel: '#alerts'
+    username: 'AlertManager'
+    icon_emoji: ':warning:'
+    
+  # Configuração de Email
+  email:
+    smtp_host: '${SMTP_HOST}'
+    smtp_port: 587
+    smtp_user: '${SMTP_USER}'
+    smtp_password: '${SMTP_PASSWORD}'
+    from: 'alerts@company.com'
+    to: ['team@company.com']
+    
+  # Configuração de SMS (via Twilio)
+  sms:
+    provider: 'twilio'
+    account_sid: '${TWILIO_ACCOUNT_SID}'
+    auth_token: '${TWILIO_AUTH_TOKEN}'
+    from_number: '${TWILIO_FROM_NUMBER}'
+    to_numbers: ['${ONCALL_PHONE}']
+
+# Configuração de retenção
+retention:
+  alert_history: '30d'
+  notification_history: '90d'
+  silence_history: '1y'
+
+# Configuração de backup
+backup:
+  enabled: true
+  frequency: '1h'
+  retention: '7d'
+  location: '/var/lib/alertmanager/backup'
+
+# Configuração de logs
+logging:
+  level: 'info'
+  format: 'json'
+  output: 'stdout'
+  
+# Configuração de métricas
+metrics:
+  enabled: true
+  port: 9093
+  path: '/metrics'
+  
+# Configuração de health checks
+health_check:
+  enabled: true
+  port: 9093
+  path: '/-/healthy'
+  interval: '30s'
+  timeout: '5s' 

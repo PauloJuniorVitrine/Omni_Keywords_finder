@@ -1,0 +1,178 @@
+# 📋 Multi-Region Deployment Configuration
+# Tracing ID: MULTI_REGION_DEPLOY_001_20250127
+# Versão: 1.0
+# Data: 2025-01-27
+# Objetivo: Deploy multi-region com alta disponibilidade
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omni-keywords-finder
+  namespace: omni-keywords
+  labels:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+  annotations:
+    reliability.omni.com/version: "1.0"
+    reliability.omni.com/region: "{{ .Values.region }}"
+    reliability.omni.com/deployment-type: "multi-region"
+spec:
+  replicas: {{ .Values.replicas | default 3 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: omni-keywords-finder
+  template:
+    metadata:
+      labels:
+        app: omni-keywords-finder
+        version: v1.0.0
+        region: {{ .Values.region }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+        reliability.omni.com/health-check: "true"
+    spec:
+      # Configuração de alta disponibilidade
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - omni-keywords-finder
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: Exists
+      # Configuração de tolerâncias para nós dedicados
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "omni-keywords"
+        effect: "NoSchedule"
+      # Configuração de recursos
+      containers:
+      - name: omni-keywords-finder
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: metrics
+          containerPort: 8000
+          protocol: TCP
+        # Configuração de health checks
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        # Configuração de recursos
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        # Configuração de variáveis de ambiente
+        env:
+        - name: ENVIRONMENT
+          value: {{ .Values.environment | default "production" }}
+        - name: REGION
+          value: {{ .Values.region }}
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: omni-keywords-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: omni-keywords-secrets
+              key: redis-url
+        - name: API_KEY_GOOGLE
+          valueFrom:
+            secretKeyRef:
+              name: omni-keywords-secrets
+              key: google-api-key
+        - name: API_KEY_YOUTUBE
+          valueFrom:
+            secretKeyRef:
+              name: omni-keywords-secrets
+              key: youtube-api-key
+        - name: API_KEY_REDDIT
+          valueFrom:
+            secretKeyRef:
+              name: omni-keywords-secrets
+              key: reddit-api-key
+        - name: LOG_LEVEL
+          value: {{ .Values.logLevel | default "INFO" }}
+        - name: RELIABILITY_MODE
+          value: "enabled"
+        - name: MULTI_REGION_ENABLED
+          value: "true"
+        - name: CIRCUIT_BREAKER_ENABLED
+          value: "true"
+        - name: AUTO_HEALING_ENABLED
+          value: "true"
+        # Configuração de volumes
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+          readOnly: true
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: cache-volume
+          mountPath: /app/cache
+        # Configuração de segurança
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      # Configuração de volumes
+      volumes:
+      - name: config-volume
+        configMap:
+          name: omni-keywords-config
+      - name: logs-volume
+        emptyDir: {}
+      - name: cache-volume
+        emptyDir: {}
+      # Configuração de restart policy
+      restartPolicy: Always
+      # Configuração de service account
+      serviceAccountName: omni-keywords-sa
+      # Configuração de image pull secrets
+      imagePullSecrets:
+      - name: omni-keywords-registry-secret 

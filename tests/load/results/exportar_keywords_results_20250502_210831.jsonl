@@ -1,0 +1,1 @@
+{"timestamp": 1746230911.5970392, "type": "GET", "endpoint": "/api/exportar_keywords?formato=json&prefix=test_kw_2245", "status_code": 200, "response_time_ms": 10.883699993428309, "response_length": 88, "exception": null, "url": "http://127.0.0.1:5000/api/exportar_keywords?formato=json&prefix=test_kw_2245"}

@@ -1,0 +1,10 @@
+{
+  "providers": {
+    "deepseek": {
+      "apiKey": "sk-cec58befa158438b8c4bbf97835983d5",
+      "apiBaseUrl": "https://api.deepseek.com/v1",
+      "model": "deepseek-coder-v2.0"
+    }
+  },
+  "defaultProvider": "deepseek"
+}

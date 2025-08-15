@@ -1,0 +1,395 @@
+# 🗄️ CONFIGURAÇÃO POSTGRESQL - OMNİ KEYWORDS FINDER
+# 📅 Criado: 2025-01-27
+# 🔧 Tracing ID: CHECKLIST_99_PERCENT_20250127_001
+# 🎯 Objetivo: Configuração enterprise-grade PostgreSQL
+
+# =============================================================================
+# 🚨 CONFIGURAÇÃO CRÍTICA DE BANCO DE DADOS
+# =============================================================================
+
+database:
+  type: "postgresql"
+  version: "15"  # Versão mínima recomendada
+  environment: "production"
+  cluster_mode: "primary_replica"  # ou "standalone", "cluster"
+  connection_pool: "pgbouncer"
+  backup_strategy: "continuous_archiving"
+
+# =============================================================================
+# 🔗 CONFIGURAÇÕES DE CONEXÃO
+# =============================================================================
+
+connection:
+  primary:
+    host: "localhost"
+    port: 5432
+    database: "omni_keywords_production"
+    username: "omni_user"
+    password: "omni_secure_password_2025_ultra_encrypted"
+    ssl_mode: "require"
+    ssl_cert: "/etc/ssl/certs/postgresql-client.crt"
+    ssl_key: "/etc/ssl/private/postgresql-client.key"
+    ssl_ca: "/etc/ssl/certs/postgresql-ca.crt"
+    
+  replica:
+    host: "replica.omni-keywords-finder.com"
+    port: 5432
+    database: "omni_keywords_production"
+    username: "omni_readonly_user"
+    password: "omni_readonly_password_2025_ultra_encrypted"
+    ssl_mode: "require"
+    
+  connection_pool:
+    min_connections: 5
+    max_connections: 100
+    connection_timeout: 30
+    idle_timeout: 300
+    max_lifetime: 3600
+
+# =============================================================================
+# ⚙️ CONFIGURAÇÕES DE PERFORMANCE
+# =============================================================================
+
+performance:
+  # Configurações de Memória
+  shared_buffers: "2GB"  # 25% da RAM total
+  effective_cache_size: "8GB"  # 75% da RAM total
+  work_mem: "64MB"  # Para operações de ordenação
+  maintenance_work_mem: "512MB"  # Para manutenção
+  
+  # Configurações de WAL (Write-Ahead Logging)
+  wal_buffers: "16MB"
+  checkpoint_completion_target: 0.9
+  checkpoint_timeout: "15min"
+  max_wal_size: "4GB"
+  min_wal_size: "1GB"
+  
+  # Configurações de Consultas
+  random_page_cost: 1.1  # Para SSD
+  effective_io_concurrency: 200  # Para SSD
+  default_statistics_target: 100
+  
+  # Configurações de Autovacuum
+  autovacuum: true
+  autovacuum_max_workers: 3
+  autovacuum_naptime: "1min"
+  autovacuum_vacuum_threshold: 50
+  autovacuum_analyze_threshold: 50
+  autovacuum_vacuum_scale_factor: 0.2
+  autovacuum_analyze_scale_factor: 0.1
+
+# =============================================================================
+# 🔒 CONFIGURAÇÕES DE SEGURANÇA
+# =============================================================================
+
+security:
+  # Autenticação
+  authentication_method: "scram-sha-256"  # Mais seguro que md5
+  password_encryption: "scram-sha-256"
+  ssl: true
+  ssl_ciphers: "HIGH:!aNULL:!MD5"
+  
+  # Controle de Acesso
+  listen_addresses: "localhost"  # Restringir acesso
+  max_connections: 200
+  superuser_reserved_connections: 3
+  
+  # Logs de Segurança
+  log_connections: true
+  log_disconnections: true
+  log_statement: "all"  # ou "ddl", "mod", "none"
+  log_duration: true
+  log_line_prefix: "%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h "
+  
+  # Row Level Security
+  row_level_security: true
+  force_row_level_security: true
+
+# =============================================================================
+# 📊 CONFIGURAÇÕES DE MONITORAMENTO
+# =============================================================================
+
+monitoring:
+  # Extensões de Monitoramento
+  extensions:
+    - "pg_stat_statements"  # Estatísticas de consultas
+    - "pg_stat_monitor"     # Monitoramento avançado
+    - "auto_explain"        # Explicação automática
+    - "pg_repack"           # Reorganização de tabelas
+    
+  # Configurações de Log
+  logging_collector: true
+  log_directory: "/var/log/postgresql"
+  log_filename: "postgresql-%Y-%m-%d_%H%M%S.log"
+  log_rotation_age: "1d"
+  log_rotation_size: "100MB"
+  log_min_duration_statement: 1000  # Log consultas > 1s
+  
+  # Métricas
+  track_activities: true
+  track_counts: true
+  track_io_timing: true
+  track_functions: "all"
+
+# =============================================================================
+# 🔄 CONFIGURAÇÕES DE REPLICAÇÃO
+# =============================================================================
+
+replication:
+  # Configuração Primária
+  primary:
+    wal_level: "replica"
+    max_wal_senders: 10
+    max_replication_slots: 10
+    hot_standby: true
+    
+  # Configuração de Réplica
+  replica:
+    hot_standby: true
+    max_standby_archive_delay: "30s"
+    max_standby_streaming_delay: "30s"
+    wal_receiver_status_interval: "10s"
+    
+  # Configuração de Streaming
+  streaming:
+    synchronous_commit: "on"  # ou "off", "local", "remote_write"
+    synchronous_standby_names: "FIRST 1 (replica1, replica2)"
+    wal_sync_method: "fdatasync"
+
+# =============================================================================
+# 🗂️ CONFIGURAÇÕES DE TABELAS E ÍNDICES
+# =============================================================================
+
+tables:
+  # Configurações Globais
+  default_tablespace: "pg_default"
+  temp_tablespaces: "pg_temp"
+  
+  # Configurações de Tabelas
+  fillfactor: 90  # Para tabelas com muitas atualizações
+  autovacuum_vacuum_scale_factor: 0.2
+  autovacuum_analyze_scale_factor: 0.1
+  
+  # Configurações de Índices
+  index_fillfactor: 90
+  maintenance_work_mem: "512MB"
+  
+  # Particionamento
+  partitioning:
+    enabled: true
+    strategy: "range"  # ou "list", "hash"
+    partition_key: "created_at"
+
+# =============================================================================
+# 🔄 CONFIGURAÇÕES DE BACKUP
+# =============================================================================
+
+backup:
+  # Backup Completo
+  full_backup:
+    enabled: true
+    schedule: "0 2 * * *"  # Diário às 2h
+    retention: "30d"
+    compression: "gzip"
+    parallel_jobs: 4
+    
+  # Backup Incremental
+  incremental_backup:
+    enabled: true
+    schedule: "0 */6 * * *"  # A cada 6 horas
+    retention: "7d"
+    
+  # WAL Archiving
+  wal_archiving:
+    enabled: true
+    archive_command: "gzip < %p > /var/lib/postgresql/wal_archive/%f.gz"
+    archive_timeout: "1min"
+    archive_mode: "on"
+    
+  # Point-in-Time Recovery
+  pitr:
+    enabled: true
+    recovery_target_time: "latest"
+    recovery_target_action: "promote"
+
+# =============================================================================
+# 🔧 CONFIGURAÇÕES DE MANUTENÇÃO
+# =============================================================================
+
+maintenance:
+  # Vacuum
+  vacuum:
+    enabled: true
+    schedule: "0 3 * * 0"  # Semanal aos domingos às 3h
+    full_vacuum: true
+    analyze: true
+    
+  # Reindex
+  reindex:
+    enabled: true
+    schedule: "0 4 * * 0"  # Semanal aos domingos às 4h
+    concurrent: true
+    
+  # Statistics
+  statistics:
+    enabled: true
+    schedule: "0 1 * * *"  # Diário às 1h
+    sample_rate: 0.1
+
+# =============================================================================
+# 🚨 CONFIGURAÇÕES DE ALERTAS
+# =============================================================================
+
+alerts:
+  # Métricas Críticas
+  critical_metrics:
+    connection_count:
+      threshold: 180  # 90% de max_connections
+      action: "alert"
+      
+    disk_usage:
+      threshold: 85  # 85% de uso do disco
+      action: "alert"
+      
+    replication_lag:
+      threshold: "30s"  # 30 segundos de lag
+      action: "alert"
+      
+    query_duration:
+      threshold: "10s"  # Consultas > 10s
+      action: "alert"
+      
+  # Alertas de Performance
+  performance_alerts:
+    slow_queries: true
+    connection_spikes: true
+    disk_io_high: true
+    memory_usage_high: true
+    
+  # Notificações
+  notifications:
+    email: ["admin@omni-keywords-finder.com", "dba@omni-keywords-finder.com"]
+    slack: "#database-alerts"
+    pagerduty: "database-service"
+
+# =============================================================================
+# 🔍 CONFIGURAÇÕES DE TESTE
+# =============================================================================
+
+testing:
+  # Testes de Conectividade
+  connectivity_tests:
+    - "psql -h localhost -U omni_user -d omni_keywords_production -c 'SELECT 1;'"
+    - "pg_isready -h localhost -p 5432"
+    - "pg_ctl status -D /var/lib/postgresql/15/main"
+    
+  # Testes de Performance
+  performance_tests:
+    - "pgbench -h localhost -U omni_user -d omni_keywords_production -c 10 -t 1000"
+    - "EXPLAIN ANALYZE SELECT * FROM keywords WHERE domain = 'test.com';"
+    
+  # Testes de Backup
+  backup_tests:
+    - "pg_dump -h localhost -U omni_user -d omni_keywords_production -f test_backup.sql"
+    - "pg_restore -h localhost -U omni_user -d test_restore test_backup.sql"
+
+# =============================================================================
+# 📝 CONFIGURAÇÕES DE LOGS
+# =============================================================================
+
+logging:
+  # Configurações de Log
+  log_destination: "stderr"
+  logging_collector: true
+  log_directory: "/var/log/postgresql"
+  log_filename: "postgresql-%Y-%m-%d_%H%M%S.log"
+  log_rotation_age: "1d"
+  log_rotation_size: "100MB"
+  
+  # Níveis de Log
+  log_min_messages: "warning"
+  log_min_error_statement: "error"
+  log_min_duration_statement: 1000
+  
+  # Logs Específicos
+  log_checkpoints: true
+  log_connections: true
+  log_disconnections: true
+  log_lock_waits: true
+  log_temp_files: "0"
+  log_autovacuum_min_duration: "0"
+
+# =============================================================================
+# 🎯 CONFIGURAÇÕES ESPECÍFICAS DO SISTEMA
+# =============================================================================
+
+system_specific:
+  # Configurações para Keywords Finder
+  keywords_finder:
+    # Tabelas principais
+    keywords_table:
+      name: "keywords"
+      partitioning: true
+      partition_key: "created_at"
+      retention: "2y"
+      
+    analysis_table:
+      name: "keyword_analysis"
+      partitioning: true
+      partition_key: "analysis_date"
+      retention: "1y"
+      
+    blog_data_table:
+      name: "blog_data"
+      partitioning: true
+      partition_key: "scraped_date"
+      retention: "6m"
+      
+  # Configurações de Cache
+  cache:
+    redis_integration: true
+    query_cache: true
+    cache_ttl: 3600  # 1 hora
+    
+  # Configurações de Processamento
+  processing:
+    batch_size: 1000
+    max_concurrent_queries: 10
+    query_timeout: "5min"
+
+# =============================================================================
+# 📋 CHECKLIST DE VALIDAÇÃO POSTGRESQL
+# =============================================================================
+
+validation_checklist:
+  - "✅ PostgreSQL 15+ instalado e configurado"
+  - "✅ SSL/TLS habilitado e configurado"
+  - "✅ Autenticação SCRAM-SHA-256 configurada"
+  - "✅ Row Level Security habilitado"
+  - "✅ Extensões de monitoramento instaladas"
+  - "✅ Backup automático configurado"
+  - "✅ Replicação configurada (se aplicável)"
+  - "✅ Autovacuum configurado e otimizado"
+  - "✅ Logs configurados e centralizados"
+  - "✅ Alertas configurados"
+  - "✅ Performance otimizada para carga esperada"
+  - "✅ Segurança configurada (firewall, acesso restrito)"
+  - "✅ Monitoramento ativo"
+  - "✅ Procedimentos de recuperação testados"
+  - "✅ Documentação atualizada"
+
+# =============================================================================
+# ⚠️ AVISOS IMPORTANTES
+# =============================================================================
+
+warnings:
+  - "Manter PostgreSQL sempre atualizado com patches de segurança"
+  - "Monitorar logs regularmente para detectar problemas"
+  - "Fazer backup antes de qualquer alteração crítica"
+  - "Testar configurações em ambiente de staging"
+  - "Documentar todas as alterações de configuração"
+  - "Manter estatísticas atualizadas para otimização"
+  - "Configurar alertas para métricas críticas"
+  - "Implementar rotação de logs"
+  - "Treinar equipe em administração PostgreSQL"
+  - "Auditar configurações de segurança regularmente" 

@@ -1,0 +1,384 @@
+# Health Check Configuration for Omni Keywords Finder
+# Author: Paulo Júnior
+# Date: 2025-01-27
+# Tracing ID: HEALTH_CONFIG_001
+
+# Global configuration
+global:
+  check_interval_seconds: 60
+  max_concurrent_checks: 10
+  priority_execution: true
+  enable_graceful_shutdown: true
+  shutdown_timeout_seconds: 30
+  enable_metrics: true
+  enable_notifications: true
+  retry_failed_checks: true
+  retry_delay_seconds: 30
+  max_retry_attempts: 3
+
+# Health check profiles
+profiles:
+  # Database health checks
+  database:
+    timeout_seconds: 30
+    retry_attempts: 3
+    check_interval_seconds: 30
+    priority: critical
+    category: database
+    description: "Database connectivity and performance checks"
+    tags:
+      - "database"
+      - "critical"
+      - "infrastructure"
+    
+    checks:
+      - name: "database_connection"
+        type: "database"
+        connection_string: "${DATABASE_URL}"
+        timeout_seconds: 10
+        retry_attempts: 2
+        
+      - name: "database_performance"
+        type: "custom"
+        function: "check_database_performance"
+        timeout_seconds: 15
+        retry_attempts: 1
+
+  # Cache health checks
+  cache:
+    timeout_seconds: 20
+    retry_attempts: 3
+    check_interval_seconds: 45
+    priority: high
+    category: cache
+    description: "Redis cache connectivity and performance checks"
+    tags:
+      - "cache"
+      - "high"
+      - "infrastructure"
+    
+    checks:
+      - name: "redis_connection"
+        type: "redis"
+        redis_url: "${REDIS_URL}"
+        timeout_seconds: 5
+        retry_attempts: 2
+        
+      - name: "redis_performance"
+        type: "custom"
+        function: "check_redis_performance"
+        timeout_seconds: 10
+        retry_attempts: 1
+
+  # External API health checks
+  external_apis:
+    timeout_seconds: 45
+    retry_attempts: 2
+    check_interval_seconds: 120
+    priority: medium
+    category: external_api
+    description: "External API dependency checks"
+    tags:
+      - "external"
+      - "medium"
+      - "dependencies"
+    
+    checks:
+      - name: "google_api"
+        type: "external_api"
+        url: "https://www.googleapis.com/discovery/v1/apis"
+        expected_status: 200
+        timeout_seconds: 30
+        retry_attempts: 2
+        
+      - name: "youtube_api"
+        type: "external_api"
+        url: "https://www.googleapis.com/youtube/v3"
+        expected_status: 400  # API returns 400 for missing parameters, but endpoint is reachable
+        timeout_seconds: 30
+        retry_attempts: 2
+        
+      - name: "reddit_api"
+        type: "external_api"
+        url: "https://www.reddit.com/api/v1"
+        expected_status: 200
+        timeout_seconds: 30
+        retry_attempts: 2
+
+  # System resources health checks
+  system_resources:
+    timeout_seconds: 15
+    retry_attempts: 1
+    check_interval_seconds: 60
+    priority: high
+    category: system_resources
+    description: "System resource monitoring"
+    tags:
+      - "system"
+      - "high"
+      - "resources"
+    
+    checks:
+      - name: "system_resources"
+        type: "system_resources"
+        timeout_seconds: 10
+        retry_attempts: 1
+        thresholds:
+          cpu_percent: 90
+          memory_percent: 90
+          disk_percent: 90
+
+  # Business logic health checks
+  business_logic:
+    timeout_seconds: 30
+    retry_attempts: 2
+    check_interval_seconds: 90
+    priority: medium
+    category: business_logic
+    description: "Business logic and service health checks"
+    tags:
+      - "business"
+      - "medium"
+      - "services"
+    
+    checks:
+      - name: "keyword_processing_service"
+        type: "custom"
+        function: "check_keyword_processing_service"
+        timeout_seconds: 20
+        retry_attempts: 2
+        
+      - name: "data_collection_service"
+        type: "custom"
+        function: "check_data_collection_service"
+        timeout_seconds: 25
+        retry_attempts: 2
+        
+      - name: "analytics_service"
+        type: "custom"
+        function: "check_analytics_service"
+        timeout_seconds: 15
+        retry_attempts: 1
+
+  # Security health checks
+  security:
+    timeout_seconds: 20
+    retry_attempts: 2
+    check_interval_seconds: 300  # 5 minutes
+    priority: high
+    category: security
+    description: "Security and authentication checks"
+    tags:
+      - "security"
+      - "high"
+      - "authentication"
+    
+    checks:
+      - name: "authentication_service"
+        type: "custom"
+        function: "check_authentication_service"
+        timeout_seconds: 15
+        retry_attempts: 2
+        
+      - name: "rate_limiting"
+        type: "custom"
+        function: "check_rate_limiting"
+        timeout_seconds: 10
+        retry_attempts: 1
+
+# Alert configurations
+alerts:
+  # Consecutive failures
+  consecutive_failures:
+    warning:
+      threshold: 3
+      severity: warning
+      message: "Health check {check_name} has failed {count} consecutive times"
+    critical:
+      threshold: 5
+      severity: critical
+      message: "Health check {check_name} has failed {count} consecutive times - CRITICAL"
+  
+  # Response time alerts
+  response_time:
+    warning:
+      threshold_ms: 5000
+      severity: warning
+      message: "Health check {check_name} response time is {duration_ms}ms (threshold: {threshold}ms)"
+    critical:
+      threshold_ms: 10000
+      severity: critical
+      message: "Health check {check_name} response time is {duration_ms}ms (threshold: {threshold}ms) - CRITICAL"
+  
+  # Success rate alerts
+  success_rate:
+    warning:
+      threshold: 0.8
+      severity: warning
+      message: "Health check {check_name} success rate is {success_rate:.2%} (threshold: {threshold:.0%})"
+    critical:
+      threshold: 0.5
+      severity: critical
+      message: "Health check {check_name} success rate is {success_rate:.2%} (threshold: {threshold:.0%}) - CRITICAL"
+
+# Notification configurations
+notifications:
+  # Slack notifications
+  slack:
+    enabled: true
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#health-checks"
+    username: "Health Check Bot"
+    icon_emoji: ":health_check:"
+    
+    # Notification levels
+    levels:
+      - warning
+      - critical
+    
+    # Notification frequency
+    frequency:
+      warning: 300  # 5 minutes
+      critical: 60   # 1 minute
+  
+  # Email notifications
+  email:
+    enabled: false
+    smtp_server: "${SMTP_SERVER}"
+    smtp_port: "${SMTP_PORT}"
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_address: "health-checks@omni-keywords-finder.com"
+    to_addresses:
+      - "admin@omni-keywords-finder.com"
+      - "devops@omni-keywords-finder.com"
+    
+    # Notification levels
+    levels:
+      - critical
+    
+    # Notification frequency
+    frequency:
+      critical: 300  # 5 minutes
+  
+  # Webhook notifications
+  webhook:
+    enabled: false
+    url: "${WEBHOOK_URL}"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer ${WEBHOOK_TOKEN}"
+    
+    # Notification levels
+    levels:
+      - critical
+    
+    # Notification frequency
+    frequency:
+      critical: 60  # 1 minute
+
+# Metrics configuration
+metrics:
+  # Prometheus metrics
+  prometheus:
+    enabled: true
+    endpoint: "/metrics"
+    port: 9090
+    
+  # Grafana dashboard
+  grafana:
+    enabled: true
+    dashboard_title: "Omni Keywords Finder - Health Checks"
+    dashboard_tags:
+      - "health-checks"
+      - "omni-keywords-finder"
+    refresh_interval: "30s"
+    
+  # Custom metrics
+  custom:
+    enabled: true
+    retention_days: 30
+    max_history_size: 1000
+
+# Environment-specific overrides
+environments:
+  development:
+    global:
+      check_interval_seconds: 120  # Less frequent in dev
+      enable_notifications: false  # No notifications in dev
+    
+    profiles:
+      database:
+        check_interval_seconds: 60
+        
+      external_apis:
+        check_interval_seconds: 300  # Less frequent API checks in dev
+  
+  staging:
+    global:
+      check_interval_seconds: 90
+      enable_notifications: true
+    
+    profiles:
+      database:
+        check_interval_seconds: 45
+        
+      external_apis:
+        check_interval_seconds: 180
+  
+  production:
+    global:
+      check_interval_seconds: 60
+      enable_notifications: true
+      max_concurrent_checks: 20  # More concurrent checks in prod
+    
+    profiles:
+      database:
+        check_interval_seconds: 30
+        priority: critical
+        
+      external_apis:
+        check_interval_seconds: 120
+        priority: high
+        
+      system_resources:
+        check_interval_seconds: 30
+        priority: high
+
+# Custom health check functions (to be implemented)
+custom_functions:
+  check_database_performance:
+    description: "Check database query performance"
+    timeout_seconds: 15
+    retry_attempts: 1
+    
+  check_redis_performance:
+    description: "Check Redis operation performance"
+    timeout_seconds: 10
+    retry_attempts: 1
+    
+  check_keyword_processing_service:
+    description: "Check keyword processing service health"
+    timeout_seconds: 20
+    retry_attempts: 2
+    
+  check_data_collection_service:
+    description: "Check data collection service health"
+    timeout_seconds: 25
+    retry_attempts: 2
+    
+  check_analytics_service:
+    description: "Check analytics service health"
+    timeout_seconds: 15
+    retry_attempts: 1
+    
+  check_authentication_service:
+    description: "Check authentication service health"
+    timeout_seconds: 15
+    retry_attempts: 2
+    
+  check_rate_limiting:
+    description: "Check rate limiting functionality"
+    timeout_seconds: 10
+    retry_attempts: 1 

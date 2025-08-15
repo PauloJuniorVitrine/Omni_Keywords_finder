@@ -1,0 +1,736 @@
+# 🔍 JAEGER CONFIGURATION - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: jaeger-config-2025-01-27-001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Configuração completa do Jaeger para distributed tracing
+# e observabilidade de requisições distribuídas
+
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: omni-keywords-jaeger
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: tracing
+    system: omni-keywords-finder
+spec:
+  strategy: production
+  storage:
+    type: elasticsearch
+    options:
+      es:
+        server-urls: http://elasticsearch:9200
+        index-prefix: jaeger
+        username: jaeger
+        password: jaeger-password
+    dependencies:
+      enabled: true
+      schedule: "0 1 * * *"  # Daily at 1 AM
+  ingress:
+    enabled: true
+    hosts:
+      - jaeger.omni-keywords.com
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls:
+      - secretName: jaeger-tls
+        hosts:
+          - jaeger.omni-keywords.com
+  agent:
+    strategy: DaemonSet
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  collector:
+    replicas: 3
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+    options:
+      collector:
+        num-workers: 10
+        queue-size: 1000
+      kafka:
+        producer:
+          topic: jaeger-spans
+          brokers: kafka:9092
+          encoding: json
+    config:
+      sampling:
+        default_strategy:
+          type: probabilistic
+          param: 0.1
+        per_operation_strategies:
+          - operation: /api/keywords
+            type: probabilistic
+            param: 0.5
+          - operation: /api/collect
+            type: probabilistic
+            param: 0.3
+          - operation: /api/process
+            type: probabilistic
+            param: 0.2
+  query:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    options:
+      query:
+        base-path: /jaeger
+        static-files: /go/jaeger-ui/build/
+        ui-config: /etc/jaeger/ui-config.json
+    config:
+      dependencies:
+        menuEnabled: true
+        menuUrl: /api/dependencies
+  allInOne:
+    enabled: false
+  production:
+    enabled: true
+    options:
+      es:
+        server-urls: http://elasticsearch:9200
+        index-prefix: jaeger
+        username: jaeger
+        password: jaeger-password
+      kafka:
+        producer:
+          topic: jaeger-spans
+          brokers: kafka:9092
+          encoding: json
+        consumer:
+          topic: jaeger-spans
+          brokers: kafka:9092
+          group-id: jaeger
+      collector:
+        num-workers: 10
+        queue-size: 1000
+      sampling:
+        default_strategy:
+          type: probabilistic
+          param: 0.1
+        per_operation_strategies:
+          - operation: /api/keywords
+            type: probabilistic
+            param: 0.5
+          - operation: /api/collect
+            type: probabilistic
+            param: 0.3
+          - operation: /api/process
+            type: probabilistic
+            param: 0.2
+
+---
+# ConfigMap para configuração do Jaeger
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-config
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: tracing
+data:
+  # Configuração de sampling
+  sampling.yaml: |
+    default_strategy:
+      type: probabilistic
+      param: 0.1
+    per_operation_strategies:
+      - operation: /api/keywords
+        type: probabilistic
+        param: 0.5
+      - operation: /api/collect
+        type: probabilistic
+        param: 0.3
+      - operation: /api/process
+        type: probabilistic
+        param: 0.2
+      - operation: /api/instagram
+        type: probabilistic
+        param: 0.4
+      - operation: /api/youtube
+        type: probabilistic
+        param: 0.4
+      - operation: /api/tiktok
+        type: probabilistic
+        param: 0.4
+      - operation: /api/pinterest
+        type: probabilistic
+        param: 0.4
+      - operation: /api/discord
+        type: probabilistic
+        param: 0.3
+
+  # Configuração de UI
+  ui-config.json: |
+    {
+      "menu": [
+        {
+          "label": "Documentation",
+          "url": "https://docs.omni-keywords.com/tracing"
+        },
+        {
+          "label": "Support",
+          "url": "https://support.omni-keywords.com"
+        }
+      ],
+      "dependencies": {
+        "menuEnabled": true,
+        "menuUrl": "/api/dependencies"
+      },
+      "tracking": {
+        "gaID": "UA-12345678-9",
+        "trackErrors": true
+      },
+      "monitoring": {
+        "menuEnabled": true,
+        "menuUrl": "/api/monitoring"
+      },
+      "archiveEnabled": true,
+      "archiveTraceUrl": "/api/archive",
+      "customBranding": "Omni Keywords Finder",
+      "customMenu": [
+        {
+          "label": "API Documentation",
+          "url": "https://docs.omni-keywords.com/api"
+        },
+        {
+          "label": "System Health",
+          "url": "/grafana"
+        }
+      ]
+    }
+
+---
+# Service para Jaeger
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-query
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: query
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-query
+      port: 16686
+      targetPort: 16686
+      protocol: TCP
+    - name: grpc-query
+      port: 16685
+      targetPort: 16685
+      protocol: TCP
+  selector:
+    app: jaeger
+    component: query
+
+---
+# Service para Jaeger Collector
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: collector
+spec:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 14250
+      targetPort: 14250
+      protocol: TCP
+    - name: http
+      port: 14268
+      targetPort: 14268
+      protocol: TCP
+    - name: zipkin
+      port: 9411
+      targetPort: 9411
+      protocol: TCP
+  selector:
+    app: jaeger
+    component: collector
+
+---
+# Service para Jaeger Agent
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-agent
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: agent
+spec:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 14250
+      targetPort: 14250
+      protocol: TCP
+    - name: http
+      port: 14271
+      targetPort: 14271
+      protocol: TCP
+  selector:
+    app: jaeger
+    component: agent
+
+---
+# Configuração de Instrumentação para Python
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-python-config
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: python-instrumentation
+data:
+  # Configuração do OpenTelemetry para Python
+  opentelemetry-config.yaml: |
+    service:
+      name: omni-keywords-finder
+      version: 1.0.0
+      environment: production
+    
+    tracing:
+      sampler:
+        type: probabilistic
+        param: 0.1
+      
+      exporters:
+        jaeger:
+          endpoint: jaeger-collector:14250
+          insecure: true
+      
+      processors:
+        batch:
+          max_queue_size: 1000
+          max_export_batch_size: 100
+          schedule_delay: 1s
+          export_timeout: 30s
+      
+      propagators:
+        - tracecontext
+        - baggage
+    
+    metrics:
+      exporters:
+        prometheus:
+          endpoint: 0.0.0.0:8000
+          port: 8000
+      
+      processors:
+        batch:
+          timeout: 1s
+          send_batch_size: 1000
+    
+    logging:
+      level: INFO
+      format: json
+      output: stdout
+
+  # Configuração específica para FastAPI
+  fastapi-tracing.py: |
+    from opentelemetry import trace
+    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.instrumentation.requests import RequestsInstrumentor
+    from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.sdk.trace.sampling import ProbabilisticSampler
+    import yaml
+    import os
+    
+    def setup_tracing():
+        """Setup OpenTelemetry tracing for Omni Keywords Finder"""
+        
+        # Load configuration
+        config_path = os.getenv('OTEL_CONFIG_PATH', '/etc/jaeger/opentelemetry-config.yaml')
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        # Create resource
+        resource = Resource.create({
+            "service.name": config['service']['name'],
+            "service.version": config['service']['version'],
+            "service.environment": config['service']['environment'],
+            "deployment.environment": "production",
+            "cloud.provider": "aws",
+            "cloud.region": "us-east-1"
+        })
+        
+        # Create tracer provider
+        provider = TracerProvider(
+            resource=resource,
+            sampler=ProbabilisticSampler(config['tracing']['sampler']['param'])
+        )
+        
+        # Create Jaeger exporter
+        jaeger_exporter = JaegerExporter(
+            agent_host_name=config['tracing']['exporters']['jaeger']['endpoint'].split(':')[0],
+            agent_port=int(config['tracing']['exporters']['jaeger']['endpoint'].split(':')[1]),
+            insecure=config['tracing']['exporters']['jaeger']['insecure']
+        )
+        
+        # Add span processor
+        provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
+        
+        # Set global tracer provider
+        trace.set_tracer_provider(provider)
+        
+        return provider
+    
+    def instrument_fastapi(app):
+        """Instrument FastAPI application with OpenTelemetry"""
+        FastAPIInstrumentor.instrument_app(app)
+        RequestsInstrumentor().instrument()
+        
+        # Custom spans for Omni Keywords Finder
+        @app.middleware("http")
+        async def add_custom_spans(request, call_next):
+            tracer = trace.get_tracer(__name__)
+            
+            with tracer.start_as_current_span("http_request") as span:
+                span.set_attribute("http.method", request.method)
+                span.set_attribute("http.url", str(request.url))
+                span.set_attribute("http.route", request.url.path)
+                span.set_attribute("user.id", request.headers.get("X-User-ID", "anonymous"))
+                
+                response = await call_next(request)
+                
+                span.set_attribute("http.status_code", response.status_code)
+                span.set_attribute("http.response_size", len(response.body) if hasattr(response, 'body') else 0)
+                
+                return response
+
+  # Configuração para instrumentação de coletores
+  collector-tracing.py: |
+    from opentelemetry import trace
+    from opentelemetry.trace import Status, StatusCode
+    import time
+    import functools
+    
+    def trace_collector(collector_name):
+        """Decorator para adicionar tracing aos coletores"""
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                tracer = trace.get_tracer(__name__)
+                
+                with tracer.start_as_current_span(f"{collector_name}.collect") as span:
+                    span.set_attribute("collector.name", collector_name)
+                    span.set_attribute("collector.type", "keyword_collector")
+                    
+                    try:
+                        start_time = time.time()
+                        result = func(*args, **kwargs)
+                        end_time = time.time()
+                        
+                        span.set_attribute("collector.duration", end_time - start_time)
+                        span.set_attribute("collector.keywords_collected", len(result) if result else 0)
+                        span.set_attribute("collector.status", "success")
+                        span.set_status(Status(StatusCode.OK))
+                        
+                        return result
+                    except Exception as e:
+                        span.set_attribute("collector.status", "error")
+                        span.set_attribute("collector.error", str(e))
+                        span.set_status(Status(StatusCode.ERROR, str(e)))
+                        raise
+            
+            return wrapper
+        return decorator
+    
+    def trace_api_call(api_name, endpoint):
+        """Decorator para adicionar tracing às chamadas de API externa"""
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                tracer = trace.get_tracer(__name__)
+                
+                with tracer.start_as_current_span(f"{api_name}.{endpoint}") as span:
+                    span.set_attribute("api.name", api_name)
+                    span.set_attribute("api.endpoint", endpoint)
+                    span.set_attribute("api.type", "external")
+                    
+                    try:
+                        start_time = time.time()
+                        result = func(*args, **kwargs)
+                        end_time = time.time()
+                        
+                        span.set_attribute("api.duration", end_time - start_time)
+                        span.set_attribute("api.status", "success")
+                        span.set_status(Status(StatusCode.OK))
+                        
+                        return result
+                    except Exception as e:
+                        span.set_attribute("api.status", "error")
+                        span.set_attribute("api.error", str(e))
+                        span.set_status(Status(StatusCode.ERROR, str(e)))
+                        raise
+            
+            return wrapper
+        return decorator
+
+---
+# Configuração de Service Mesh Integration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-service-mesh-config
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: service-mesh
+data:
+  # Configuração para Linkerd
+  linkerd-jaeger.yaml: |
+    apiVersion: linkerd.io/v1alpha2
+    kind: ServiceProfile
+    metadata:
+      name: omni-keywords-api.default.svc.cluster.local
+      namespace: default
+    spec:
+      routes:
+        - name: "GET /api/keywords"
+          condition:
+            method: GET
+            pathRegex: "/api/keywords"
+          responseClasses:
+            - condition:
+                status:
+                  min: 200
+                  max: 299
+              isFailure: false
+            - condition:
+                status:
+                  min: 500
+                  max: 599
+              isFailure: true
+        - name: "POST /api/collect"
+          condition:
+            method: POST
+            pathRegex: "/api/collect"
+          responseClasses:
+            - condition:
+                status:
+                  min: 200
+                  max: 299
+              isFailure: false
+            - condition:
+                status:
+                  min: 500
+                  max: 599
+              isFailure: true
+        - name: "POST /api/process"
+          condition:
+            method: POST
+            pathRegex: "/api/process"
+          responseClasses:
+            - condition:
+                status:
+                  min: 200
+                  max: 299
+              isFailure: false
+            - condition:
+                status:
+                  min: 500
+                  max: 599
+              isFailure: true
+
+---
+# Configuração de Alertas para Jaeger
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: PrometheusRule
+metadata:
+  name: jaeger-alerts
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: tracing
+spec:
+  groups:
+    - name: jaeger.rules
+      rules:
+        - alert: JaegerCollectorDown
+          expr: up{job="jaeger-collector"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: devops
+            component: tracing
+          annotations:
+            summary: "Jaeger Collector is down"
+            description: "Jaeger Collector has been down for more than 1 minute"
+        
+        - alert: JaegerQueryDown
+          expr: up{job="jaeger-query"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: devops
+            component: tracing
+          annotations:
+            summary: "Jaeger Query is down"
+            description: "Jaeger Query has been down for more than 1 minute"
+        
+        - alert: HighTraceLatency
+          expr: histogram_quantile(0.95, rate(jaeger_trace_duration_seconds_bucket[5m])) > 5
+          for: 5m
+          labels:
+            severity: warning
+            team: devops
+            component: tracing
+          annotations:
+            summary: "High trace latency"
+            description: "95th percentile of trace latency is above 5 seconds"
+        
+        - alert: HighTraceErrorRate
+          expr: rate(jaeger_trace_errors_total[5m]) / rate(jaeger_trace_total[5m]) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+            team: devops
+            component: tracing
+          annotations:
+            summary: "High trace error rate"
+            description: "Trace error rate is above 10%"
+
+---
+# Configuração de Grafana Dashboard para Jaeger
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-grafana-dashboard
+  namespace: monitoring
+  labels:
+    app: jaeger
+    component: grafana-dashboard
+data:
+  jaeger-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Jaeger - Omni Keywords Finder",
+        "tags": ["jaeger", "tracing", "omni-keywords"],
+        "timezone": "browser",
+        "refresh": "30s",
+        "schemaVersion": 30,
+        "version": 1,
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "title": "Trace Success Rate",
+            "type": "stat",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+            "targets": [
+              {
+                "expr": "rate(jaeger_trace_success_total[5m]) / rate(jaeger_trace_total[5m])",
+                "legendFormat": "Success Rate"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percentunit",
+                "decimals": 4,
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": null},
+                    {"color": "yellow", "value": 0.9},
+                    {"color": "green", "value": 0.95}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "title": "Trace Duration (95th percentile)",
+            "type": "timeseries",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(jaeger_trace_duration_seconds_bucket[5m]))",
+                "legendFormat": "95th percentile"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "s",
+                "decimals": 3
+              }
+            }
+          },
+          {
+            "title": "Traces per Second",
+            "type": "timeseries",
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+            "targets": [
+              {
+                "expr": "rate(jaeger_trace_total[5m])",
+                "legendFormat": "Traces/sec"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "ops",
+                "decimals": 2
+              }
+            }
+          },
+          {
+            "title": "Error Rate by Service",
+            "type": "timeseries",
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+            "targets": [
+              {
+                "expr": "rate(jaeger_trace_errors_total[5m]) by (service_name)",
+                "legendFormat": "{{service_name}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "ops",
+                "decimals": 2
+              }
+            }
+          }
+        ]
+      }
+    }
+
+# Documentação
+documentation:
+  version: "1.0"
+  last_updated: "2025-01-27"
+  maintainer: "DevOps Team"
+  description: "Jaeger configuration for Omni Keywords Finder distributed tracing"
+  contact: "devops@omni-keywords.com" 

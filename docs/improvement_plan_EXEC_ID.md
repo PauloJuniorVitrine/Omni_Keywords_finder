@@ -1,0 +1,16 @@
+# Plano de Melhorias — EXEC_ID
+
+| ID       | Descrição Técnica                                                                 | Módulo/Diretório                        | Gravidade | Impacto | Camada         | Tags                    | Prioridade | Custo (h) | Risco | IMPACT_SCORE | Score Antes/Depois | Relevância Logs | Status |
+|----------|-----------------------------------------------------------------------------------|------------------------------------------|-----------|---------|----------------|-------------------------|------------|-----------|-------|--------------|--------------------|------------------|--------|
+| IMP-001  | Modularizar `processador_keywords.py` (>600 linhas) em handlers independentes     | infrastructure/processamento             | Alta      | Alta    | Infraestrutura | @refactor @critical     | Alta       | 8         | Médio | 145          | 62 → 88            | Sim             | 🔲     |
+| IMP-002  | Remover arquivos `.bak` antigos após validação de reversibilidade                 | infrastructure/processamento             | Média     | Média   | Infraestrutura | @cleanup @risk          | Média      | 1         | Baixo | 45           | 62 → 65            | Não             | 🔲     |
+| IMP-003  | Garantir docstrings em todas as funções públicas dos módulos de processamento      | infrastructure/processamento             | Média     | Média   | Infraestrutura | @doc @quality           | Média      | 2         | Baixo | 55           | 62 → 70            | Não             | 🔲     |
+| IMP-004  | Revisar nomenclatura de handlers para evitar ambiguidade cross-domain             | infrastructure/processamento             | Média     | Média   | Infraestrutura | @naming @consistency    | Média      | 2         | Baixo | 50           | 62 → 68            | Não             | 🔲     |
+| IMP-005  | Isolar lógica de domínio atualmente em infra/processamento para domain/           | infrastructure/processamento, domain     | Alta      | Alta    | Domínio        | @refactor @architecture | Alta       | 6         | Médio | 120          | 62 → 85            | Sim             | 🔲     |
+| IMP-006  | Garantir teste unitário para cada função crítica de processamento/exportação       | infrastructure/processamento, tests/unit | Alta      | Alta    | Testes         | @test @coverage         | Alta       | 4         | Médio | 100          | 62 → 90            | Sim             | 🔲     |
+| IMP-007  | Validar uploads e manipulação de arquivos em todos os endpoints de API            | app/api, infrastructure/processamento    | Alta      | Alta    | Segurança      | @security @api          | Alta       | 3         | Médio | 90           | 62 → 88            | Sim             | 🔲     |
+| IMP-008  | Documentar e padronizar feature flags e pontos de fallback                        | app, infrastructure                      | Média     | Média   | Infraestrutura | @featureflag @resilience| Média      | 2         | Baixo | 50           | 62 → 70            | Não             | 🔲     |
+
+---
+
+*Plano gerado automaticamente. Atualize conforme novas melhorias forem identificadas ou priorizadas.* 

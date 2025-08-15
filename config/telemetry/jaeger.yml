@@ -1,0 +1,311 @@
+# 🔍 CONFIGURAÇÃO JAEGER - OMNI KEYWORDS FINDER
+# 🎯 Objetivo: Distributed tracing enterprise-grade
+# 📅 Data: 2025-01-27
+# 🔧 Versão: 1.0
+# 🏷️ Tracing ID: JAEGER_CONFIG_20250127_001
+
+# Configuração do Jaeger Collector
+collector:
+  # Configuração de recebimento de spans
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+          endpoint: "0.0.0.0:14268"
+        thrift_binary:
+          endpoint: "0.0.0.0:6832"
+        thrift_compact:
+          endpoint: "0.0.0.0:6831"
+        grpc:
+          endpoint: "0.0.0.0:14250"
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+
+  # Configuração de processamento
+  processors:
+    batch:
+      timeout: 1s
+      send_batch_size: 1024
+      send_batch_max_size: 2048
+    memory_limiter:
+      check_interval: 1s
+      memory_limit_mib: 1500
+    tail_sampling:
+      decision_wait: 10s
+      num_traces: 50000
+      expected_new_traces_per_sec: 10
+      policies:
+        - name: low-latency
+          type: latency
+          latency:
+            threshold_ms: 100
+        - name: high-error-rate
+          type: error_rate
+          error_rate:
+            threshold: 0.1
+        - name: high-throughput
+          type: throughput
+          throughput:
+            threshold: 100
+
+  # Configuração de exportação
+  exporters:
+    jaeger:
+      endpoint: "jaeger-agent:14250"
+      tls:
+        insecure: false
+        ca_file: "/etc/jaeger/certs/ca.crt"
+        cert_file: "/etc/jaeger/certs/client.crt"
+        key_file: "/etc/jaeger/certs/client.key"
+    logging:
+      loglevel: info
+    otlp:
+      endpoint: "jaeger-agent:4317"
+      tls:
+        insecure: false
+        ca_file: "/etc/jaeger/certs/ca.crt"
+
+# Configuração do Jaeger Agent
+agent:
+  # Configuração de recebimento
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+          endpoint: "0.0.0.0:14268"
+        thrift_binary:
+          endpoint: "0.0.0.0:6832"
+        thrift_compact:
+          endpoint: "0.0.0.0:6831"
+        grpc:
+          endpoint: "0.0.0.0:14250"
+
+  # Configuração de processamento
+  processors:
+    batch:
+      timeout: 1s
+      send_batch_size: 1024
+    memory_limiter:
+      check_interval: 1s
+      memory_limit_mib: 500
+
+  # Configuração de exportação
+  exporters:
+    jaeger:
+      endpoint: "jaeger-collector:14250"
+      tls:
+        insecure: false
+        ca_file: "/etc/jaeger/certs/ca.crt"
+
+# Configuração do Jaeger Query
+query:
+  # Configuração do servidor HTTP
+  server:
+    http:
+      host: "0.0.0.0"
+      port: 16686
+      cors:
+        allowed_origins:
+          - "https://omni-keywords-finder.com"
+          - "https://admin.omni-keywords-finder.com"
+        allowed_headers:
+          - "Content-Type"
+          - "Authorization"
+        allowed_methods:
+          - "GET"
+          - "POST"
+          - "OPTIONS"
+
+  # Configuração do storage
+  storage:
+    type: elasticsearch
+    options:
+      es:
+        server_urls: "http://elasticsearch:9200"
+        username: "${ES_USERNAME}"
+        password: "${ES_PASSWORD}"
+        index_prefix: "jaeger"
+        tls:
+          ca: "/etc/jaeger/certs/es-ca.crt"
+          cert: "/etc/jaeger/certs/es-client.crt"
+          key: "/etc/jaeger/certs/es-client.key"
+          server_name: "elasticsearch"
+
+  # Configuração de cache
+  cache:
+    type: redis
+    options:
+      redis:
+        addr: "redis:6379"
+        password: "${REDIS_PASSWORD}"
+        db: 1
+        pool_size: 10
+        max_retries: 3
+
+# Configuração do Jaeger Ingester
+ingester:
+  # Configuração do Kafka
+  kafka:
+    consumer:
+      brokers: "kafka:9092"
+      topic: "jaeger-spans"
+      group_id: "jaeger-ingester"
+      sarama:
+        version: "2.8.0"
+        config:
+          consumer:
+            return:
+              errors: true
+          net:
+            dial_timeout: 5s
+            read_timeout: 30s
+            write_timeout: 30s
+
+  # Configuração do storage
+  storage:
+    type: elasticsearch
+    options:
+      es:
+        server_urls: "http://elasticsearch:9200"
+        username: "${ES_USERNAME}"
+        password: "${ES_PASSWORD}"
+        index_prefix: "jaeger"
+        tls:
+          ca: "/etc/jaeger/certs/es-ca.crt"
+          cert: "/etc/jaeger/certs/es-client.crt"
+          key: "/etc/jaeger/certs/es-client.key"
+
+# Configuração de métricas
+metrics:
+  backend: prometheus
+  prometheus:
+    endpoint: "0.0.0.0:14269"
+    path: "/metrics"
+
+# Configuração de logs
+logging:
+  level: info
+  format: json
+  outputPaths:
+    - stdout
+    - /var/log/jaeger/jaeger.log
+  errorOutputPaths:
+    - stderr
+    - /var/log/jaeger/jaeger-error.log
+
+# Configuração de segurança
+security:
+  # Configuração TLS
+  tls:
+    enabled: true
+    cert_file: "/etc/jaeger/certs/jaeger.crt"
+    key_file: "/etc/jaeger/certs/jaeger.key"
+    ca_file: "/etc/jaeger/certs/ca.crt"
+
+  # Configuração de autenticação
+  auth:
+    type: "oauth2"
+    oauth2:
+      provider: "google"
+      client_id: "${OAUTH_CLIENT_ID}"
+      client_secret: "${OAUTH_CLIENT_SECRET}"
+      redirect_url: "https://jaeger.omni-keywords-finder.com/oauth/callback"
+      scopes:
+        - "openid"
+        - "email"
+        - "profile"
+
+# Configuração de backup
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: 30d
+  storage:
+    type: s3
+    bucket: "omni-keywords-jaeger-backup"
+    region: "us-east-1"
+    prefix: "jaeger/"
+
+# Configuração de notificações
+notifications:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#monitoring-alerts"
+  email:
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    username: "${EMAIL_USERNAME}"
+    password: "${EMAIL_PASSWORD}"
+    from: "jaeger@omni-keywords-finder.com"
+    to: ["admin@omni-keywords-finder.com", "devops@omni-keywords-finder.com"]
+
+# Configuração de retenção de dados
+retention:
+  traces:
+    default: 30d
+    high_volume: 7d
+    low_volume: 90d
+  metrics:
+    default: 90d
+    high_cardinality: 30d
+  logs:
+    application: 30d
+    access: 90d
+    error: 365d
+
+# Configuração de sampling
+sampling:
+  default_strategy:
+    type: probabilistic
+    param: 0.1
+  per_operation_strategies:
+    - operation: "/api/keywords"
+      type: probabilistic
+      param: 0.5
+    - operation: "/api/executions"
+      type: probabilistic
+      param: 0.3
+    - operation: "/api/health"
+      type: probabilistic
+      param: 0.01
+
+# Configuração de tags customizadas
+custom_tags:
+  environment: "production"
+  application: "omni-keywords-finder"
+  version: "1.0.0"
+  team: "backend"
+  service_tier: "critical"
+
+# Configuração de health checks
+health_checks:
+  - name: "jaeger_collector"
+    url: "http://localhost:14269/health"
+    interval: 30s
+    timeout: 5s
+    expected_status: 200
+  
+  - name: "jaeger_query"
+    url: "http://localhost:16686/api/services"
+    interval: 30s
+    timeout: 5s
+    expected_status: 200
+  
+  - name: "elasticsearch"
+    url: "http://elasticsearch:9200/_cluster/health"
+    interval: 60s
+    timeout: 10s
+    expected_status: 200
+
+# Configuração de performance
+performance:
+  max_concurrent_requests: 1000
+  max_memory_usage: "2GB"
+  max_cpu_usage: "80%"
+  connection_pool_size: 100
+  query_timeout: 30s
+  write_timeout: 10s 

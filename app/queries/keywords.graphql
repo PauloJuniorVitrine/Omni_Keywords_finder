@@ -1,0 +1,47 @@
+# Queries para Keywords
+# Arquivo de exemplo para GraphQL Codegen
+
+query GetKeywords($filtros: KeywordFilterInput) {
+  keywords(filtros: $filtros) {
+    id
+    keyword
+    volume
+    dificuldade
+    cpc
+    categoria
+    nicho
+    dataColeta
+    score
+  }
+}
+
+query GetKeyword($id: ID!) {
+  keyword(id: $id) {
+    id
+    keyword
+    volume
+    dificuldade
+    cpc
+    categoria
+    nicho
+    dataColeta
+    score
+  }
+}
+
+query GetClusters($nichoId: ID, $scoreMin: Float) {
+  clusters(nichoId: $nichoId, scoreMin: $scoreMin) {
+    id
+    nome
+    keywords {
+      id
+      keyword
+      volume
+      dificuldade
+      score
+    }
+    scoreMedio
+    volumeTotal
+    dataCriacao
+  }
+} 

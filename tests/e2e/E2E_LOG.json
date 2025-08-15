@@ -1,0 +1,91 @@
+{
+  "exec_id": "EXEC2",
+  "ambiente": "staging",
+  "jornadas": [
+    {
+      "nome": "Processamento Completo de Keywords",
+      "tempo_total_ms": 6421,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 800 },
+        { "etapa": "upload_keywords", "tempo_ms": 1200 },
+        { "etapa": "processamento", "tempo_ms": 3200 },
+        { "etapa": "relatorio", "tempo_ms": 800 },
+        { "etapa": "exportacao", "tempo_ms": 421 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/processamento/sucesso.png"],
+      "ux_metrics": { "LCP": 1.7, "CLS": 0.01 },
+      "resolucao_testada": ["mobile", "desktop"],
+      "embedding_score": 0.93
+    },
+    {
+      "nome": "Exportação de Keywords",
+      "tempo_total_ms": 3120,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 700 },
+        { "etapa": "exportacao", "tempo_ms": 2420 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/exportacao/sucesso.png"],
+      "ux_metrics": { "LCP": 1.5, "CLS": 0.02 },
+      "resolucao_testada": ["desktop"],
+      "embedding_score": 0.91
+    },
+    {
+      "nome": "Gerenciamento de Regras de Governança",
+      "tempo_total_ms": 4890,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 900 },
+        { "etapa": "upload_blacklist", "tempo_ms": 1200 },
+        { "etapa": "upload_whitelist", "tempo_ms": 1100 },
+        { "etapa": "edicao_regras", "tempo_ms": 900 },
+        { "etapa": "consulta_regras", "tempo_ms": 790 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/governanca/sucesso.png"],
+      "ux_metrics": { "LCP": 1.8, "CLS": 0.01 },
+      "resolucao_testada": ["desktop"],
+      "embedding_score": 0.92
+    },
+    {
+      "nome": "Consulta de Logs/Auditoria",
+      "tempo_total_ms": 3775,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 700 },
+        { "etapa": "filtro_evento", "tempo_ms": 1200 },
+        { "etapa": "visualizacao_detalhes", "tempo_ms": 1875 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/logs/sucesso.png"],
+      "ux_metrics": { "LCP": 1.6, "CLS": 0.01 },
+      "resolucao_testada": ["desktop"],
+      "embedding_score": 0.91
+    },
+    {
+      "nome": "Consulta de Tendências Externas",
+      "tempo_total_ms": 4012,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 800 },
+        { "etapa": "consulta_termo", "tempo_ms": 3212 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/tendencias/sucesso.png"],
+      "ux_metrics": { "LCP": 1.9, "CLS": 0.02 },
+      "resolucao_testada": ["mobile", "desktop"],
+      "embedding_score": 0.90
+    },
+    {
+      "nome": "Dashboard e Métricas",
+      "tempo_total_ms": 2987,
+      "etapas": [
+        { "etapa": "login", "tempo_ms": 700 },
+        { "etapa": "dashboard", "tempo_ms": 2287 }
+      ],
+      "status": "✅",
+      "screenshots": ["/snapshots/dashboard/sucesso.png"],
+      "ux_metrics": { "LCP": 1.4, "CLS": 0.01 },
+      "resolucao_testada": ["desktop"],
+      "embedding_score": 0.91
+    }
+  ]
+} 

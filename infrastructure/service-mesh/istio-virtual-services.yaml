@@ -1,0 +1,150 @@
+# =============================================================================
+# Istio Virtual Services Configuration
+# =============================================================================
+# 
+# Este arquivo configura os Virtual Services do Istio para
+# traffic management avançado no Omni Keywords Finder.
+#
+# Tracing ID: istio-virtual-services-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+# =============================================================================
+
+---
+# Virtual Service para API Principal
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: omni-keywords-finder-api-vs
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-api
+    environment: production
+    traffic-management: istio
+spec:
+  hosts:
+  - "api.omni-keywords-finder.com"
+  - "omni-keywords-finder-api.omni-keywords-finder.svc.cluster.local"
+  gateways:
+  - omni-keywords-finder-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/keywords"
+      headers:
+        x-canary:
+          exact: "true"
+    route:
+    - destination:
+        host: omni-keywords-finder-api-canary
+        port:
+          number: 8000
+      weight: 100
+  - match:
+    - uri:
+        prefix: "/api/v1/keywords"
+    route:
+    - destination:
+        host: omni-keywords-finder-api-stable
+        port:
+          number: 8000
+      weight: 90
+    - destination:
+        host: omni-keywords-finder-api-canary
+        port:
+          number: 8000
+      weight: 10
+  - match:
+    - uri:
+        prefix: "/api/v1/analytics"
+    route:
+    - destination:
+        host: omni-keywords-finder-analytics
+        port:
+          number: 8001
+      weight: 100
+  - match:
+    - uri:
+        prefix: "/api/v1/ml"
+    route:
+    - destination:
+        host: omni-keywords-finder-ml
+        port:
+          number: 8002
+      weight: 100
+  - route:
+    - destination:
+        host: omni-keywords-finder-api-stable
+        port:
+          number: 8000
+      weight: 100
+
+---
+# Virtual Service para ML Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: omni-keywords-finder-ml-vs
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-ml
+    environment: production
+    traffic-management: istio
+spec:
+  hosts:
+  - "ml.omni-keywords-finder.com"
+  - "omni-keywords-finder-ml.omni-keywords-finder.svc.cluster.local"
+  gateways:
+  - omni-keywords-finder-gateway
+  http:
+  - match:
+    - headers:
+        x-ml-version:
+          exact: "v2"
+    route:
+    - destination:
+        host: omni-keywords-finder-ml-v2
+        port:
+          number: 8002
+      weight: 100
+  - route:
+    - destination:
+        host: omni-keywords-finder-ml-stable
+        port:
+          number: 8002
+      weight: 85
+    - destination:
+        host: omni-keywords-finder-ml-canary
+        port:
+          number: 8002
+      weight: 15
+
+---
+# Virtual Service para Analytics
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: omni-keywords-finder-analytics-vs
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-analytics
+    environment: production
+    traffic-management: istio
+spec:
+  hosts:
+  - "analytics.omni-keywords-finder.com"
+  - "omni-keywords-finder-analytics.omni-keywords-finder.svc.cluster.local"
+  gateways:
+  - omni-keywords-finder-gateway
+  http:
+  - route:
+    - destination:
+        host: omni-keywords-finder-analytics
+        port:
+          number: 8001
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: connect-failure,refused-stream,unavailable,cancelled,retriable-status-codes
+    timeout: 10s 

@@ -1,0 +1,2 @@
+Este é um arquivo de texto inválido para testar a validação de formato CSV.
+O sistema deve rejeitar este arquivo e mostrar uma mensagem de erro apropriada. 

@@ -1,0 +1,692 @@
+# 📋 Configuração do Ambiente de Testes Controlado
+# Sistema: Omni Keywords Finder
+# Tracing ID: test-env-config-2025-01-27-001
+# Timestamp: 2025-01-27T18:00:00Z
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+
+# 📐 CoCoT: Configuração baseada em requisitos reais de teste
+# 🌲 ToT: Avaliadas múltiplas estratégias de configuração
+# ♻️ ReAct: Simulado cenários de teste e validada configuração
+
+# Configuração geral do ambiente de testes
+environment:
+  name: "test_environment"
+  description: "Ambiente de testes controlado para Omni Keywords Finder"
+  version: "1.0.0"
+  tracing_id: "test-env-2025-01-27-001"
+  
+  # Configurações de segurança
+  security:
+    enable_ssl_verification: true
+    timeout_seconds: 30
+    max_retries: 3
+    enable_rate_limiting: true
+    enable_circuit_breaker: true
+    
+  # Configurações de logging
+  logging:
+    level: "INFO"
+    format: "json"
+    enable_structured_logging: true
+    enable_request_logging: true
+    enable_response_logging: false  # Não logar dados sensíveis
+    log_file: "logs/test_environment.log"
+    
+  # Configurações de métricas
+  metrics:
+    enable_collection: true
+    collection_interval: 60  # segundos
+    enable_export: true
+    export_format: "prometheus"
+    
+  # Configurações de cache
+  cache:
+    enable_cache: true
+    cache_ttl: 300  # 5 minutos
+    cache_max_size: 1000
+    enable_cache_metrics: true
+
+# Configurações específicas por API
+apis:
+  
+  # Instagram API Test Environment
+  instagram:
+    enabled: true
+    environment: "sandbox"
+    base_url: "https://graph.instagram.com/v12.0"
+    sandbox_url: "https://graph.instagram.com/v12.0"
+    
+    # Credenciais de teste (não usar em produção)
+    credentials:
+      client_id: "${INSTAGRAM_TEST_CLIENT_ID}"
+      client_secret: "${INSTAGRAM_TEST_CLIENT_SECRET}"
+      access_token: "${INSTAGRAM_TEST_ACCESS_TOKEN}"
+      test_user_id: "${INSTAGRAM_TEST_USER_ID}"
+    
+    # Rate limiting para testes
+    rate_limits:
+      requests_per_hour: 200
+      requests_per_minute: 10
+      burst_limit: 5
+      
+    # Configurações de teste
+    test_config:
+      max_posts_per_request: 10
+      max_comments_per_post: 5
+      test_hashtags: ["test", "demo", "sandbox"]
+      test_user_ids: ["test_user_1", "test_user_2"]
+      
+    # Circuit breaker para testes
+    circuit_breaker:
+      failure_threshold: 5
+      recovery_timeout: 60
+      expected_exception: "Exception"
+      
+    # Fallback para testes
+    fallback:
+      enable_web_scraping: false
+      enable_cache_fallback: true
+      enable_mock_data: true
+      
+    # Dados de teste
+    test_data:
+      posts:
+        - id: "test_post_1"
+          caption: "Test post with #test #demo hashtags"
+          likes_count: 10
+          comments_count: 5
+          media_type: "IMAGE"
+        - id: "test_post_2"
+          caption: "Another test post #sandbox"
+          likes_count: 15
+          comments_count: 8
+          media_type: "VIDEO"
+      hashtags:
+        - name: "test"
+          media_count: 1000
+        - name: "demo"
+          media_count: 500
+        - name: "sandbox"
+          media_count: 200
+
+  # TikTok API Test Environment
+  tiktok:
+    enabled: true
+    environment: "sandbox"
+    base_url: "https://open.tiktokapis.com/v2"
+    sandbox_url: "https://open-sandbox.tiktokapis.com/v2"
+    
+    # Credenciais de teste
+    credentials:
+      client_key: "${TIKTOK_TEST_CLIENT_KEY}"
+      client_secret: "${TIKTOK_TEST_CLIENT_SECRET}"
+      access_token: "${TIKTOK_TEST_ACCESS_TOKEN}"
+      test_user_id: "${TIKTOK_TEST_USER_ID}"
+    
+    # Rate limiting para testes
+    rate_limits:
+      requests_per_hour: 1000
+      requests_per_minute: 20
+      burst_limit: 10
+      
+    # Configurações de teste
+    test_config:
+      max_videos_per_request: 10
+      max_comments_per_video: 5
+      test_hashtags: ["test", "demo", "sandbox"]
+      test_user_ids: ["test_user_1", "test_user_2"]
+      
+    # Circuit breaker para testes
+    circuit_breaker:
+      failure_threshold: 5
+      recovery_timeout: 60
+      expected_exception: "Exception"
+      
+    # Fallback para testes
+    fallback:
+      enable_web_scraping: false
+      enable_cache_fallback: true
+      enable_mock_data: true
+      
+    # Dados de teste
+    test_data:
+      videos:
+        - id: "test_video_1"
+          description: "Test video with #test #demo hashtags"
+          like_count: 100
+          comment_count: 20
+          share_count: 10
+          view_count: 1000
+        - id: "test_video_2"
+          description: "Another test video #sandbox"
+          like_count: 150
+          comment_count: 30
+          share_count: 15
+          view_count: 2000
+      hashtags:
+        - name: "test"
+          video_count: 5000
+        - name: "demo"
+          video_count: 3000
+        - name: "sandbox"
+          video_count: 1000
+
+  # YouTube API Test Environment
+  youtube:
+    enabled: true
+    environment: "sandbox"
+    base_url: "https://www.googleapis.com/youtube/v3"
+    sandbox_url: "https://www.googleapis.com/youtube/v3"
+    
+    # Credenciais de teste
+    credentials:
+      api_key: "${YOUTUBE_TEST_API_KEY}"
+      client_id: "${YOUTUBE_TEST_CLIENT_ID}"
+      client_secret: "${YOUTUBE_TEST_CLIENT_SECRET}"
+      refresh_token: "${YOUTUBE_TEST_REFRESH_TOKEN}"
+      test_channel_id: "${YOUTUBE_TEST_CHANNEL_ID}"
+    
+    # Quota management para testes
+    quota:
+      daily_quota: 10000
+      quota_reset_time: "00:00:00"
+      quota_warning_threshold: 0.8
+      quota_critical_threshold: 0.95
+      
+    # Rate limiting para testes
+    rate_limits:
+      requests_per_second: 5
+      requests_per_minute: 300
+      burst_limit: 10
+      
+    # Configurações de teste
+    test_config:
+      max_videos_per_request: 10
+      max_comments_per_video: 5
+      test_keywords: ["test", "demo", "sandbox"]
+      test_channel_ids: ["test_channel_1", "test_channel_2"]
+      
+    # Circuit breaker para testes
+    circuit_breaker:
+      failure_threshold: 5
+      recovery_timeout: 60
+      expected_exception: "Exception"
+      
+    # Fallback para testes
+    fallback:
+      enable_web_scraping: false
+      enable_cache_fallback: true
+      enable_mock_data: true
+      
+    # Dados de teste
+    test_data:
+      videos:
+        - id: "test_video_1"
+          title: "Test Video Title"
+          description: "Test video description with keywords"
+          view_count: 1000
+          like_count: 100
+          comment_count: 20
+          published_at: "2025-01-27T10:00:00Z"
+        - id: "test_video_2"
+          title: "Another Test Video"
+          description: "Another test video description"
+          view_count: 2000
+          like_count: 150
+          comment_count: 30
+          published_at: "2025-01-27T11:00:00Z"
+      channels:
+        - id: "test_channel_1"
+          title: "Test Channel"
+          subscriber_count: 1000
+          video_count: 50
+        - id: "test_channel_2"
+          title: "Another Test Channel"
+          subscriber_count: 2000
+          video_count: 100
+
+  # Pinterest API Test Environment
+  pinterest:
+    enabled: true
+    environment: "sandbox"
+    base_url: "https://api.pinterest.com/v5"
+    sandbox_url: "https://api-sandbox.pinterest.com/v5"
+    
+    # Credenciais de teste
+    credentials:
+      client_id: "${PINTEREST_TEST_CLIENT_ID}"
+      client_secret: "${PINTEREST_TEST_CLIENT_SECRET}"
+      access_token: "${PINTEREST_TEST_ACCESS_TOKEN}"
+      test_user_id: "${PINTEREST_TEST_USER_ID}"
+    
+    # Rate limiting para testes
+    rate_limits:
+      requests_per_hour: 1000
+      requests_per_minute: 20
+      burst_limit: 10
+      
+    # Configurações de teste
+    test_config:
+      max_pins_per_request: 10
+      max_boards_per_user: 5
+      test_keywords: ["test", "demo", "sandbox"]
+      test_user_ids: ["test_user_1", "test_user_2"]
+      
+    # Circuit breaker para testes
+    circuit_breaker:
+      failure_threshold: 5
+      recovery_timeout: 60
+      expected_exception: "Exception"
+      
+    # Fallback para testes
+    fallback:
+      enable_web_scraping: false
+      enable_cache_fallback: true
+      enable_mock_data: true
+      
+    # Dados de teste
+    test_data:
+      pins:
+        - id: "test_pin_1"
+          title: "Test Pin Title"
+          description: "Test pin description with keywords"
+          link: "https://example.com/test1"
+          media_type: "image"
+          save_count: 100
+        - id: "test_pin_2"
+          title: "Another Test Pin"
+          description: "Another test pin description"
+          link: "https://example.com/test2"
+          media_type: "video"
+          save_count: 150
+      boards:
+        - id: "test_board_1"
+          name: "Test Board"
+          description: "Test board description"
+          pin_count: 50
+        - id: "test_board_2"
+          name: "Another Test Board"
+          description: "Another test board description"
+          pin_count: 100
+
+  # Discord Bot Test Environment
+  discord:
+    enabled: true
+    environment: "sandbox"
+    base_url: "https://discord.com/api/v10"
+    sandbox_url: "https://discord.com/api/v10"
+    
+    # Credenciais de teste
+    credentials:
+      bot_token: "${DISCORD_TEST_BOT_TOKEN}"
+      application_id: "${DISCORD_TEST_APPLICATION_ID}"
+      public_key: "${DISCORD_TEST_PUBLIC_KEY}"
+      test_guild_id: "${DISCORD_TEST_GUILD_ID}"
+    
+    # Rate limiting para testes
+    rate_limits:
+      requests_per_second: 50
+      requests_per_minute: 100
+      burst_limit: 10
+      
+    # Configurações de teste
+    test_config:
+      max_messages_per_channel: 10
+      max_reactions_per_message: 5
+      test_channels: ["test-channel-1", "test-channel-2"]
+      test_guild_ids: ["test_guild_1", "test_guild_2"]
+      
+    # Circuit breaker para testes
+    circuit_breaker:
+      failure_threshold: 5
+      recovery_timeout: 60
+      expected_exception: "Exception"
+      
+    # Fallback para testes
+    fallback:
+      enable_web_scraping: false
+      enable_cache_fallback: true
+      enable_mock_data: true
+      
+    # Dados de teste
+    test_data:
+      messages:
+        - id: "test_message_1"
+          content: "Test message with #test #demo hashtags"
+          author_id: "test_user_1"
+          channel_id: "test_channel_1"
+          guild_id: "test_guild_1"
+          timestamp: "2025-01-27T10:00:00Z"
+        - id: "test_message_2"
+          content: "Another test message #sandbox"
+          author_id: "test_user_2"
+          channel_id: "test_channel_2"
+          guild_id: "test_guild_1"
+          timestamp: "2025-01-27T11:00:00Z"
+      reactions:
+        - message_id: "test_message_1"
+          user_id: "test_user_2"
+          emoji: "👍"
+          timestamp: "2025-01-27T10:05:00Z"
+        - message_id: "test_message_2"
+          user_id: "test_user_1"
+          emoji: "❤️"
+          timestamp: "2025-01-27T11:05:00Z"
+
+# Configurações de monitoramento de testes
+monitoring:
+  # Métricas de teste
+  metrics:
+    enable_test_metrics: true
+    test_metrics_interval: 30  # segundos
+    enable_alerting: true
+    alert_thresholds:
+      error_rate: 0.05  # 5%
+      latency_p95: 2000  # 2 segundos
+      timeout_rate: 0.01  # 1%
+      
+  # Alertas de teste
+  alerts:
+    enable_email_alerts: false
+    enable_slack_alerts: false
+    enable_discord_alerts: false
+    alert_channels:
+      - type: "log"
+        level: "ERROR"
+      - type: "console"
+        level: "WARNING"
+        
+  # Dashboards de teste
+  dashboards:
+    enable_test_dashboard: true
+    dashboard_refresh_interval: 60  # segundos
+    dashboard_metrics:
+      - "api_response_time"
+      - "api_error_rate"
+      - "api_success_rate"
+      - "cache_hit_rate"
+      - "circuit_breaker_status"
+
+# Configurações de cache para testes
+cache:
+  # Redis para testes
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 1  # Usar DB diferente para testes
+    password: null
+    ssl: false
+    max_connections: 10
+    connection_timeout: 5
+    read_timeout: 5
+    write_timeout: 5
+    
+  # Configurações de cache por API
+  api_cache:
+    instagram:
+      ttl: 300  # 5 minutos
+      max_size: 1000
+      enable_compression: true
+    tiktok:
+      ttl: 300
+      max_size: 1000
+      enable_compression: true
+    youtube:
+      ttl: 600  # 10 minutos (quota limitada)
+      max_size: 500
+      enable_compression: true
+    pinterest:
+      ttl: 300
+      max_size: 1000
+      enable_compression: true
+    discord:
+      ttl: 60  # 1 minuto (dados em tempo real)
+      max_size: 2000
+      enable_compression: false
+
+# Configurações de logging para testes
+logging:
+  # Configurações gerais
+  general:
+    level: "INFO"
+    format: "json"
+    enable_timestamp: true
+    enable_tracing: true
+    
+  # Configurações por componente
+  components:
+    api_calls:
+      level: "DEBUG"
+      enable_request_logging: true
+      enable_response_logging: false
+      mask_sensitive_data: true
+    cache:
+      level: "INFO"
+      enable_cache_hit_logging: true
+      enable_cache_miss_logging: true
+    circuit_breaker:
+      level: "WARNING"
+      enable_state_change_logging: true
+      enable_failure_logging: true
+    rate_limiter:
+      level: "INFO"
+      enable_rate_limit_logging: true
+      enable_throttle_logging: true
+      
+  # Configurações de arquivo
+  file:
+    enable_file_logging: true
+    log_file: "logs/test_environment.log"
+    max_file_size: "10MB"
+    max_files: 5
+    enable_rotation: true
+
+# Configurações de segurança para testes
+security:
+  # Configurações de SSL/TLS
+  ssl:
+    enable_ssl_verification: true
+    ssl_cert_path: null
+    ssl_key_path: null
+    ssl_ca_path: null
+    
+  # Configurações de autenticação
+  authentication:
+    enable_token_validation: true
+    token_expiry_check: true
+    enable_refresh_token: true
+    
+  # Configurações de rate limiting
+  rate_limiting:
+    enable_ip_rate_limiting: false  # Desabilitado em testes
+    enable_user_rate_limiting: false
+    enable_api_rate_limiting: true
+    
+  # Configurações de dados sensíveis
+  sensitive_data:
+    mask_tokens: true
+    mask_passwords: true
+    mask_api_keys: true
+    mask_user_ids: false  # Permitir em testes
+    mask_emails: true
+
+# Configurações de performance para testes
+performance:
+  # Configurações de timeout
+  timeouts:
+    connection_timeout: 10
+    read_timeout: 30
+    write_timeout: 30
+    
+  # Configurações de pool de conexões
+  connection_pool:
+    max_connections: 20
+    max_connections_per_host: 10
+    connection_timeout: 10
+    pool_timeout: 30
+    
+  # Configurações de retry
+  retry:
+    max_retries: 3
+    backoff_factor: 2
+    max_backoff: 60
+    jitter: 0.1
+    
+  # Configurações de concorrência
+  concurrency:
+    max_concurrent_requests: 10
+    max_concurrent_connections: 20
+    enable_connection_reuse: true
+
+# Configurações de dados de teste
+test_data:
+  # Configurações gerais
+  general:
+    enable_mock_data: true
+    mock_data_path: "tests/data/mock"
+    enable_data_validation: true
+    enable_data_cleanup: true
+    
+  # Configurações por tipo de dado
+  data_types:
+    keywords:
+      min_length: 3
+      max_length: 50
+      allowed_characters: "a-zA-Z0-9_-"
+      test_keywords: ["test", "demo", "sandbox", "integration", "api"]
+    hashtags:
+      min_length: 2
+      max_length: 30
+      allowed_characters: "a-zA-Z0-9_"
+      test_hashtags: ["#test", "#demo", "#sandbox", "#integration", "#api"]
+    urls:
+      allowed_domains: ["example.com", "test.com", "sandbox.com"]
+      test_urls: ["https://example.com/test", "https://test.com/demo"]
+    timestamps:
+      format: "ISO8601"
+      timezone: "UTC"
+      test_timestamps: ["2025-01-27T10:00:00Z", "2025-01-27T11:00:00Z"]
+
+# Configurações de validação para testes
+validation:
+  # Configurações de schema
+  schema:
+    enable_schema_validation: true
+    strict_validation: false  # Mais flexível em testes
+    enable_custom_validators: true
+    
+  # Configurações de dados
+  data:
+    enable_data_type_validation: true
+    enable_range_validation: true
+    enable_format_validation: true
+    
+  # Configurações de resposta
+  response:
+    enable_response_validation: true
+    enable_status_code_validation: true
+    enable_header_validation: false  # Menos rigoroso em testes
+
+# Configurações de limpeza para testes
+cleanup:
+  # Configurações de limpeza automática
+  automatic:
+    enable_auto_cleanup: true
+    cleanup_interval: 3600  # 1 hora
+    cleanup_retention_days: 7
+    
+  # Configurações de limpeza manual
+  manual:
+    enable_manual_cleanup: true
+    cleanup_commands:
+      - "cleanup_cache"
+      - "cleanup_logs"
+      - "cleanup_temp_files"
+      
+  # Configurações de backup
+  backup:
+    enable_backup: false  # Desabilitado em testes
+    backup_retention_days: 30
+    backup_compression: true
+
+# Configurações de relatórios para testes
+reports:
+  # Configurações de relatórios automáticos
+  automatic:
+    enable_auto_reports: true
+    report_interval: 86400  # 24 horas
+    report_format: "json"
+    
+  # Configurações de relatórios manuais
+  manual:
+    enable_manual_reports: true
+    report_types:
+      - "test_summary"
+      - "api_performance"
+      - "error_analysis"
+      - "coverage_report"
+      
+  # Configurações de exportação
+  export:
+    enable_export: true
+    export_formats: ["json", "csv", "html"]
+    export_path: "reports/test_environment"
+
+# Configurações de notificações para testes
+notifications:
+  # Configurações de email
+  email:
+    enable_email_notifications: false
+    smtp_host: "localhost"
+    smtp_port: 587
+    smtp_username: null
+    smtp_password: null
+    from_email: "test@example.com"
+    to_emails: []
+    
+  # Configurações de Slack
+  slack:
+    enable_slack_notifications: false
+    webhook_url: null
+    channel: "#test-notifications"
+    
+  # Configurações de Discord
+  discord:
+    enable_discord_notifications: false
+    webhook_url: null
+    channel_id: null
+    
+  # Configurações de webhook
+  webhook:
+    enable_webhook_notifications: false
+    webhook_url: null
+    webhook_secret: null
+    webhook_events:
+      - "test_started"
+      - "test_completed"
+      - "test_failed"
+      - "api_error"
+
+# Configurações de ambiente específicas
+environment_specific:
+  # Configurações para desenvolvimento
+  development:
+    enable_debug_mode: true
+    enable_verbose_logging: true
+    enable_mock_apis: true
+    enable_slow_queries: true
+    
+  # Configurações para staging
+  staging:
+    enable_debug_mode: false
+    enable_verbose_logging: false
+    enable_mock_apis: false
+    enable_slow_queries: false
+    
+  # Configurações para produção (não usar em testes)
+  production:
+    enable_debug_mode: false
+    enable_verbose_logging: false
+    enable_mock_apis: false
+    enable_slow_queries: false 

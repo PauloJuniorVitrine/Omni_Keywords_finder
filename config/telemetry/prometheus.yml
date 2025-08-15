@@ -1,0 +1,210 @@
+# 📊 CONFIGURAÇÃO PROMETHEUS - OMNI KEYWORDS FINDER
+# 🎯 Objetivo: Monitoramento enterprise-grade com métricas customizadas
+# 📅 Data: 2025-01-27
+# 🔧 Versão: 1.0
+# 🏷️ Tracing ID: PROMETHEUS_CONFIG_20250127_001
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: production
+    application: omni-keywords-finder
+    version: 1.0.0
+
+rule_files:
+  - "rules/keywords_finder_rules.yml"
+  - "rules/security_rules.yml"
+  - "rules/performance_rules.yml"
+
+scrape_configs:
+  # Monitoramento do próprio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Monitoramento da aplicação Flask/FastAPI
+  - job_name: 'omni-keywords-finder-backend'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # Monitoramento do banco de dados PostgreSQL
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['localhost:9187']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Monitoramento do Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:9121']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Monitoramento do sistema (Node Exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Monitoramento de APIs externas
+  - job_name: 'external-apis'
+    static_configs:
+      - targets: 
+        - 'api.google.com:443'
+        - 'api.semrush.com:443'
+        - 'api.ahrefs.com:443'
+    metrics_path: /health
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    tls_config:
+      insecure_skip_verify: false
+
+  # Monitoramento de segurança
+  - job_name: 'security-monitoring'
+    static_configs:
+      - targets: ['localhost:9091']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+# Configuração de alertas
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - localhost:9093
+      scheme: http
+      timeout: 10s
+      api_version: v1
+
+# Configuração de persistência
+storage:
+  tsdb:
+    path: /var/lib/prometheus/data
+    retention.time: 30d
+    retention.size: 50GB
+    wal:
+      retention.period: 12h
+
+# Configuração de logs
+log:
+  level: info
+  format: json
+
+# Configuração de telemetria
+telemetry:
+  enabled: true
+  path: /metrics
+  max_concurrent_scrapes: 100
+  max_scrape_timeout: 30s
+
+# Configuração de segurança
+security:
+  tls_config:
+    cert_file: /etc/prometheus/certs/prometheus.crt
+    key_file: /etc/prometheus/certs/prometheus.key
+  basic_auth:
+    username: prometheus
+    password: ${PROMETHEUS_PASSWORD}
+
+# Configuração de backup
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: 7d
+  storage:
+    type: s3
+    bucket: omni-keywords-monitoring-backup
+    region: us-east-1
+
+# Configuração de notificações
+notifications:
+  slack:
+    webhook_url: ${SLACK_WEBHOOK_URL}
+    channel: "#monitoring-alerts"
+  email:
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    from: monitoring@omni-keywords-finder.com
+    to: ["admin@omni-keywords-finder.com", "devops@omni-keywords-finder.com"]
+
+# Configuração de métricas customizadas específicas do Omni Keywords Finder
+custom_metrics:
+  keywords_processed:
+    description: "Número total de keywords processadas"
+    type: counter
+    labels: ["source", "status", "user_id"]
+  
+  api_requests:
+    description: "Requisições para APIs externas"
+    type: counter
+    labels: ["api_name", "endpoint", "status_code", "response_time"]
+  
+  search_queries:
+    description: "Consultas de busca realizadas"
+    type: counter
+    labels: ["query_type", "domain", "user_id", "success"]
+  
+  data_collection:
+    description: "Coleta de dados de fontes externas"
+    type: counter
+    labels: ["source", "data_type", "status", "records_count"]
+  
+  user_sessions:
+    description: "Sessões de usuário ativas"
+    type: gauge
+    labels: ["user_type", "plan", "region"]
+  
+  system_performance:
+    description: "Métricas de performance do sistema"
+    type: histogram
+    labels: ["component", "operation", "status"]
+    buckets: [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0]
+
+# Configuração de health checks
+health_checks:
+  - name: "database_connection"
+    url: "http://localhost:8000/health/db"
+    interval: 30s
+    timeout: 5s
+    expected_status: 200
+  
+  - name: "redis_connection"
+    url: "http://localhost:8000/health/redis"
+    interval: 30s
+    timeout: 5s
+    expected_status: 200
+  
+  - name: "external_apis"
+    url: "http://localhost:8000/health/external"
+    interval: 60s
+    timeout: 10s
+    expected_status: 200
+
+# Configuração de retenção de dados
+retention:
+  metrics:
+    default: 30d
+    high_cardinality: 7d
+    low_cardinality: 90d
+  alerts:
+    resolved: 24h
+    firing: 7d
+  logs:
+    application: 30d
+    access: 90d
+    error: 365d 

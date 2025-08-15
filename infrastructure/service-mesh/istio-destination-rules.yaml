@@ -1,0 +1,129 @@
+# =============================================================================
+# Istio Destination Rules Configuration
+# =============================================================================
+# 
+# Este arquivo configura os Destination Rules do Istio para
+# load balancing e circuit breakers no Omni Keywords Finder.
+#
+# Tracing ID: istio-destination-rules-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+# =============================================================================
+
+---
+# Destination Rule para API Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: omni-keywords-finder-api-dr
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-api
+    environment: production
+    traffic-management: istio
+spec:
+  host: omni-keywords-finder-api
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http1MaxPendingRequests: 1024
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  subsets:
+  - name: stable
+    labels:
+      version: stable
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+  - name: canary
+    labels:
+      version: canary
+    trafficPolicy:
+      loadBalancer:
+        simple: LEAST_CONN
+      connectionPool:
+        tcp:
+          maxConnections: 50
+        http:
+          http1MaxPendingRequests: 512
+
+---
+# Destination Rule para ML Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: omni-keywords-finder-ml-dr
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-ml
+    environment: production
+    traffic-management: istio
+spec:
+  host: omni-keywords-finder-ml
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 60ms
+      http:
+        http1MaxPendingRequests: 512
+        maxRequestsPerConnection: 5
+        maxRetries: 2
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 15s
+      baseEjectionTime: 60s
+      maxEjectionPercent: 30
+  subsets:
+  - name: stable
+    labels:
+      version: stable
+  - name: canary
+    labels:
+      version: canary
+  - name: v2
+    labels:
+      version: v2
+
+---
+# Destination Rule para Analytics Service
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: omni-keywords-finder-analytics-dr
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-analytics
+    environment: production
+    traffic-management: istio
+spec:
+  host: omni-keywords-finder-analytics
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 200
+        connectTimeout: 30ms
+      http:
+        http1MaxPendingRequests: 2048
+        maxRequestsPerConnection: 20
+        maxRetries: 5
+    outlierDetection:
+      consecutive5xxErrors: 10
+      interval: 5s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 20 

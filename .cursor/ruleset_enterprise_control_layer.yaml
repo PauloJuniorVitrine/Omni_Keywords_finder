@@ -1,0 +1,15 @@
+# 📜 Ruleset: Enterprise Control Layer
+style_guidelines:
+  language: pt-BR
+  communication: objetiva, técnica e rastreável
+rules:
+  - id: immutable-generated-artifacts
+    description: |
+      Não modifique arquivos previamente gerados sem autorização explícita.
+    severity: error
+    always: true
+  - id: test-coverage-enforcement
+    description: |
+      Todo código novo deve vir com teste correspondente.
+    severity: error
+    always: true

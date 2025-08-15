@@ -1,0 +1,25 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+
+<Meta title="Comum/Loader" component={Loader} />
+
+# Loader
+
+Componente de loader animado para feedback visual em operações assíncronas.
+
+<Canvas>
+  <Story name="Padrão">
+    <Loader />
+  </Story>
+  <Story name="Grande">
+    <Loader size="large" />
+  </Story>
+  <Story name="Cor Alternativa">
+    <Loader color="#eab308" />
+  </Story>
+</Canvas>
+
+<ArgsTable story="Padrão" />
+
+## Referência Visual
+- Consulte `wireframes_dashboard.svg` e `wireframes_governanca.svg` para posição e cor
+- Consulte `interface_proposta_v1.md` para delays e layer 

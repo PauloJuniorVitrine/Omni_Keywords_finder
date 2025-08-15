@@ -1,0 +1,866 @@
+# 🔗 **SERVICE MESH CONFIGURATION - OMNİ KEYWORDS FINDER**
+
+**Tracing ID**: SERVICE_MESH_CONFIG_20250127_001  
+**Data de Criação**: 2025-01-27  
+**Versão**: 1.0.0  
+**Status**: 🟡 EM DESENVOLVIMENTO  
+**Responsável**: AI Assistant
+
+---
+
+## **🔧 CONFIGURAÇÃO ISTIO SERVICE MESH**
+
+### **Istio Installation Profile**
+```yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: omni-keywords-istio-control-plane
+spec:
+  profile: demo
+  components:
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2048Mi
+          limits:
+            cpu: 1000m
+            memory: 4096Mi
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: true
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+        service:
+          ports:
+          - name: http2
+            port: 80
+            targetPort: 8080
+          - name: https
+            port: 443
+            targetPort: 8443
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+      defaultResources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1024Mi
+    pilot:
+      autoscaleEnabled: true
+      autoscaleMin: 1
+      autoscaleMax: 5
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2048Mi
+        limits:
+          cpu: 1000m
+          memory: 4096Mi
+    gateways:
+      istio-ingressgateway:
+        autoscaleEnabled: true
+        autoscaleMin: 1
+        autoscaleMax: 5
+```
+
+### **Gateway Configuration**
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: omni-keywords-gateway
+  namespace: omni-keywords
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*.omni-keywords.com"
+    - "omni-keywords.com"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "*.omni-keywords.com"
+    - "omni-keywords.com"
+    tls:
+      mode: SIMPLE
+      credentialName: omni-keywords-tls-cert
+```
+
+### **Virtual Services**
+```yaml
+# Keyword Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: keyword-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "keywords.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/keywords"
+    route:
+    - destination:
+        host: keyword-service
+        port:
+          number: 8000
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+    timeout: 30s
+    fault:
+      delay:
+        percentage:
+          value: 5
+        fixedDelay: 2s
+      abort:
+        percentage:
+          value: 1
+        httpStatus: 500
+
+---
+# Analytics Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: analytics-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "analytics.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/analytics"
+    route:
+    - destination:
+        host: analytics-service
+        port:
+          number: 8001
+      weight: 100
+    retries:
+      attempts: 2
+      perTryTimeout: 5s
+    timeout: 60s
+
+---
+# Crawler Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: crawler-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "crawler.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/crawler"
+    route:
+    - destination:
+        host: crawler-service
+        port:
+          number: 8002
+      weight: 100
+    retries:
+      attempts: 1
+      perTryTimeout: 10s
+    timeout: 120s
+
+---
+# Ranking Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ranking-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "ranking.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/ranking"
+    route:
+    - destination:
+        host: ranking-service
+        port:
+          number: 8003
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+    timeout: 30s
+
+---
+# Auth Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: auth-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "auth.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/auth"
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 8004
+      weight: 100
+    retries:
+      attempts: 5
+      perTryTimeout: 1s
+    timeout: 15s
+
+---
+# Notification Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: notification-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "notifications.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/notifications"
+    route:
+    - destination:
+        host: notification-service
+        port:
+          number: 8005
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+    timeout: 30s
+
+---
+# Billing Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: billing-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "billing.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/billing"
+    route:
+    - destination:
+        host: billing-service
+        port:
+          number: 8006
+      weight: 100
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+    timeout: 30s
+
+---
+# UI Service Virtual Service
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ui-vs
+  namespace: omni-keywords
+spec:
+  hosts:
+  - "omni-keywords.com"
+  - "www.omni-keywords.com"
+  gateways:
+  - omni-keywords-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: ui-service
+        port:
+          number: 3000
+      weight: 100
+    retries:
+      attempts: 2
+      perTryTimeout: 1s
+    timeout: 15s
+```
+
+### **Destination Rules**
+```yaml
+# Keyword Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: keyword-dr
+  namespace: omni-keywords
+spec:
+  host: keyword-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 10
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+
+---
+# Analytics Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: analytics-dr
+  namespace: omni-keywords
+spec:
+  host: analytics-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 60ms
+      http:
+        http2MaxRequests: 500
+        maxRequestsPerConnection: 5
+        maxRetries: 2
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 30s
+      baseEjectionTime: 60s
+      maxEjectionPercent: 20
+
+---
+# Crawler Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: crawler-dr
+  namespace: omni-keywords
+spec:
+  host: crawler-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 20
+        connectTimeout: 120ms
+      http:
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 1
+        maxRetries: 1
+    outlierDetection:
+      consecutive5xxErrors: 2
+      interval: 60s
+      baseEjectionTime: 120s
+      maxEjectionPercent: 30
+
+---
+# Ranking Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ranking-dr
+  namespace: omni-keywords
+spec:
+  host: ranking-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 10
+
+---
+# Auth Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: auth-dr
+  namespace: omni-keywords
+spec:
+  host: auth-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 200
+        connectTimeout: 15ms
+      http:
+        http2MaxRequests: 2000
+        maxRequestsPerConnection: 20
+        maxRetries: 5
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 5s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 5
+
+---
+# Notification Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: notification-dr
+  namespace: omni-keywords
+spec:
+  host: notification-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 10
+
+---
+# Billing Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: billing-dr
+  namespace: omni-keywords
+spec:
+  host: billing-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 10
+
+---
+# UI Service Destination Rule
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ui-dr
+  namespace: omni-keywords
+spec:
+  host: ui-service
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 200
+        connectTimeout: 15ms
+      http:
+        http2MaxRequests: 2000
+        maxRequestsPerConnection: 20
+        maxRetries: 2
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 5s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 5
+```
+
+### **Authorization Policies**
+```yaml
+# Global Authorization Policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: global-auth-policy
+  namespace: omni-keywords
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords/sa/default"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/metrics"]
+  - from:
+    - source:
+        namespaces: ["omni-keywords"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/v1/*"]
+
+---
+# Auth Service Authorization Policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: auth-service-policy
+  namespace: omni-keywords
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords/sa/default"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health"]
+  - from:
+    - source:
+        namespaces: ["omni-keywords"]
+    to:
+    - operation:
+        methods: ["POST"]
+        paths: ["/api/v1/auth/login", "/api/v1/auth/logout", "/api/v1/auth/refresh"]
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords/sa/authenticated"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/api/v1/auth/profile"]
+
+---
+# Billing Service Authorization Policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: billing-service-policy
+  namespace: omni-keywords
+spec:
+  selector:
+    matchLabels:
+      app: billing-service
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords/sa/default"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health"]
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords/sa/authenticated"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/v1/billing/*"]
+```
+
+### **Peer Authentication**
+```yaml
+# Global Peer Authentication
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: omni-keywords
+spec:
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    8000:
+      mode: PERMISSIVE
+    8001:
+      mode: PERMISSIVE
+    8002:
+      mode: PERMISSIVE
+    8003:
+      mode: PERMISSIVE
+    8004:
+      mode: STRICT
+    8005:
+      mode: PERMISSIVE
+    8006:
+      mode: STRICT
+    3000:
+      mode: PERMISSIVE
+```
+
+### **Request Authentication**
+```yaml
+# JWT Request Authentication
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-auth
+  namespace: omni-keywords
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  jwtRules:
+  - issuer: "omni-keywords"
+    jwksUri: "https://omni-keywords.com/.well-known/jwks.json"
+    audiences:
+    - "omni-keywords-api"
+    forwardOriginalToken: true
+```
+
+### **Circuit Breaker Configuration**
+```yaml
+# Circuit Breaker for External Services
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: external-services-cb
+  namespace: omni-keywords
+spec:
+  host: "*.external.com"
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30ms
+      http:
+        http2MaxRequests: 1000
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 10
+```
+
+### **Rate Limiting**
+```yaml
+# Rate Limiting EnvoyFilter
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: rate-limit
+  namespace: omni-keywords
+spec:
+  workloadSelector:
+    labels:
+      app: istio-ingressgateway
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: envoy.filters.network.http_connection_manager
+            subFilter:
+              name: envoy.filters.http.router
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.ratelimit
+        typedConfig:
+          '@type': type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+          domain: omni-keywords
+          rate_limit_service:
+            grpc_service:
+              envoy_grpc:
+                cluster_name: rate_limit_cluster
+            transport_api_version: V3
+```
+
+### **Tracing Configuration**
+```yaml
+# Jaeger Tracing Configuration
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: tracing
+spec:
+  addonComponents:
+    tracing:
+      enabled: true
+  values:
+    global:
+      tracer:
+        zipkin:
+          address: jaeger-collector.observability:9411
+    kiali:
+      enabled: true
+    tracing:
+      enabled: true
+      provider: jaeger
+      jaeger:
+        template: all-in-one
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+```
+
+### **Monitoring Configuration**
+```yaml
+# Prometheus Configuration
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-component-monitor
+  namespace: istio-system
+  labels:
+    monitoring: istio-components
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      istio: mixer
+  endpoints:
+  - port: prometheus
+    interval: 15s
+    path: /metrics
+
+---
+# Grafana Dashboard
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: istio-grafana-dashboards
+  namespace: istio-system
+  labels:
+    app: grafana
+    release: prometheus
+data:
+  istio-mesh-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Istio Mesh Dashboard",
+        "tags": ["istio"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Request Volume",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum(rate(istio_requests_total[5m])) by (destination_service)",
+                "legendFormat": "{{destination_service}}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+```
+
+---
+
+**🎯 STATUS**: 🟡 **CONFIGURAÇÃO CRIADA**  
+**📅 Próxima Ação**: Implementar documentação de arquitetura refatorada  
+**👨‍💻 Responsável**: AI Assistant  
+**📊 Progresso**: 4/5 itens da seção 4 (80%)
+
+---
+
+*Configuração salva em: `config/service_mesh.yaml`* 

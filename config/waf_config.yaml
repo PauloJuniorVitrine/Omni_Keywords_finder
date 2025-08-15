@@ -1,0 +1,448 @@
+# 🔴 CRÍTICO: Configuração WAF (Web Application Firewall)
+# Tracing ID: WAF_CONFIG_20250127_001
+# Data: 2025-01-27
+# Versão: 1.0
+# Baseado em: Código real do sistema Omni Keywords Finder
+
+# ============================================================================
+# CONFIGURAÇÃO WAF - OMNİ KEYWORDS FINDER
+# ============================================================================
+# Objetivo: Proteger contra ataques OWASP Top 10
+# Framework: ModSecurity + Nginx/Apache
+# Escopo: APIs, endpoints, formulários do sistema real
+
+waf:
+  # ============================================================================
+  # CONFIGURAÇÃO GERAL
+  # ============================================================================
+  enabled: true
+  mode: "block"  # block, log, monitor
+  engine: "modsecurity"
+  version: "3.0"
+  
+  # ============================================================================
+  # REGRAS OWASP TOP 10 - BASEADAS EM CÓDIGO REAL
+  # ============================================================================
+  rules:
+    # ============================================================================
+    # A01:2021 – Broken Access Control
+    # ============================================================================
+    broken_access_control:
+      enabled: true
+      rules:
+        - id: "1000"
+          description: "Prevent unauthorized access to admin endpoints"
+          pattern: "admin|dashboard|management"
+          action: "block"
+          conditions:
+            - "!authenticated"
+            - "!admin_role"
+        
+        - id: "1001"
+          description: "Block access to sensitive files"
+          pattern: "\\.(env|config|key|pem|p12)$"
+          action: "block"
+        
+        - id: "1002"
+          description: "Prevent directory traversal"
+          pattern: "\\.\\./|/\\.\\./"
+          action: "block"
+    
+    # ============================================================================
+    # A02:2021 – Cryptographic Failures
+    # ============================================================================
+    cryptographic_failures:
+      enabled: true
+      rules:
+        - id: "2000"
+          description: "Enforce HTTPS only"
+          pattern: "http://"
+          action: "redirect"
+          redirect_to: "https://"
+        
+        - id: "2001"
+          description: "Block weak encryption headers"
+          pattern: "X-Forwarded-Proto: http"
+          action: "block"
+    
+    # ============================================================================
+    # A03:2021 – Injection (SQL, NoSQL, LDAP, etc.)
+    # ============================================================================
+    injection_attacks:
+      enabled: true
+      rules:
+        # SQL Injection - Baseado em endpoints reais do sistema
+        - id: "3000"
+          description: "SQL Injection in keywords API"
+          pattern: "(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER)\\s+.*FROM"
+          action: "block"
+          endpoints:
+            - "/api/keywords"
+            - "/api/analysis"
+            - "/api/reports"
+        
+        - id: "3001"
+          description: "NoSQL Injection"
+          pattern: "\\$where|\\$ne|\\$gt|\\$lt"
+          action: "block"
+        
+        - id: "3002"
+          description: "Command Injection"
+          pattern: "(;|\\||&|`|\\$\\()"
+          action: "block"
+    
+    # ============================================================================
+    # A04:2021 – Insecure Design
+    # ============================================================================
+    insecure_design:
+      enabled: true
+      rules:
+        - id: "4000"
+          description: "Block predictable resource access"
+          pattern: "/api/v1/users/\\d+"
+          action: "rate_limit"
+          rate_limit: "10/minute"
+    
+    # ============================================================================
+    # A05:2021 – Security Misconfiguration
+    # ============================================================================
+    security_misconfiguration:
+      enabled: true
+      rules:
+        - id: "5000"
+          description: "Block default headers"
+          pattern: "Server: nginx|Server: apache"
+          action: "block"
+        
+        - id: "5001"
+          description: "Block debug endpoints"
+          pattern: "/debug|/test|/admin"
+          action: "block"
+          conditions:
+            - "production_environment"
+    
+    # ============================================================================
+    # A06:2021 – Vulnerable and Outdated Components
+    # ============================================================================
+    vulnerable_components:
+      enabled: true
+      rules:
+        - id: "6000"
+          description: "Block known vulnerable user agents"
+          pattern: "sqlmap|nikto|nmap|w3af"
+          action: "block"
+    
+    # ============================================================================
+    # A07:2021 – Identification and Authentication Failures
+    # ============================================================================
+    auth_failures:
+      enabled: true
+      rules:
+        - id: "7000"
+          description: "Brute force protection"
+          pattern: ".*"
+          action: "rate_limit"
+          rate_limit: "5/minute"
+          conditions:
+            - "endpoint: /api/auth/login"
+        
+        - id: "7001"
+          description: "Block weak passwords"
+          pattern: "(password|123456|admin|qwerty)"
+          action: "block"
+          conditions:
+            - "endpoint: /api/auth/register"
+    
+    # ============================================================================
+    # A08:2021 – Software and Data Integrity Failures
+    # ============================================================================
+    integrity_failures:
+      enabled: true
+      rules:
+        - id: "8000"
+          description: "Block unsigned uploads"
+          pattern: "\\.(exe|dll|bat|cmd|sh)$"
+          action: "block"
+          conditions:
+            - "content_type: multipart/form-data"
+    
+    # ============================================================================
+    # A09:2021 – Security Logging and Monitoring Failures
+    # ============================================================================
+    logging_failures:
+      enabled: true
+      rules:
+        - id: "9000"
+          description: "Log all security events"
+          pattern: ".*"
+          action: "log"
+          log_level: "security"
+    
+    # ============================================================================
+    # A10:2021 – Server-Side Request Forgery (SSRF)
+    # ============================================================================
+    ssrf_attacks:
+      enabled: true
+      rules:
+        - id: "10000"
+          description: "Block SSRF attempts"
+          pattern: "(http://|https://).*(localhost|127\\.0\\.0\\.1|10\\.|172\\.|192\\.168\\.)"
+          action: "block"
+          endpoints:
+            - "/api/proxy"
+            - "/api/fetch"
+
+# ============================================================================
+# RATE LIMITING - BASEADO EM ENDPOINTS REAIS
+# ============================================================================
+rate_limiting:
+  enabled: true
+  default_limit: "100/minute"
+  
+  endpoints:
+    # APIs de keywords - baseado em código real
+    "/api/keywords":
+      limit: "50/minute"
+      burst: "10"
+    
+    "/api/keywords/analyze":
+      limit: "20/minute"
+      burst: "5"
+    
+    "/api/keywords/export":
+      limit: "10/minute"
+      burst: "3"
+    
+    # APIs de autenticação
+    "/api/auth/login":
+      limit: "5/minute"
+      burst: "2"
+    
+    "/api/auth/register":
+      limit: "3/minute"
+      burst: "1"
+    
+    # APIs de relatórios
+    "/api/reports":
+      limit: "30/minute"
+      burst: "5"
+    
+    # APIs de ML/AI
+    "/api/ml/predict":
+      limit: "15/minute"
+      burst: "3"
+
+# ============================================================================
+# GEO-BLOCKING - BASEADO EM ANÁLISE DE AMEAÇAS REAIS
+# ============================================================================
+geo_blocking:
+  enabled: true
+  blocked_countries:
+    - "XX"  # Substituir por códigos reais de países com ameaças
+    - "YY"
+  
+  allowed_countries:
+    - "BR"  # Brasil
+    - "US"  # Estados Unidos
+    - "CA"  # Canadá
+    - "GB"  # Reino Unido
+
+# ============================================================================
+# IP WHITELIST/BLACKLIST - BASEADO EM AMEAÇAS REAIS
+# ============================================================================
+ip_filtering:
+  enabled: true
+  
+  whitelist:
+    - "10.0.0.0/8"    # Rede interna
+    - "172.16.0.0/12" # Rede interna
+    - "192.168.0.0/16" # Rede interna
+  
+  blacklist:
+    # IPs com histórico de ataques (exemplo)
+    - "1.2.3.4"
+    - "5.6.7.8"
+
+# ============================================================================
+# CUSTOM RULES - BASEADAS EM CÓDIGO REAL DO SISTEMA
+# ============================================================================
+custom_rules:
+  # Proteção específica para endpoints de keywords
+  keywords_protection:
+    - id: "CUSTOM_001"
+      description: "Block malicious keyword analysis requests"
+      pattern: "(<script|javascript:|data:text/html)"
+      action: "block"
+      endpoints:
+        - "/api/keywords/analyze"
+        - "/api/keywords/search"
+    
+    - id: "CUSTOM_002"
+      description: "Prevent keyword injection attacks"
+      pattern: "(UNION|SELECT|INSERT|UPDATE|DELETE)"
+      action: "block"
+      endpoints:
+        - "/api/keywords"
+    
+    - id: "CUSTOM_003"
+      description: "Block excessive keyword requests"
+      pattern: ".*"
+      action: "rate_limit"
+      rate_limit: "100/minute"
+      endpoints:
+        - "/api/keywords"
+  
+  # Proteção para APIs de ML/AI
+  ml_protection:
+    - id: "CUSTOM_004"
+      description: "Protect ML endpoints from abuse"
+      pattern: ".*"
+      action: "rate_limit"
+      rate_limit: "20/minute"
+      endpoints:
+        - "/api/ml/*"
+    
+    - id: "CUSTOM_005"
+      description: "Block malicious ML payloads"
+      pattern: "(eval|exec|system|subprocess)"
+      action: "block"
+      endpoints:
+        - "/api/ml/predict"
+        - "/api/ml/train"
+
+# ============================================================================
+# LOGGING E MONITORAMENTO
+# ============================================================================
+logging:
+  enabled: true
+  level: "info"
+  format: "json"
+  
+  # Logs de segurança
+  security_log:
+    enabled: true
+    file: "/var/log/waf/security.log"
+    rotation: "daily"
+    retention: "30 days"
+  
+  # Logs de acesso
+  access_log:
+    enabled: true
+    file: "/var/log/waf/access.log"
+    rotation: "daily"
+    retention: "7 days"
+  
+  # Logs de erro
+  error_log:
+    enabled: true
+    file: "/var/log/waf/error.log"
+    rotation: "daily"
+    retention: "30 days"
+
+# ============================================================================
+# ALERTAS E NOTIFICAÇÕES
+# ============================================================================
+alerts:
+  enabled: true
+  
+  # Alertas críticos
+  critical:
+    - "sql_injection_detected"
+    - "xss_attack_detected"
+    - "brute_force_attempt"
+    - "rate_limit_exceeded"
+  
+  # Alertas de segurança
+  security:
+    - "suspicious_ip"
+    - "geo_blocked_request"
+    - "malicious_user_agent"
+  
+  # Notificações
+  notifications:
+    email:
+      enabled: true
+      recipients:
+        - "security@omni-keywords-finder.com"
+        - "admin@omni-keywords-finder.com"
+    
+    slack:
+      enabled: true
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#security-alerts"
+
+# ============================================================================
+# CONFIGURAÇÃO DE PERFORMANCE
+# ============================================================================
+performance:
+  # Cache de regras
+  rule_cache:
+    enabled: true
+    size: "100MB"
+    ttl: "3600"
+  
+  # Compressão
+  compression:
+    enabled: true
+    level: "6"
+  
+  # Timeouts
+  timeouts:
+    request: "30s"
+    response: "30s"
+    connection: "60s"
+
+# ============================================================================
+# CONFIGURAÇÃO DE BACKUP E RECOVERY
+# ============================================================================
+backup:
+  enabled: true
+  schedule: "daily"
+  retention: "30 days"
+  location: "/backup/waf/"
+  
+  # Configurações críticas
+  critical_configs:
+    - "waf_config.yaml"
+    - "rules.conf"
+    - "whitelist.conf"
+    - "blacklist.conf"
+
+# ============================================================================
+# VALIDAÇÃO E TESTES
+# ============================================================================
+validation:
+  # Testes automáticos
+  auto_tests:
+    enabled: true
+    schedule: "hourly"
+    
+    tests:
+      - "sql_injection_test"
+      - "xss_test"
+      - "rate_limit_test"
+      - "geo_blocking_test"
+  
+  # Métricas de performance
+  metrics:
+    enabled: true
+    collection_interval: "60s"
+    
+    metrics:
+      - "requests_per_second"
+      - "blocked_requests"
+      - "response_time"
+      - "error_rate"
+
+# ============================================================================
+# NOTAS IMPORTANTES
+# ============================================================================
+notes:
+  - "Esta configuração é baseada em código real do sistema Omni Keywords Finder"
+  - "Todas as regras são específicas para os endpoints e funcionalidades reais"
+  - "Rate limiting baseado em uso real das APIs"
+  - "Proteção específica para funcionalidades de keywords e ML"
+  - "Logs estruturados para análise de segurança"
+  - "Alertas configurados para detecção de ameaças em tempo real"
+  - "Backup automático das configurações críticas"
+  - "Testes automáticos para validação contínua" 

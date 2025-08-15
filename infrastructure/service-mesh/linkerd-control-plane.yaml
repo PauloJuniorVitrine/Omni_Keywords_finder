@@ -1,0 +1,904 @@
+# =============================================================================
+# Linkerd Control Plane Deployment Configuration
+# =============================================================================
+# 
+# Este arquivo configura o deployment do Linkerd control plane no cluster
+# Kubernetes para o sistema Omni Keywords Finder.
+#
+# Tracing ID: linkerd-control-plane-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+#
+# Metodologias Aplicadas:
+# - 📐 CoCoT: Baseado em best practices da CNCF e Linkerd
+# - 🌲 ToT: Avaliado configurações de recursos e escolhido otimal
+# - ♻️ ReAct: Simulado impacto no cluster e validado estabilidade
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linkerd
+  labels:
+    linkerd.io/is-control-plane: "true"
+    linkerd.io/control-plane-ns: "linkerd"
+---
+# Configuração do Linkerd Control Plane
+apiVersion: linkerd.io/v1alpha1
+kind: LinkerdConfig
+metadata:
+  name: linkerd-config
+  namespace: linkerd
+spec:
+  # Configurações de recursos otimizadas para Omni Keywords Finder
+  resources:
+    cpu:
+      request: "100m"
+      limit: "500m"
+    memory:
+      request: "256Mi"
+      limit: "1Gi"
+  
+  # Configurações de alta disponibilidade
+  highAvailability: true
+  
+  # Configurações de segurança
+  security:
+    # Habilitar mTLS automático
+    mTLS: true
+    # Configurar certificados automáticos
+    autoCert: true
+    # Configurar trust domain
+    trustDomain: "omni-keywords-finder.local"
+  
+  # Configurações de observabilidade
+  observability:
+    # Habilitar métricas Prometheus
+    prometheus: true
+    # Configurar sampling de traces
+    tracing:
+      sampling: 0.1
+    # Habilitar logs estruturados
+    logging:
+      level: "info"
+      format: "json"
+  
+  # Configurações de proxy
+  proxy:
+    # Configurar recursos do proxy
+    resources:
+      cpu:
+        request: "50m"
+        limit: "200m"
+      memory:
+        request: "128Mi"
+        limit: "512Mi"
+    
+    # Configurar timeouts
+    timeouts:
+      connect: "1s"
+      read: "30s"
+      write: "30s"
+    
+    # Configurar circuit breakers
+    circuitBreakers:
+      maxFailures: 5
+      failureWindow: "10s"
+      recoveryWindow: "30s"
+  
+  # Configurações de ingress
+  ingress:
+    # Habilitar ingress controller
+    enabled: true
+    # Configurar annotations
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  
+  # Configurações de policy
+  policy:
+    # Habilitar policy controller
+    enabled: true
+    # Configurar recursos
+    resources:
+      cpu:
+        request: "50m"
+        limit: "200m"
+      memory:
+        request: "128Mi"
+        limit: "512Mi"
+---
+# Configuração do Linkerd Identity Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-identity
+  namespace: linkerd
+  labels:
+    app: linkerd-identity
+    linkerd.io/control-plane-component: identity
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: linkerd-identity
+  template:
+    metadata:
+      labels:
+        app: linkerd-identity
+        linkerd.io/control-plane-component: identity
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-identity
+      containers:
+      - name: identity
+        image: gcr.io/linkerd-io/controller:stable-2.13.4
+        args:
+        - "identity"
+        - "--log-level=info"
+        - "--controller-namespace=linkerd"
+        - "--trust-domain=omni-keywords-finder.local"
+        ports:
+        - name: admin
+          containerPort: 9990
+        - name: grpc
+          containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: admin
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: admin
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+---
+# Service para Linkerd Identity
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-identity
+  namespace: linkerd
+  labels:
+    app: linkerd-identity
+    linkerd.io/control-plane-component: identity
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 8080
+    targetPort: grpc
+  - name: admin
+    port: 9990
+    targetPort: admin
+  selector:
+    app: linkerd-identity
+---
+# Configuração do Linkerd Destination Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-destination
+  namespace: linkerd
+  labels:
+    app: linkerd-destination
+    linkerd.io/control-plane-component: destination
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: linkerd-destination
+  template:
+    metadata:
+      labels:
+        app: linkerd-destination
+        linkerd.io/control-plane-component: destination
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-destination
+      containers:
+      - name: destination
+        image: gcr.io/linkerd-io/controller:stable-2.13.4
+        args:
+        - "destination"
+        - "--log-level=info"
+        - "--controller-namespace=linkerd"
+        ports:
+        - name: admin
+          containerPort: 9990
+        - name: grpc
+          containerPort: 8086
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: admin
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: admin
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+---
+# Service para Linkerd Destination
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-destination
+  namespace: linkerd
+  labels:
+    app: linkerd-destination
+    linkerd.io/control-plane-component: destination
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 8086
+    targetPort: grpc
+  - name: admin
+    port: 9990
+    targetPort: admin
+  selector:
+    app: linkerd-destination
+---
+# Configuração do Linkerd Proxy Injector
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-proxy-injector
+  namespace: linkerd
+  labels:
+    app: linkerd-proxy-injector
+    linkerd.io/control-plane-component: proxy-injector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: linkerd-proxy-injector
+  template:
+    metadata:
+      labels:
+        app: linkerd-proxy-injector
+        linkerd.io/control-plane-component: proxy-injector
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-proxy-injector
+      containers:
+      - name: proxy-injector
+        image: gcr.io/linkerd-io/controller:stable-2.13.4
+        args:
+        - "proxy-injector"
+        - "--log-level=info"
+        - "--controller-namespace=linkerd"
+        ports:
+        - name: admin
+          containerPort: 9990
+        - name: https
+          containerPort: 8443
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: admin
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: admin
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+---
+# Service para Linkerd Proxy Injector
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-proxy-injector
+  namespace: linkerd
+  labels:
+    app: linkerd-proxy-injector
+    linkerd.io/control-plane-component: proxy-injector
+spec:
+  type: ClusterIP
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  - name: admin
+    port: 9990
+    targetPort: admin
+  selector:
+    app: linkerd-proxy-injector
+---
+# Configuração do Linkerd Tap Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-tap
+  namespace: linkerd
+  labels:
+    app: linkerd-tap
+    linkerd.io/control-plane-component: tap
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: linkerd-tap
+  template:
+    metadata:
+      labels:
+        app: linkerd-tap
+        linkerd.io/control-plane-component: tap
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-tap
+      containers:
+      - name: tap
+        image: gcr.io/linkerd-io/controller:stable-2.13.4
+        args:
+        - "tap"
+        - "--log-level=info"
+        - "--controller-namespace=linkerd"
+        ports:
+        - name: admin
+          containerPort: 9990
+        - name: grpc
+          containerPort: 8089
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: admin
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: admin
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+---
+# Service para Linkerd Tap
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-tap
+  namespace: linkerd
+  labels:
+    app: linkerd-tap
+    linkerd.io/control-plane-component: tap
+spec:
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 8089
+    targetPort: grpc
+  - name: admin
+    port: 9990
+    targetPort: admin
+  selector:
+    app: linkerd-tap
+---
+# Configuração do Linkerd Web Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-web
+  namespace: linkerd
+  labels:
+    app: linkerd-web
+    linkerd.io/control-plane-component: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: linkerd-web
+  template:
+    metadata:
+      labels:
+        app: linkerd-web
+        linkerd.io/control-plane-component: web
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-web
+      containers:
+      - name: web
+        image: gcr.io/linkerd-io/web:stable-2.13.4
+        args:
+        - "--log-level=info"
+        - "--controller-namespace=linkerd"
+        - "--template-dir=/templates"
+        ports:
+        - name: http
+          containerPort: 8084
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+---
+# Service para Linkerd Web
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-web
+  namespace: linkerd
+  labels:
+    app: linkerd-web
+    linkerd.io/control-plane-component: web
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8084
+    targetPort: http
+  selector:
+    app: linkerd-web
+---
+# Configuração do Linkerd Prometheus
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkerd-prometheus
+  namespace: linkerd
+  labels:
+    app: linkerd-prometheus
+    linkerd.io/control-plane-component: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkerd-prometheus
+  template:
+    metadata:
+      labels:
+        app: linkerd-prometheus
+        linkerd.io/control-plane-component: prometheus
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      serviceAccountName: linkerd-prometheus
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.45.0
+        args:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.path=/prometheus"
+        - "--storage.tsdb.retention.time=15d"
+        - "--web.console.libraries=/etc/prometheus/console_libraries"
+        - "--web.console.templates=/etc/prometheus/consoles"
+        - "--web.enable-lifecycle"
+        ports:
+        - name: admin
+          containerPort: 9090
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: admin
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: admin
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus
+        - name: prometheus-data
+          mountPath: /prometheus
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: linkerd-prometheus-config
+      - name: prometheus-data
+        emptyDir: {}
+---
+# Service para Linkerd Prometheus
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkerd-prometheus
+  namespace: linkerd
+  labels:
+    app: linkerd-prometheus
+    linkerd.io/control-plane-component: prometheus
+spec:
+  type: ClusterIP
+  ports:
+  - name: admin
+    port: 9090
+    targetPort: admin
+  selector:
+    app: linkerd-prometheus
+---
+# ConfigMap para Prometheus
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linkerd-prometheus-config
+  namespace: linkerd
+  labels:
+    app: linkerd-prometheus
+    linkerd.io/control-plane-component: prometheus
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - /etc/prometheus/rules/*.yml
+    
+    scrape_configs:
+      - job_name: 'linkerd-proxy'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_linkerd_io_proxy_metrics_port]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+            replacement: /metrics
+          - source_labels: [__meta_kubernetes_pod_annotation_linkerd_io_proxy_metrics_port]
+            action: replace
+            regex: (.+)
+            replacement: ${1}:${2}
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+      
+      - job_name: 'linkerd-controller'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_linkerd_io_control_plane_component]
+            action: keep
+            regex: (identity|destination|proxy-injector|tap|web)
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: admin
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+---
+# Service Accounts
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-identity
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: identity
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-destination
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: destination
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-proxy-injector
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-tap
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: tap
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-web
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: web
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: linkerd-prometheus
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: prometheus
+---
+# RBAC - Cluster Roles
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-identity
+  labels:
+    linkerd.io/control-plane-component: identity
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-destination
+  labels:
+    linkerd.io/control-plane-component: destination
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-proxy-injector
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-tap
+  labels:
+    linkerd.io/control-plane-component: tap
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-web
+  labels:
+    linkerd.io/control-plane-component: web
+rules:
+- apiGroups: [""]
+  resources: ["services", "pods", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: linkerd-prometheus
+  labels:
+    linkerd.io/control-plane-component: prometheus
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# RBAC - Cluster Role Bindings
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-identity
+  labels:
+    linkerd.io/control-plane-component: identity
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-identity
+subjects:
+- kind: ServiceAccount
+  name: linkerd-identity
+  namespace: linkerd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-destination
+  labels:
+    linkerd.io/control-plane-component: destination
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-destination
+subjects:
+- kind: ServiceAccount
+  name: linkerd-destination
+  namespace: linkerd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-proxy-injector
+  labels:
+    linkerd.io/control-plane-component: proxy-injector
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-proxy-injector
+subjects:
+- kind: ServiceAccount
+  name: linkerd-proxy-injector
+  namespace: linkerd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-tap
+  labels:
+    linkerd.io/control-plane-component: tap
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-tap
+subjects:
+- kind: ServiceAccount
+  name: linkerd-tap
+  namespace: linkerd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-web
+  labels:
+    linkerd.io/control-plane-component: web
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-web
+subjects:
+- kind: ServiceAccount
+  name: linkerd-web
+  namespace: linkerd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: linkerd-prometheus
+  labels:
+    linkerd.io/control-plane-component: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: linkerd-prometheus
+subjects:
+- kind: ServiceAccount
+  name: linkerd-prometheus
+  namespace: linkerd 

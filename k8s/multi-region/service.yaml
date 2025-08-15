@@ -1,0 +1,97 @@
+# 📋 Multi-Region Service Configuration
+# Tracing ID: MULTI_REGION_SERVICE_002_20250127
+# Versão: 1.0
+# Data: 2025-01-27
+# Objetivo: Service multi-region com load balancing
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: omni-keywords-finder-service
+  namespace: omni-keywords
+  labels:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+  annotations:
+    reliability.omni.com/version: "1.0"
+    reliability.omni.com/region: "{{ .Values.region }}"
+    reliability.omni.com/service-type: "multi-region"
+    # Configuração de load balancing
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-path: "/health/ready"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-port: "8000"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-protocol: "HTTP"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-interval: "30"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-timeout: "5"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-unhealthy-threshold: "2"
+    # Configuração de sticky sessions
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Environment={{ .Values.environment }},Region={{ .Values.region }}"
+spec:
+  type: LoadBalancer
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+  # Configuração de external traffic policy
+  externalTrafficPolicy: Local
+  # Configuração de load balancer source ranges
+  loadBalancerSourceRanges:
+  - 0.0.0.0/0
+  # Configuração de health check
+  healthCheckNodePort: 30000
+---
+# 📋 Multi-Region Internal Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: omni-keywords-finder-internal
+  namespace: omni-keywords
+  labels:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+    type: internal
+  annotations:
+    reliability.omni.com/version: "1.0"
+    reliability.omni.com/region: "{{ .Values.region }}"
+    reliability.omni.com/service-type: "internal"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+  # Configuração de session affinity para serviços internos
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 1800 

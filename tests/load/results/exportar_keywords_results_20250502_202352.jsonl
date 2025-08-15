@@ -1,0 +1,1 @@
+{"timestamp": 1746228232.7290916, "type": "GET", "endpoint": "/api/exportar_keywords?formato=xml&prefix=test_kw_7696", "status_code": 200, "response_time_ms": 4.10560000455007, "response_length": 88, "exception": "Esperado 400, obtido 200", "url": "http://127.0.0.1:5000/api/exportar_keywords?formato=xml&prefix=test_kw_7696"}

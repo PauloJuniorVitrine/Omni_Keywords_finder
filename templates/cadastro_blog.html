@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Blog</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Cadastro de Blog</h1>
+        <form id="form-cadastro-blog" method="post" action="/cadastro_blog">
+            <label for="dominio">Domínio:</label>
+            <input type="text" id="dominio" name="dominio" required placeholder="ex: meu-blog.com">
+
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required placeholder="Nome do blog">
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" rows="," required placeholder="Descreva o blog"></textarea>
+
+            <label for="publico_alvo">Público-alvo:</label>
+            <input type="text" id="publico_alvo" name="publico_alvo" required placeholder="Ex: desenvolvedores, mães, advogados">
+
+            <label for="tom_voz">Tom de voz:</label>
+            <input type="text" id="tom_voz" name="tom_voz" required placeholder="Ex: profissional, descontraído, técnico">
+
+            <label>Categorias (até 7):</label>
+            <div id="categorias-container" aria-describedby="categorias-feedback">
+                <div class="categoria-item">
+                    <input type="text" name="categorias" class="categoria-input" placeholder="Categoria 1" required>
+                    <button type="button" class="remove-categoria" aria-label="Remover categoria" tabindex="0" style="display:none">×</button>
+                </div>
+            </div>
+            <div id="categorias-contador">1/7 categorias</div>
+            <button type="button" id="add-categoria">Adicionar Categoria</button>
+
+            <button type="button" id="preview-btn">Pré-visualizar</button>
+            <button type="submit">Salvar Blog</button>
+        </form>
+        {% if preview %}
+        <section class="preview-bloco">
+            <h2>Pré-visualização</h2>
+            <ul>
+                <li><b>Domínio:</b> {{ preview.dominio }}</li>
+                <li><b>Nome:</b> {{ preview.nome }}</li>
+                <li><b>Descrição:</b> {{ preview.descricao }}</li>
+                <li><b>Público-alvo:</b> {{ preview.publico_alvo }}</li>
+                <li><b>Tom de voz:</b> {{ preview.tom_voz }}</li>
+                <li><b>Categorias:</b> {{ preview.categorias|join(', ') }}</li>
+            </ul>
+        </section>
+        {% endif %}
+        <div id="feedback" aria-live="polite" aria-describedby="categorias-feedback">
+            {% if feedback %}
+                <div class="feedback {{ feedback_status }}">{{ feedback }}</div>
+            {% endif %}
+        </div>
+    </main>
+    <script src="/static/js/cadastro_blog.js"></script>
+</body>
+</html> 

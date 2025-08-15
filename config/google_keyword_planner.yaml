@@ -1,0 +1,83 @@
+# Configuração do Google Keyword Planner Validator
+# Prompt: Google Keyword Planner como Validador
+# Ruleset: enterprise_control_layer.yaml
+# Data: 2024-12-20
+# Versão: 1.0.0
+
+# Configurações do Validador Avançado
+validacao:
+  estrategia_padrao: "cascata"  # cascata, paralela, consenso
+  timeout_segundos: 300
+  max_retries: 3
+  
+  # Configurações do Google Keyword Planner
+  google_keyword_planner:
+    enabled: true
+    api_enabled: true
+    scraping_enabled: true
+    cache_enabled: true
+    rate_limiting_enabled: true
+    
+    # Configurações de API
+    api:
+      client_id: "${GOOGLE_CLIENT_ID}"
+      client_secret: "${GOOGLE_CLIENT_SECRET}"
+      refresh_token: "${GOOGLE_REFRESH_TOKEN}"
+      customer_id: "${GOOGLE_CUSTOMER_ID}"
+    
+    # Configurações de Cache
+    cache:
+      ttl: 86400  # 24 horas em segundos
+      max_size: 10000
+      cleanup_interval: 3600  # 1 hora
+    
+    # Configurações de Rate Limiting
+    rate_limiting:
+      delay_segundos: 2.0
+      max_keywords_per_request: 100
+      max_requests_per_minute: 30
+    
+    # Configurações de Selenium (fallback)
+    selenium:
+      headless: true
+      timeout_segundos: 30
+      window_size: "1920,1080"
+      user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    
+    # Critérios de Validação
+    criterios:
+      min_search_volume: 100
+      max_cpc: 5.0
+      reject_high_competition: true
+      min_competition_index: 0
+      max_competition_index: 100
+    
+    # Configurações de Logging
+    logging:
+      level: "INFO"
+      include_metrics: true
+      include_errors: true
+      include_warnings: true
+
+# Configurações de Monitoramento
+monitoramento:
+  enabled: true
+  metrics_interval: 60  # segundos
+  alert_threshold:
+    error_rate: 0.05  # 5%
+    timeout_rate: 0.10  # 10%
+    cache_hit_rate: 0.80  # 80%
+
+# Configurações de Segurança
+seguranca:
+  encrypt_credentials: true
+  mask_sensitive_data: true
+  audit_logging: true
+  rate_limit_by_ip: true
+
+# Configurações de Performance
+performance:
+  parallel_processing: true
+  max_workers: 4
+  batch_size: 50
+  memory_limit_mb: 512 

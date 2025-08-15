@@ -1,0 +1,3 @@
+{"timestamp": 1746227835.2531643, "type": "POST", "endpoint": "/api/processar_keywords", "status_code": 400, "response_time_ms": 16.183599997020792, "response_length": 27, "exception": null, "url": "http://127.0.0.1:5000/api/processar_keywords"}
+{"timestamp": 1746227835.427378, "type": "POST", "endpoint": "/api/processar_keywords", "status_code": 400, "response_time_ms": 20.530899993900675, "response_length": 27, "exception": null, "url": "http://127.0.0.1:5000/api/processar_keywords"}
+{"timestamp": 1746227835.577014, "type": "POST", "endpoint": "/api/processar_keywords", "status_code": 200, "response_time_ms": 16.11879999836674, "response_length": 473, "exception": null, "url": "http://127.0.0.1:5000/api/processar_keywords"}

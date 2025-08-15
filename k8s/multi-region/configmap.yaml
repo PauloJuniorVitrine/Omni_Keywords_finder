@@ -1,0 +1,291 @@
+# 📋 Multi-Region ConfigMap Configuration
+# Tracing ID: MULTI_REGION_CONFIGMAP_004_20250127
+# Versão: 1.0
+# Data: 2025-01-27
+# Objetivo: ConfigMap multi-region com configurações da aplicação
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: omni-keywords-config
+  namespace: omni-keywords
+  labels:
+    app: omni-keywords-finder
+    version: v1.0.0
+    region: {{ .Values.region }}
+  annotations:
+    reliability.omni.com/version: "1.0"
+    reliability.omni.com/region: "{{ .Values.region }}"
+    reliability.omni.com/config-type: "multi-region"
+data:
+  # Configuração da aplicação
+  app.py: |
+    # Configuração da aplicação Flask
+    from flask import Flask
+    from flask_cors import CORS
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+    
+    app = Flask(__name__)
+    CORS(app)
+    
+    # Configuração de rate limiting
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
+    
+    # Configuração de logging
+    import logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    # Configuração de métricas
+    from prometheus_client import Counter, Histogram, generate_latest
+    request_count = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+    request_latency = Histogram('http_request_duration_seconds', 'HTTP request latency')
+    
+    @app.route('/metrics')
+    def metrics():
+        return generate_latest()
+    
+    if __name__ == '__main__':
+        app.run(host='0.0.0.0', port=8000, debug=False)
+
+  # Configuração de reliability
+  reliability_config.yaml: |
+    # Configuração de Reliability Patterns
+    reliability:
+      enabled: true
+      version: "1.0"
+      region: "{{ .Values.region }}"
+      
+      # Circuit Breaker Configuration
+      circuit_breaker:
+        enabled: true
+        failure_threshold: 5
+        recovery_timeout: 60
+        expected_exception: "ConnectionError"
+        
+      # Retry Configuration
+      retry:
+        enabled: true
+        max_attempts: 3
+        backoff_factor: 2
+        max_backoff: 60
+        
+      # Bulkhead Configuration
+      bulkhead:
+        enabled: true
+        max_concurrent_calls: 10
+        max_wait_duration: 30
+        
+      # Timeout Configuration
+      timeout:
+        enabled: true
+        default_timeout: 30
+        connection_timeout: 10
+        
+      # Health Check Configuration
+      health_check:
+        enabled: true
+        interval: 30
+        timeout: 5
+        failure_threshold: 3
+        
+      # Auto Recovery Configuration
+      auto_recovery:
+        enabled: true
+        max_attempts: 3
+        recovery_strategies:
+          - service_restart
+          - connection_recovery
+          - resource_cleanup
+
+  # Configuração de multi-region
+  multi_region_config.yaml: |
+    # Configuração Multi-Region
+    multi_region:
+      enabled: true
+      current_region: "{{ .Values.region }}"
+      regions:
+        - name: "us-east-1"
+          endpoint: "https://api-us-east-1.omni-keywords.com"
+          priority: 1
+        - name: "us-west-2"
+          endpoint: "https://api-us-west-2.omni-keywords.com"
+          priority: 2
+        - name: "eu-west-1"
+          endpoint: "https://api-eu-west-1.omni-keywords.com"
+          priority: 3
+      
+      # Failover Configuration
+      failover:
+        enabled: true
+        automatic: true
+        health_check_interval: 30
+        failure_threshold: 3
+        
+      # Load Balancing Configuration
+      load_balancing:
+        strategy: "round_robin"
+        health_check: true
+        sticky_sessions: true
+        session_timeout: 3600
+
+  # Configuração de database
+  database_config.yaml: |
+    # Configuração de Database Multi-Region
+    database:
+      type: "postgresql"
+      primary:
+        host: "{{ .Values.database.primary.host }}"
+        port: 5432
+        database: "omni_keywords"
+        username: "omni_user"
+        ssl_mode: "require"
+        
+      # Replica Configuration
+      replicas:
+        - host: "{{ .Values.database.replica1.host }}"
+          port: 5432
+          database: "omni_keywords"
+          username: "omni_user"
+          ssl_mode: "require"
+          priority: 1
+        - host: "{{ .Values.database.replica2.host }}"
+          port: 5432
+          database: "omni_keywords"
+          username: "omni_user"
+          ssl_mode: "require"
+          priority: 2
+          
+      # Connection Pool Configuration
+      pool:
+        min_size: 5
+        max_size: 20
+        max_queries: 50000
+        max_inactive_connection_lifetime: 300
+
+  # Configuração de cache
+  cache_config.yaml: |
+    # Configuração de Cache Multi-Region
+    cache:
+      type: "redis"
+      primary:
+        host: "{{ .Values.cache.primary.host }}"
+        port: 6379
+        database: 0
+        ssl: true
+        
+      # Replica Configuration
+      replicas:
+        - host: "{{ .Values.cache.replica1.host }}"
+          port: 6379
+          database: 0
+          ssl: true
+        - host: "{{ .Values.cache.replica2.host }}"
+          port: 6379
+          database: 0
+          ssl: true
+          
+      # Cache Configuration
+      settings:
+        default_timeout: 3600
+        key_prefix: "omni_keywords"
+        compression: true
+        serialization: "json"
+
+  # Configuração de monitoring
+  monitoring_config.yaml: |
+    # Configuração de Monitoring
+    monitoring:
+      enabled: true
+      metrics:
+        prometheus:
+          enabled: true
+          port: 8000
+          path: "/metrics"
+          
+      # Health Checks
+      health_checks:
+        - name: "database"
+          endpoint: "/health/database"
+          interval: 30
+          timeout: 5
+        - name: "cache"
+          endpoint: "/health/cache"
+          interval: 30
+          timeout: 5
+        - name: "external_apis"
+          endpoint: "/health/external"
+          interval: 60
+          timeout: 10
+          
+      # Alerting
+      alerting:
+        enabled: true
+        slack_webhook: "{{ .Values.alerting.slack_webhook }}"
+        email: "{{ .Values.alerting.email }}"
+
+  # Configuração de logging
+  logging_config.yaml: |
+    # Configuração de Logging
+    logging:
+      level: "INFO"
+      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+      
+      # File Logging
+      file:
+        enabled: true
+        path: "/app/logs"
+        max_size: "100MB"
+        backup_count: 5
+        
+      # Structured Logging
+      structured:
+        enabled: true
+        include_trace_id: true
+        include_region: true
+        include_service: true
+        
+      # External Logging
+      external:
+        enabled: true
+        type: "cloudwatch"
+        region: "{{ .Values.region }}"
+        log_group: "omni-keywords-finder"
+        log_stream: "{{ .Values.environment }}"
+
+  # Configuração de security
+  security_config.yaml: |
+    # Configuração de Security
+    security:
+      # CORS Configuration
+      cors:
+        allowed_origins: ["*"]
+        allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        allowed_headers: ["*"]
+        expose_headers: ["Content-Length", "Content-Range"]
+        
+      # Rate Limiting
+      rate_limiting:
+        enabled: true
+        default_limit: "100 per minute"
+        burst_limit: "200 per minute"
+        
+      # Authentication
+      authentication:
+        enabled: true
+        type: "jwt"
+        secret_key: "{{ .Values.auth.secret_key }}"
+        token_expiry: 3600
+        
+      # Authorization
+      authorization:
+        enabled: true
+        rbac_enabled: true
+        default_role: "user" 

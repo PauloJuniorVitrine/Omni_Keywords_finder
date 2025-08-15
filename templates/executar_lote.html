@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execução em Lote</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Execução em Lote</h1>
+        <div class="alert-info" role="alert">
+            <b>Aviso:</b> O processamento em lote pode ser intensivo. Cada prompt gerado resultará em <b>6 artigos completos</b> por cluster e pode consumir recursos significativos.
+        </div>
+        <form id="form-executar-lote" method="post" action="/executar_lote">
+            <label>Blogs:</label>
+            <div id="blogs-container">
+                {% for blog in blogs %}
+                <label class="categoria-checkbox">
+                    <input type="checkbox" name="blogs" value="{{ blog.dominio }}"> {{ blog.nome }} ({{ blog.dominio }})
+                </label>
+                {% endfor %}
+            </div>
+            <label>Categorias por blog:</label>
+            <input type="number" id="categorias_por_blog" name="categorias_por_blog" min="1" max="7" value="3" required>
+            <button type="submit">Executar todos</button>
+        </form>
+        <section id="lote-status" aria-live="polite">
+            <div id="barra-progresso-lote" style="display:none;">
+                <div id="progresso-preenchido-lote"></div>
+            </div>
+            <!-- Status detalhado por blog/categoria -->
+        </section>
+        <div id="feedback" aria-live="polite">
+            {% if feedback %}
+                <div class="feedback {{ feedback_status }}">{{ feedback }}</div>
+            {% endif %}
+        </div>
+    </main>
+    <script src="/static/js/executar_lote.js"></script>
+</body>
+</html> 

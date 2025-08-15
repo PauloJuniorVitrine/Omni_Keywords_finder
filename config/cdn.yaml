@@ -1,0 +1,349 @@
+# CDN Configuration - Omni Keywords Finder
+# Tracing ID: CDN_CONFIG_20250127_001
+# Data: 2025-01-27
+# Versão: 1.0.0
+
+# Configuração principal do CDN
+cdn:
+  # Configurações globais
+  global:
+    enabled: true
+    primary_provider: "cloudflare"
+    fallback_providers: ["aws_cloudfront", "azure_cdn"]
+    health_check_interval: 30  # segundos
+    failover_enabled: true
+    
+  # Configurações de cache
+  cache:
+    # Cache de assets estáticos
+    static_assets:
+      ttl: 86400  # 24 horas
+      max_age: 31536000  # 1 ano
+      stale_while_revalidate: 3600  # 1 hora
+      stale_if_error: 86400  # 24 horas
+      compression: true
+      brotli_enabled: true
+      gzip_enabled: true
+      
+    # Cache de imagens
+    images:
+      ttl: 604800  # 7 dias
+      max_age: 31536000  # 1 ano
+      formats: ["webp", "avif", "jpeg", "png"]
+      auto_optimization: true
+      responsive_images: true
+      
+    # Cache de JavaScript/CSS
+    scripts:
+      ttl: 3600  # 1 hora
+      max_age: 31536000  # 1 ano
+      minification: true
+      source_maps: false
+      versioning: true
+      
+    # Cache de APIs
+    api:
+      ttl: 300  # 5 minutos
+      max_age: 3600  # 1 hora
+      vary_by_headers: ["Authorization", "Accept-Language"]
+      cache_control: "public, max-age=300, s-maxage=3600"
+      
+  # Configurações de segurança
+  security:
+    # WAF (Web Application Firewall)
+    waf:
+      enabled: true
+      rules:
+        - name: "SQL Injection Protection"
+          action: "block"
+          pattern: "(?i)(union|select|insert|delete|update|drop|create|alter)"
+          
+        - name: "XSS Protection"
+          action: "block"
+          pattern: "(?i)(<script|javascript:|vbscript:|onload=|onerror=)"
+          
+        - name: "Path Traversal Protection"
+          action: "block"
+          pattern: "(\\.\\./|\\.\\.\\\\)"
+          
+        - name: "Rate Limiting"
+          action: "challenge"
+          rate_limit: 100  # requests por minuto
+          
+    # HTTPS/TLS
+    tls:
+      enabled: true
+      min_version: "TLSv1.2"
+      preferred_ciphers: ["ECDHE-RSA-AES256-GCM-SHA384", "ECDHE-RSA-AES128-GCM-SHA256"]
+      hsts_enabled: true
+      hsts_max_age: 31536000  # 1 ano
+      ocsp_stapling: true
+      
+    # Headers de segurança
+    security_headers:
+      X-Frame-Options: "SAMEORIGIN"
+      X-Content-Type-Options: "nosniff"
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Content-Security-Policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:;"
+      
+  # Configurações de performance
+  performance:
+    # Otimizações de imagem
+    image_optimization:
+      enabled: true
+      formats:
+        webp:
+          enabled: true
+          quality: 85
+        avif:
+          enabled: true
+          quality: 80
+        jpeg:
+          quality: 85
+          progressive: true
+        png:
+          optimization: true
+          
+    # Minificação
+    minification:
+      html: true
+      css: true
+      js: true
+      remove_comments: true
+      remove_whitespace: true
+      
+    # Lazy loading
+    lazy_loading:
+      enabled: true
+      images: true
+      iframes: true
+      threshold: 0.1  # 10% da viewport
+      
+    # Preload de recursos críticos
+    preload:
+      critical_css: true
+      critical_js: true
+      fonts: true
+      dns_prefetch: true
+      
+  # Configurações de monitoramento
+  monitoring:
+    # Métricas de performance
+    metrics:
+      enabled: true
+      collection_interval: 60  # segundos
+      metrics:
+        - "response_time"
+        - "cache_hit_rate"
+        - "bandwidth_usage"
+        - "error_rate"
+        - "availability"
+        
+    # Alertas
+    alerts:
+      enabled: true
+      channels:
+        - type: "email"
+          recipients: ["devops@omni-keywords.com"]
+        - type: "slack"
+          webhook: "https://hooks.slack.com/services/..."
+        - type: "webhook"
+          url: "https://api.omni-keywords.com/alerts/cdn"
+          
+      thresholds:
+        response_time_ms: 1000
+        error_rate_percent: 5
+        availability_percent: 99.9
+        cache_hit_rate_percent: 80
+        
+  # Configurações específicas por provedor
+  providers:
+    # Cloudflare (Provedor principal)
+    cloudflare:
+      enabled: true
+      zone_id: "${CLOUDFLARE_ZONE_ID}"
+      api_token: "${CLOUDFLARE_API_TOKEN}"
+      
+      # Configurações específicas
+      settings:
+        rocket_loader: true
+        minify:
+          css: true
+          html: true
+          js: true
+        brotli: true
+        http2: true
+        http3: true
+        websockets: true
+        
+      # Regras de cache
+      cache_rules:
+        - name: "Static Assets"
+          pattern: "*.css,*.js,*.png,*.jpg,*.gif,*.ico,*.svg"
+          ttl: 86400
+          
+        - name: "API Cache"
+          pattern: "/api/*"
+          ttl: 300
+          headers:
+            "Cache-Control": "public, max-age=300"
+            
+    # AWS CloudFront (Fallback)
+    aws_cloudfront:
+      enabled: true
+      distribution_id: "${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
+      access_key: "${AWS_ACCESS_KEY_ID}"
+      secret_key: "${AWS_SECRET_ACCESS_KEY}"
+      region: "us-east-1"
+      
+      # Configurações específicas
+      settings:
+        price_class: "PriceClass_100"  # Apenas EUA, Canadá e Europa
+        http_version: "http2"
+        ipv6_enabled: true
+        
+      # Behaviors
+      behaviors:
+        - path_pattern: "/*"
+          target_origin: "s3-origin"
+          viewer_protocol_policy: "redirect-to-https"
+          cache_policy: "Managed-CachingOptimized"
+          
+    # Azure CDN (Fallback secundário)
+    azure_cdn:
+      enabled: true
+      profile_name: "${AZURE_CDN_PROFILE}"
+      endpoint_name: "${AZURE_CDN_ENDPOINT}"
+      subscription_id: "${AZURE_SUBSCRIPTION_ID}"
+      
+      # Configurações específicas
+      settings:
+        optimization_type: "GeneralWebDelivery"
+        compression_enabled: true
+        http_version: "2.0"
+        
+  # Configurações de geo-distribuição
+  geo_distribution:
+    enabled: true
+    regions:
+      - name: "North America"
+        countries: ["US", "CA"]
+        primary_provider: "cloudflare"
+        
+      - name: "Europe"
+        countries: ["GB", "DE", "FR", "IT", "ES", "NL"]
+        primary_provider: "cloudflare"
+        
+      - name: "Asia Pacific"
+        countries: ["JP", "KR", "AU", "SG", "IN"]
+        primary_provider: "aws_cloudfront"
+        
+      - name: "South America"
+        countries: ["BR", "AR", "CL", "CO", "MX"]
+        primary_provider: "azure_cdn"
+        
+  # Configurações de backup e disaster recovery
+  disaster_recovery:
+    enabled: true
+    backup_providers: ["aws_cloudfront", "azure_cdn"]
+    failover_time: 30  # segundos
+    health_check_path: "/health"
+    health_check_interval: 10  # segundos
+    
+    # Configurações de backup
+    backup:
+      enabled: true
+      frequency: "daily"
+      retention_days: 30
+      compression: true
+      encryption: true
+      
+  # Configurações de logs e analytics
+  analytics:
+    enabled: true
+    providers:
+      - name: "cloudflare_analytics"
+        enabled: true
+        retention_days: 90
+        
+      - name: "aws_cloudwatch"
+        enabled: true
+        log_group: "/aws/cloudfront/omni-keywords"
+        retention_days: 30
+        
+    # Métricas customizadas
+    custom_metrics:
+      - name: "user_experience_score"
+        calculation: "weighted_average(response_time, availability, cache_hit_rate)"
+        
+      - name: "cost_per_request"
+        calculation: "bandwidth_cost / total_requests"
+        
+  # Configurações de desenvolvimento e staging
+  environments:
+    development:
+      enabled: false
+      cache_ttl: 0  # Sem cache
+      security_level: "low"
+      
+    staging:
+      enabled: true
+      cache_ttl: 300  # 5 minutos
+      security_level: "medium"
+      
+    production:
+      enabled: true
+      cache_ttl: 86400  # 24 horas
+      security_level: "high"
+      
+  # Configurações de manutenção
+  maintenance:
+    enabled: true
+    maintenance_mode:
+      enabled: false
+      message: "Site em manutenção. Volte em breve."
+      allowed_ips: ["127.0.0.1", "::1"]
+      
+    # Janelas de manutenção
+    windows:
+      - day: "sunday"
+        start_time: "02:00"
+        end_time: "04:00"
+        timezone: "UTC"
+        
+  # Configurações de compliance
+  compliance:
+    gdpr:
+      enabled: true
+      data_retention_days: 90
+      user_consent_required: true
+      
+    sox:
+      enabled: true
+      audit_logs_retention_days: 2555  # 7 anos
+      
+    pci_dss:
+      enabled: true
+      ssl_required: true
+      data_encryption: true
+      
+  # Configurações de custo
+  cost_optimization:
+    enabled: true
+    budget_alerts:
+      monthly_budget_usd: 100
+      alert_threshold_percent: 80
+      
+    optimization_strategies:
+      - name: "Cache Optimization"
+        enabled: true
+        target_cache_hit_rate: 90
+        
+      - name: "Bandwidth Optimization"
+        enabled: true
+        compression_enabled: true
+        
+      - name: "Geographic Optimization"
+        enabled: true
+        use_nearest_edge: true 

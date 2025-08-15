@@ -1,0 +1,28 @@
+# GraphQL Code Generator Configuration
+# Omni Keywords Finder
+
+overwrite: true
+schema: "http://localhost:5000/graphql/schema"
+documents: "app/**/*.graphql"
+generates:
+  app/types/graphql-generated.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      apolloReactHooksImportFrom: "@apollo/client"
+      scalars:
+        DateTime: "Date"
+        ID: "string"
+      skipTypename: false
+      useTypeImports: true
+      dedupeOperationSuffix: true
+      avoidOptionals:
+        field: true
+        inputValue: false
+        object: false
+        inputValue: false 

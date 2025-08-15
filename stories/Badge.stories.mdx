@@ -1,0 +1,25 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+
+<Meta title="Comum/Badge" component={Badge} />
+
+# Badge
+
+Componente de badge de status para feedback visual em cards, tabelas e logs.
+
+<Canvas>
+  <Story name="Ativo">
+    <Badge label="Ativo" color="#22c55e" />
+  </Story>
+  <Story name="Pendente">
+    <Badge label="Pendente" color="#eab308" />
+  </Story>
+  <Story name="Erro">
+    <Badge label="Erro" color="#ef4444" />
+  </Story>
+</Canvas>
+
+<ArgsTable story="Ativo" />
+
+## Referência Visual
+- Consulte `wireframes_dashboard.svg` e `wireframes_governanca.svg` para posição e cor
+- Consulte `interface_proposta_v1.md` para layer e animação 

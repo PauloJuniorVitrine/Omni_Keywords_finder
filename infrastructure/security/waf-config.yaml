@@ -1,0 +1,727 @@
+# 🛡️ WAF Configuration - Omni Keywords Finder
+# Enterprise-Grade Web Application Firewall Configuration
+# Baseado no código real do sistema Omni Keywords Finder
+
+# Tracing ID: WAF_CONFIG_20250127_001
+# Data: 2025-01-27
+# Versão: 1.0
+# Status: 🔴 CRÍTICO - Configuração de WAF
+
+apiVersion: security.omni-keywords.com/v1
+kind: WAFConfiguration
+metadata:
+  name: omni-keywords-waf
+  namespace: production
+  labels:
+    app: omni-keywords-finder
+    component: waf
+    security-level: critical
+    environment: production
+  annotations:
+    description: "WAF Enterprise-Grade para Omni Keywords Finder"
+    security-framework: "OWASP Top 10, NIST, ISO 27001"
+    compliance: "GDPR, LGPD, PCI-DSS"
+
+spec:
+  # Configuração geral do WAF
+  general:
+    enabled: true
+    mode: "block"  # block, log, challenge
+    log_level: "info"
+    max_request_size: "10MB"
+    request_timeout: "30s"
+    response_timeout: "30s"
+    
+    # Configurações de performance
+    performance:
+      max_concurrent_requests: 10000
+      max_requests_per_second: 1000
+      connection_timeout: "60s"
+      keep_alive_timeout: "65s"
+      
+    # Configurações de logging
+    logging:
+      enabled: true
+      format: "json"
+      level: "info"
+      destination: "file"
+      file_path: "/var/log/waf/access.log"
+      rotation:
+        max_size: "100MB"
+        max_files: 10
+        compress: true
+        
+    # Configurações de alertas
+    alerts:
+      enabled: true
+      channels:
+        - email: "security@omni-keywords.com"
+        - slack: "#security-alerts"
+        - webhook: "https://api.omni-keywords.com/security/alerts"
+      thresholds:
+        critical_attacks: 5
+        suspicious_requests: 100
+        blocked_requests: 50
+
+  # Regras de segurança baseadas no código real
+  security_rules:
+    # Proteção contra OWASP Top 10
+    owasp_top_10:
+      enabled: true
+      rules:
+        # A1:2021 - Broken Access Control
+        broken_access_control:
+          enabled: true
+          patterns:
+            - "admin"
+            - "root"
+            - "superuser"
+            - "privileged"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # A2:2021 - Cryptographic Failures
+        cryptographic_failures:
+          enabled: true
+          patterns:
+            - "password.*=.*['\"][^'\"]+['\"]"
+            - "secret.*=.*['\"][^'\"]+['\"]"
+            - "token.*=.*['\"][^'\"]+['\"]"
+            - "api_key.*=.*['\"][^'\"]+['\"]"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # A3:2021 - Injection
+        injection:
+          enabled: true
+          patterns:
+            # SQL Injection
+            - "'.*OR.*1=1"
+            - "'.*OR.*'1'='1"
+            - "'.*UNION.*SELECT"
+            - "'.*DROP.*TABLE"
+            - "'.*INSERT.*INTO"
+            - "'.*UPDATE.*SET"
+            - "'.*DELETE.*FROM"
+            
+            # NoSQL Injection
+            - "\\$where.*\\$ne"
+            - "\\$regex.*\\$options"
+            - "\\$gt.*\\$lt"
+            
+            # Command Injection
+            - ";.*ls"
+            - ";.*cat"
+            - ";.*rm"
+            - ";.*wget"
+            - ";.*curl"
+            - "\\|.*bash"
+            - "\\|.*sh"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # A4:2021 - Insecure Design
+        insecure_design:
+          enabled: true
+          patterns:
+            - "debug.*=.*true"
+            - "test.*=.*true"
+            - "development.*=.*true"
+          actions:
+            - "log"
+            - "alert"
+            
+        # A5:2021 - Security Misconfiguration
+        security_misconfiguration:
+          enabled: true
+          patterns:
+            - "server.*apache"
+            - "server.*nginx"
+            - "x-powered-by"
+            - "x-aspnet-version"
+          actions:
+            - "log"
+            - "alert"
+            
+        # A6:2021 - Vulnerable and Outdated Components
+        vulnerable_components:
+          enabled: true
+          patterns:
+            - "jquery.*1\\.\\d+\\.\\d+"
+            - "bootstrap.*3\\.\\d+\\.\\d+"
+            - "angular.*1\\.\\d+\\.\\d+"
+          actions:
+            - "log"
+            - "alert"
+            
+        # A7:2021 - Identification and Authentication Failures
+        auth_failures:
+          enabled: true
+          patterns:
+            - "admin.*admin"
+            - "root.*root"
+            - "user.*password"
+            - "test.*test"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # A8:2021 - Software and Data Integrity Failures
+        integrity_failures:
+          enabled: true
+          patterns:
+            - "integrity.*check.*failed"
+            - "checksum.*mismatch"
+            - "signature.*invalid"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # A9:2021 - Security Logging and Monitoring Failures
+        logging_failures:
+          enabled: true
+          patterns:
+            - "log.*disabled"
+            - "monitoring.*off"
+            - "audit.*disabled"
+          actions:
+            - "log"
+            - "alert"
+            
+        # A10:2021 - Server-Side Request Forgery
+        ssrf:
+          enabled: true
+          patterns:
+            - "http://localhost"
+            - "http://127.0.0.1"
+            - "http://0.0.0.0"
+            - "http://10\\."
+            - "http://172\\.1[6-9]\\."
+            - "http://172\\.2[0-9]\\."
+            - "http://172\\.3[0-1]\\."
+            - "http://192\\.168\\."
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+
+    # Regras específicas do Omni Keywords Finder
+    omni_keywords_specific:
+      enabled: true
+      rules:
+        # Proteção contra ataques específicos do domínio
+        keyword_injection:
+          enabled: true
+          description: "Proteção contra injeção de keywords maliciosas"
+          patterns:
+            - "keyword.*=.*<script"
+            - "keyword.*=.*javascript:"
+            - "keyword.*=.*data:text/html"
+            - "keyword.*=.*vbscript:"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # Proteção contra scraping malicioso
+        malicious_scraping:
+          enabled: true
+          description: "Detecção de scraping malicioso"
+          patterns:
+            - "bot.*=.*true"
+            - "scraper.*=.*true"
+            - "crawler.*=.*true"
+          rate_limit:
+            requests_per_minute: 60
+            burst_size: 10
+          actions:
+            - "challenge"
+            - "log"
+            - "alert"
+            
+        # Proteção contra ataques de API
+        api_attacks:
+          enabled: true
+          description: "Proteção contra ataques na API"
+          patterns:
+            - "/api/.*\\.\\./"
+            - "/api/.*%2e%2e/"
+            - "/api/.*%252e%252e/"
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # Proteção contra ataques de autenticação
+        auth_attacks:
+          enabled: true
+          description: "Proteção contra ataques de autenticação"
+          patterns:
+            - "login.*=.*admin"
+            - "username.*=.*admin"
+            - "email.*=.*admin@admin"
+          rate_limit:
+            requests_per_minute: 5
+            burst_size: 2
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+
+    # Regras de rate limiting
+    rate_limiting:
+      enabled: true
+      rules:
+        # Rate limiting geral
+        general:
+          requests_per_minute: 1000
+          burst_size: 100
+          actions:
+            - "throttle"
+            - "log"
+            
+        # Rate limiting para APIs
+        api:
+          requests_per_minute: 100
+          burst_size: 20
+          actions:
+            - "throttle"
+            - "log"
+            - "alert"
+            
+        # Rate limiting para login
+        login:
+          requests_per_minute: 5
+          burst_size: 2
+          actions:
+            - "block"
+            - "log"
+            - "alert"
+            
+        # Rate limiting para busca
+        search:
+          requests_per_minute: 60
+          burst_size: 10
+          actions:
+            - "throttle"
+            - "log"
+
+    # Regras de geolocalização
+    geolocation:
+      enabled: true
+      rules:
+        # Bloquear países específicos
+        blocked_countries:
+          - "XX"  # Código do país a ser bloqueado
+          - "YY"  # Código do país a ser bloqueado
+        actions:
+          - "block"
+          - "log"
+          
+        # Permitir apenas países específicos
+        allowed_countries:
+          - "BR"  # Brasil
+          - "US"  # Estados Unidos
+          - "CA"  # Canadá
+          - "GB"  # Reino Unido
+          - "DE"  # Alemanha
+          - "FR"  # França
+          - "AU"  # Austrália
+        actions:
+          - "allow"
+          - "log"
+
+    # Regras de User-Agent
+    user_agent:
+      enabled: true
+      rules:
+        # Bloquear bots maliciosos
+        malicious_bots:
+          patterns:
+            - ".*bot.*"
+            - ".*crawler.*"
+            - ".*spider.*"
+            - ".*scraper.*"
+          actions:
+            - "challenge"
+            - "log"
+            
+        # Bloquear User-Agents vazios
+        empty_user_agent:
+          patterns:
+            - "^$"
+            - "^-$"
+          actions:
+            - "block"
+            - "log"
+
+    # Regras de IP
+    ip_rules:
+      enabled: true
+      rules:
+        # Lista de IPs bloqueados
+        blocked_ips:
+          - "192.168.1.100"
+          - "10.0.0.50"
+        actions:
+          - "block"
+          - "log"
+          
+        # Lista de IPs permitidos (whitelist)
+        allowed_ips:
+          - "192.168.1.1"
+          - "10.0.0.1"
+        actions:
+          - "allow"
+          - "log"
+          
+        # Proteção contra IPs suspeitos
+        suspicious_ips:
+          reputation_threshold: 0.7
+          actions:
+            - "challenge"
+            - "log"
+            - "alert"
+
+  # Configurações de ML e IA
+  machine_learning:
+    enabled: true
+    models:
+      # Modelo de detecção de anomalias
+      anomaly_detection:
+        enabled: true
+        algorithm: "isolation_forest"
+        training_data_days: 30
+        confidence_threshold: 0.8
+        actions:
+          - "log"
+          - "alert"
+          
+      # Modelo de detecção de bots
+      bot_detection:
+        enabled: true
+        algorithm: "random_forest"
+        features:
+          - "request_pattern"
+          - "timing_pattern"
+          - "user_agent_pattern"
+          - "ip_reputation"
+        confidence_threshold: 0.7
+        actions:
+          - "challenge"
+          - "log"
+          - "alert"
+          
+      # Modelo de classificação de ameaças
+      threat_classification:
+        enabled: true
+        algorithm: "neural_network"
+        classes:
+          - "benign"
+          - "malicious"
+          - "suspicious"
+        confidence_threshold: 0.6
+        actions:
+          - "block"
+          - "log"
+          - "alert"
+
+  # Configurações de resposta automática
+  auto_response:
+    enabled: true
+    rules:
+      # Resposta para ataques críticos
+      critical_attacks:
+        conditions:
+          - "threat_level: critical"
+          - "attack_type: injection"
+        actions:
+          - "block"
+          - "log"
+          - "alert"
+          - "notify_security_team"
+          
+      # Resposta para ataques de DDoS
+      ddos_attacks:
+        conditions:
+          - "requests_per_second > 1000"
+          - "concurrent_connections > 5000"
+        actions:
+          - "enable_ddos_protection"
+          - "log"
+          - "alert"
+          - "notify_ops_team"
+          
+      # Resposta para ataques de força bruta
+      brute_force:
+        conditions:
+          - "failed_logins > 10"
+          - "time_window: 5_minutes"
+        actions:
+          - "block_ip"
+          - "log"
+          - "alert"
+          - "notify_security_team"
+
+  # Configurações de integração
+  integrations:
+    # Integração com sistema de logs
+    logging:
+      enabled: true
+      systems:
+        - name: "elasticsearch"
+          url: "https://logs.omni-keywords.com"
+          index: "waf-logs"
+          username: "${ELASTICSEARCH_USERNAME}"
+          password: "${ELASTICSEARCH_PASSWORD}"
+          
+        - name: "splunk"
+          url: "https://splunk.omni-keywords.com"
+          token: "${SPLUNK_TOKEN}"
+          
+    # Integração com SIEM
+    siem:
+      enabled: true
+      systems:
+        - name: "qradar"
+          url: "https://siem.omni-keywords.com"
+          token: "${QRADAR_TOKEN}"
+          
+        - name: "splunk_es"
+          url: "https://splunk-es.omni-keywords.com"
+          token: "${SPLUNK_ES_TOKEN}"
+          
+    # Integração com sistemas de notificação
+    notifications:
+      enabled: true
+      channels:
+        - name: "email"
+          smtp_server: "smtp.omni-keywords.com"
+          smtp_port: 587
+          username: "${SMTP_USERNAME}"
+          password: "${SMTP_PASSWORD}"
+          recipients:
+            - "security@omni-keywords.com"
+            - "ops@omni-keywords.com"
+            
+        - name: "slack"
+          webhook_url: "${SLACK_WEBHOOK_URL}"
+          channel: "#security-alerts"
+          
+        - name: "webhook"
+          url: "https://api.omni-keywords.com/security/alerts"
+          method: "POST"
+          headers:
+            Authorization: "Bearer ${WEBHOOK_TOKEN}"
+
+  # Configurações de monitoramento
+  monitoring:
+    enabled: true
+    metrics:
+      # Métricas de performance
+      performance:
+        - "requests_per_second"
+        - "response_time"
+        - "error_rate"
+        - "blocked_requests"
+        
+      # Métricas de segurança
+      security:
+        - "attacks_blocked"
+        - "threats_detected"
+        - "false_positives"
+        - "security_score"
+        
+      # Métricas de compliance
+      compliance:
+        - "owasp_compliance"
+        - "gdpr_compliance"
+        - "lgpd_compliance"
+        - "pci_compliance"
+        
+    dashboards:
+      - name: "WAF Security Dashboard"
+        url: "https://grafana.omni-keywords.com/d/waf-security"
+        
+      - name: "WAF Performance Dashboard"
+        url: "https://grafana.omni-keywords.com/d/waf-performance"
+        
+      - name: "WAF Compliance Dashboard"
+        url: "https://grafana.omni-keywords.com/d/waf-compliance"
+
+  # Configurações de backup e recuperação
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"  # Diário às 2h
+    retention:
+      days: 30
+      copies: 3
+    storage:
+      type: "s3"
+      bucket: "omni-keywords-waf-backups"
+      region: "us-east-1"
+      credentials:
+        access_key: "${S3_ACCESS_KEY}"
+        secret_key: "${S3_SECRET_KEY}"
+
+  # Configurações de auditoria
+  audit:
+    enabled: true
+    events:
+      - "configuration_change"
+      - "rule_update"
+      - "security_incident"
+      - "compliance_violation"
+    storage:
+      type: "database"
+      table: "waf_audit_logs"
+      retention_days: 365
+
+---
+# Configuração de deployment do WAF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omni-keywords-waf
+  namespace: production
+  labels:
+    app: omni-keywords-finder
+    component: waf
+    security-level: critical
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: omni-keywords-waf
+  template:
+    metadata:
+      labels:
+        app: omni-keywords-waf
+        component: waf
+        security-level: critical
+    spec:
+      containers:
+      - name: waf
+        image: omni-keywords/waf:latest
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        env:
+        - name: WAF_CONFIG_PATH
+          value: "/etc/waf/config.yaml"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: ENVIRONMENT
+          value: "production"
+        volumeMounts:
+        - name: waf-config
+          mountPath: "/etc/waf"
+        - name: waf-logs
+          mountPath: "/var/log/waf"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: waf-config
+        configMap:
+          name: omni-keywords-waf-config
+      - name: waf-logs
+        persistentVolumeClaim:
+          claimName: waf-logs-pvc
+
+---
+# Service para o WAF
+apiVersion: v1
+kind: Service
+metadata:
+  name: omni-keywords-waf-service
+  namespace: production
+  labels:
+    app: omni-keywords-finder
+    component: waf
+
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: omni-keywords-waf
+
+---
+# Ingress para o WAF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: omni-keywords-waf-ingress
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+
+spec:
+  tls:
+  - hosts:
+    - "api.omni-keywords.com"
+    - "app.omni-keywords.com"
+    secretName: omni-keywords-tls
+  rules:
+  - host: api.omni-keywords.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: omni-keywords-waf-service
+            port:
+              number: 80
+  - host: app.omni-keywords.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: omni-keywords-waf-service
+            port:
+              number: 80 

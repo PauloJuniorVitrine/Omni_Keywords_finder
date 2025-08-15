@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Monitoramento</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Painel de Execuções</h1>
+        <section class="painel-indicadores">
+            <div><b>Execuções totais:</b> <span id="indicador-total">0</span></div>
+            <div><b>Tempo médio (s):</b> <span id="indicador-tempo">0</span></div>
+            <div><b>Falhas:</b> <span id="indicador-falhas">0</span></div>
+            <div><b>Clusters repetidos:</b> <span id="indicador-repetidos">0</span></div>
+            <div><b>Prompts gerados:</b> <span id="indicador-prompts">0</span></div>
+        </section>
+        <section>
+            <label for="filtro-blog">Filtrar por blog:</label>
+            <select id="filtro-blog"><option value="">Todos</option></select>
+            <label for="filtro-status">Status:</label>
+            <select id="filtro-status">
+                <option value="">Todos</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Em execução">Em execução</option>
+                <option value="Aguardando">Aguardando</option>
+                <option value="Erro">Erro</option>
+            </select>
+        </section>
+        <section>
+            <table id="tabela-execucoes" class="painel-tabela">
+                <thead>
+                    <tr>
+                        <th>Blog</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Tempo (s)</th>
+                        <th>Falha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas preenchidas dinamicamente -->
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Logs Detalhados</h2>
+            <div id="painel-logs" class="logs-lote"></div>
+        </section>
+    </main>
+    <script src="/static/js/painel.js"></script>
+</body>
+</html> 

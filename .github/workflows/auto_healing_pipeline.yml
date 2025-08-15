@@ -1,0 +1,806 @@
+# 🚀 OMNİ KEYWORDS FINDER - AUTO-HEALING PIPELINE ENTERPRISE
+# 📅 Criado: 2025-01-27
+# 🔧 Tracing ID: AUTO_HEALING_PIPELINE_001_20250127
+# ⚡ Status: ✅ ENTERPRISE-READY
+# 🎯 Objetivo: Pipeline completo com auto-healing inteligente e auditoria enterprise
+
+name: 🚀 Auto-Healing Enterprise Pipeline
+
+# =============================================================================
+# 🔧 CONFIGURAÇÕES GLOBAIS
+# =============================================================================
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/workflows/auto_healing_pipeline.yml'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Estágio específico para executar'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit_tests
+          - integration_tests
+          - e2e_tests
+          - load_test
+          - quality_security
+          - packaging
+
+# =============================================================================
+# 🔧 VARIÁVEIS DE AMBIENTE
+# =============================================================================
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+  COVERAGE_THRESHOLD: 80
+  MAX_HEALING_ATTEMPTS: 8
+  OPENAI_MODEL: 'code-davinci-002'
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+# =============================================================================
+# 🔧 JOBS PRINCIPAIS
+# =============================================================================
+
+jobs:
+  # ========================================
+  # 🏗️ BUILD - PREPARAÇÃO DO AMBIENTE
+  # ========================================
+  build:
+    name: 🏗️ Build Environment
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    outputs:
+      build-status: ${{ job.status }}
+      cache-key: ${{ steps.cache-key.outputs.value }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔑 Setup SSH for Auto-PRs
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: 🔧 Install System Dependencies
+        run: |
+          # Instalar dependências do sistema
+          if [ -f "system-deps.txt" ]; then
+            sudo xargs apt-get install -y < system-deps.txt
+          else
+            sudo apt-get update
+            sudo apt-get install -y \
+              build-essential \
+              libpq-dev \
+              libssl-dev \
+              libffi-dev \
+              python3-dev \
+              php-cli \
+              php-mysql \
+              nodejs \
+              npm \
+              zip \
+              unzip \
+              curl \
+              wget \
+              git
+          fi
+      
+      - name: 🐍 Create Virtual Environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+      
+      - name: 📦 Install Python Dependencies
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
+          pip install pytest requests smtplib pyinstaller coverage safety bandit openai
+          pip install pytest-cov pytest-html pytest-xdist
+          pip install k6-python
+      
+      - name: 📦 Install Node.js Dependencies
+        if: hashFiles('package.json') != ''
+        run: |
+          npm ci
+          npm install -g k6
+      
+      - name: 🗄️ Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql version: '15'
+          postgresql db: 'omni_keywords_test'
+          postgresql user: 'test_user'
+          postgresql password: 'test_password'
+      
+      - name: 🔴 Setup Redis
+        uses: supercharge/redis-github-action@v1.4.6
+        with:
+          redis-version: '7-alpine'
+      
+      - name: 🔑 Generate Cache Key
+        id: cache-key
+        run: |
+          echo "value=$(date +%s)" >> $GITHUB_OUTPUT
+      
+      - name: 💾 Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ steps.cache-key.outputs.value }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+  # ========================================
+  # 🧪 UNIT TESTS + HEALING
+  # ========================================
+  unit_tests:
+    name: 🧪 Unit Tests + Auto-Healing
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: build
+    if: needs.build.result == 'success'
+    outputs:
+      unit-status: ${{ job.status }}
+      healing-attempts: ${{ steps.healing.outputs.attempts }}
+      patches-created: ${{ steps.healing.outputs.patches }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔑 Setup SSH for Auto-PRs
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 💾 Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ needs.build.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      
+      - name: 🗄️ Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql version: '15'
+          postgresql db: 'omni_keywords_test'
+          postgresql user: 'test_user'
+          postgresql password: 'test_password'
+      
+      - name: 🔴 Setup Redis
+        uses: supercharge/redis-github-action@v1.4.6
+        with:
+          redis-version: '7-alpine'
+      
+      - name: 🧪 Run Unit Tests with Auto-Healing
+        id: healing
+        run: |
+          source venv/bin/activate
+          python scripts/run_and_heal.py \
+            --tests "tests/unit" \
+            --stage "unit_tests" \
+            --max-attempts ${{ env.MAX_HEALING_ATTEMPTS }} \
+            --openai-key ${{ env.OPENAI_API_KEY }} \
+            --openai-model ${{ env.OPENAI_MODEL }}
+      
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: unit-test-results
+          path: |
+            logs/unit_tests_healing_report.json
+            patches/unit_tests/
+            test-results/unit.xml
+            coverage/unit-coverage.xml
+      
+      - name: 📋 Generate Unit Test Summary
+        if: always()
+        run: |
+          echo "## Unit Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ steps.healing.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Healing Attempts: ${{ steps.healing.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Patches Created: ${{ steps.healing.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 🔗 INTEGRATION TESTS + HEALING
+  # ========================================
+  integration_tests:
+    name: 🔗 Integration Tests + Auto-Healing
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: unit_tests
+    if: needs.unit_tests.result == 'success'
+    outputs:
+      integration-status: ${{ job.status }}
+      healing-attempts: ${{ steps.healing.outputs.attempts }}
+      patches-created: ${{ steps.healing.outputs.patches }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔑 Setup SSH for Auto-PRs
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 💾 Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ needs.build.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      
+      - name: 🗄️ Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql version: '15'
+          postgresql db: 'omni_keywords_test'
+          postgresql user: 'test_user'
+          postgresql password: 'test_password'
+      
+      - name: 🔴 Setup Redis
+        uses: supercharge/redis-github-action@v1.4.6
+        with:
+          redis-version: '7-alpine'
+      
+      - name: 🧪 Run Integration Tests with Auto-Healing
+        id: healing
+        run: |
+          source venv/bin/activate
+          python scripts/run_and_heal.py \
+            --tests "tests/integration" \
+            --stage "integration_tests" \
+            --max-attempts ${{ env.MAX_HEALING_ATTEMPTS }} \
+            --openai-key ${{ env.OPENAI_API_KEY }} \
+            --openai-model ${{ env.OPENAI_MODEL }}
+      
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            logs/integration_tests_healing_report.json
+            patches/integration_tests/
+            test-results/integration.xml
+            coverage/integration-coverage.xml
+      
+      - name: 📋 Generate Integration Test Summary
+        if: always()
+        run: |
+          echo "## Integration Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ steps.healing.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Healing Attempts: ${{ steps.healing.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Patches Created: ${{ steps.healing.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 🌐 E2E TESTS + HEALING
+  # ========================================
+  e2e_tests:
+    name: 🌐 E2E Tests + Auto-Healing
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: integration_tests
+    if: needs.integration_tests.result == 'success'
+    outputs:
+      e2e-status: ${{ job.status }}
+      healing-attempts: ${{ steps.healing.outputs.attempts }}
+      patches-created: ${{ steps.healing.outputs.patches }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🔑 Setup SSH for Auto-PRs
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 💾 Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ needs.build.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      
+      - name: 🗄️ Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql version: '15'
+          postgresql db: 'omni_keywords_test'
+          postgresql user: 'test_user'
+          postgresql password: 'test_password'
+      
+      - name: 🔴 Setup Redis
+        uses: supercharge/redis-github-action@v1.4.6
+        with:
+          redis-version: '7-alpine'
+      
+      - name: 🧪 Run E2E Tests with Auto-Healing
+        id: healing
+        run: |
+          source venv/bin/activate
+          python scripts/run_and_heal.py \
+            --tests "tests/e2e" \
+            --stage "e2e_tests" \
+            --max-attempts ${{ env.MAX_HEALING_ATTEMPTS }} \
+            --openai-key ${{ env.OPENAI_API_KEY }} \
+            --openai-model ${{ env.OPENAI_MODEL }}
+      
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            logs/e2e_tests_healing_report.json
+            patches/e2e_tests/
+            test-results/e2e.xml
+            coverage/e2e-coverage.xml
+      
+      - name: 📋 Generate E2E Test Summary
+        if: always()
+        run: |
+          echo "## E2E Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ steps.healing.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Healing Attempts: ${{ steps.healing.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Patches Created: ${{ steps.healing.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 📈 LOAD TESTS
+  # ========================================
+  load_test:
+    name: 📈 Load Tests
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: e2e_tests
+    if: needs.e2e_tests.result == 'success'
+    outputs:
+      load-status: ${{ job.status }}
+      performance-metrics: ${{ steps.k6.outputs.metrics }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: 📦 Install k6
+        uses: grafana/k6-action@v0.3.0
+        with:
+          filename: tests/load/performance.js
+          flags: --out json=k6-results.json
+      
+      - name: 📊 Run k6 Load Tests
+        id: k6
+        run: |
+          k6 run --out json=k6-results.json tests/load/performance.js
+          
+          # Extrair métricas principais
+          echo "metrics=$(cat k6-results.json | jq -r '.metrics.http_req_duration.avg')" >> $GITHUB_OUTPUT
+      
+      - name: 📊 Upload Load Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results
+          path: k6-results.json
+      
+      - name: 📋 Generate Load Test Summary
+        run: |
+          echo "## Load Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Average Response Time: ${{ steps.k6.outputs.metrics }}ms" >> $GITHUB_STEP_SUMMARY
+          echo "- Results saved to: k6-results.json" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 🔒 QUALITY & SECURITY
+  # ========================================
+  quality_security:
+    name: 🔒 Quality & Security Gates
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: load_test
+    if: needs.load_test.result == 'success'
+    outputs:
+      quality-status: ${{ job.status }}
+      coverage-percentage: ${{ steps.coverage.outputs.percentage }}
+      security-score: ${{ steps.security.outputs.score }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 💾 Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ needs.build.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      
+      - name: 🧪 Run Coverage Analysis
+        id: coverage
+        run: |
+          source venv/bin/activate
+          pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing
+          
+          # Extrair porcentagem de cobertura
+          COVERAGE_PCT=$(coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
+          echo "percentage=$COVERAGE_PCT" >> $GITHUB_OUTPUT
+          
+          # Verificar se atinge threshold
+          if (( $(echo "$COVERAGE_PCT < ${{ env.COVERAGE_THRESHOLD }}" | bc -l) )); then
+            echo "❌ Coverage below threshold: $COVERAGE_PCT% < ${{ env.COVERAGE_THRESHOLD }}%"
+            exit 1
+          fi
+      
+      - name: 🔒 Run Security Analysis
+        id: security
+        run: |
+          source venv/bin/activate
+          
+          # Bandit - Análise estática de segurança
+          bandit -r . -f json -o bandit-results.json || true
+          
+          # Safety - Verificar dependências vulneráveis
+          safety check --json --output safety-results.json || true
+          
+          # Gitleaks - Verificar secrets expostos
+          gitleaks detect --source . --report-format json --report-path gitleaks-results.json || true
+          
+          # Calcular score de segurança
+          SECURITY_SCORE=100
+          if [ -f "bandit-results.json" ]; then
+            BANDIT_ISSUES=$(jq '.results | length' bandit-results.json)
+            SECURITY_SCORE=$((SECURITY_SCORE - BANDIT_ISSUES * 5))
+          fi
+          
+          if [ -f "safety-results.json" ]; then
+            SAFETY_ISSUES=$(jq '.vulnerabilities | length' safety-results.json)
+            SECURITY_SCORE=$((SECURITY_SCORE - SAFETY_ISSUES * 10))
+          fi
+          
+          if [ -f "gitleaks-results.json" ]; then
+            GITLEAKS_ISSUES=$(jq '.findings | length' gitleaks-results.json)
+            SECURITY_SCORE=$((SECURITY_SCORE - GITLEAKS_ISSUES * 20))
+          fi
+          
+          echo "score=$SECURITY_SCORE" >> $GITHUB_OUTPUT
+          
+          # Falhar se score muito baixo
+          if [ $SECURITY_SCORE -lt 70 ]; then
+            echo "❌ Security score too low: $SECURITY_SCORE"
+            exit 1
+          fi
+      
+      - name: 📊 Upload Quality Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: quality-security-results
+          path: |
+            coverage.xml
+            htmlcov/
+            bandit-results.json
+            safety-results.json
+            gitleaks-results.json
+      
+      - name: 📋 Generate Quality Summary
+        run: |
+          echo "## Quality & Security Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage: ${{ steps.coverage.outputs.percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Score: ${{ steps.security.outputs.score }}/100" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 📦 PACKAGING & RELEASE
+  # ========================================
+  packaging:
+    name: 📦 Packaging & Release
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: quality_security
+    if: needs.quality_security.result == 'success'
+    outputs:
+      release-url: ${{ steps.release.outputs.url }}
+      artifacts-created: ${{ steps.package.outputs.artifacts }}
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: 💾 Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            venv/
+            node_modules/
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ needs.build.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      
+      - name: 📦 Generate Python Executable
+        id: package
+        run: |
+          source venv/bin/activate
+          
+          # Criar executável Python
+          pyinstaller --onefile --name OmniKeywordsFinder backend/app/main.py
+          
+          # Empacotar plugin WordPress (se existir)
+          if [ -d "wp-plugin" ]; then
+            zip -r wordpress-plugin.zip wp-plugin/
+          fi
+          
+          # Gerar changelog
+          python scripts/generate_changelog.py
+          
+          echo "artifacts=dist/OmniKeywordsFinder,wordpress-plugin.zip,CHANGELOG.md" >> $GITHUB_OUTPUT
+      
+      - name: 🏷️ Create GitHub Release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/OmniKeywordsFinder
+            wordpress-plugin.zip
+            CHANGELOG.md
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            ## Auto-Healing Pipeline Release v${{ github.run_number }}
+            
+            ### 🧪 Test Results
+            - Unit Tests: ${{ needs.unit_tests.outputs.unit-status }}
+            - Integration Tests: ${{ needs.integration_tests.outputs.integration-status }}
+            - E2E Tests: ${{ needs.e2e_tests.outputs.e2e-status }}
+            - Load Tests: ${{ needs.load_test.outputs.load-status }}
+            
+            ### 🔒 Quality Gates
+            - Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%
+            - Security Score: ${{ needs.quality_security.outputs.security-score }}/100
+            
+            ### 🚀 Auto-Healing Summary
+            - Total Healing Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}
+            - Patches Created: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}
+            
+            ### 📦 Artifacts
+            - Python Executable: OmniKeywordsFinder
+            - WordPress Plugin: wordpress-plugin.zip
+            - Changelog: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 📊 Upload Release Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: |
+            dist/
+            wordpress-plugin.zip
+            CHANGELOG.md
+      
+      - name: 📋 Generate Release Summary
+        run: |
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Release URL: ${{ steps.release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Artifacts: ${{ steps.package.outputs.artifacts }}" >> $GITHUB_STEP_SUMMARY
+
+  # ========================================
+  # 📢 NOTIFICATION
+  # ========================================
+  notify:
+    name: 📢 Notify Team
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    needs: [packaging, unit_tests, integration_tests, e2e_tests, load_test, quality_security]
+    if: always()
+    
+    steps:
+      - name: 📢 Send Slack Notification
+        if: env.SLACK_WEBHOOK != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#devops-alerts'
+          text: |
+            🚀 **Auto-Healing Pipeline Complete**
+            
+            **Status**: ${{ job.status }}
+            **Branch**: ${{ github.ref_name }}
+            **Commit**: ${{ github.sha }}
+            
+            **🧪 Test Results**:
+            - Unit: ${{ needs.unit_tests.outputs.unit-status }}
+            - Integration: ${{ needs.integration_tests.outputs.integration-status }}
+            - E2E: ${{ needs.e2e_tests.outputs.e2e-status }}
+            - Load: ${{ needs.load_test.outputs.load-status }}
+            
+            **🔒 Quality Gates**:
+            - Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%
+            - Security: ${{ needs.quality_security.outputs.security-score }}/100
+            
+            **🚀 Auto-Healing**:
+            - Total Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}
+            - Patches: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}
+            
+            **📦 Release**: ${{ needs.packaging.outputs.release-url }}
+            
+            **🔗 Links**:
+            - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - Release: ${{ needs.packaging.outputs.release-url }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
+      
+      - name: 📢 Send Discord Notification
+        if: env.DISCORD_WEBHOOK != ''
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "🚀 Auto-Healing Pipeline Complete",
+                   "color": '${{ job.status == "success" && 3066993 || 15158332 }}',
+                   "fields": [
+                     {
+                       "name": "Status",
+                       "value": "${{ job.status }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "${{ github.ref_name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Tests",
+                       "value": "Unit: ${{ needs.unit_tests.outputs.unit-status }}\nIntegration: ${{ needs.integration_tests.outputs.integration-status }}\nE2E: ${{ needs.e2e_tests.outputs.e2e-status }}",
+                       "inline": false
+                     },
+                     {
+                       "name": "Quality",
+                       "value": "Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%\nSecurity: ${{ needs.quality_security.outputs.security-score }}/100",
+                       "inline": false
+                     },
+                     {
+                       "name": "Auto-Healing",
+                       "value": "Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}\nPatches: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}",
+                       "inline": false
+                     }
+                   ],
+                   "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                 }]
+               }' \
+               ${{ env.DISCORD_WEBHOOK }}
+      
+      - name: 📋 Generate Final Summary
+        run: |
+          echo "## 🚀 Auto-Healing Pipeline Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Final Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Overall Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Unit Tests: ${{ needs.unit_tests.outputs.unit-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Integration Tests: ${{ needs.integration_tests.outputs.integration-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E Tests: ${{ needs.e2e_tests.outputs.e2e-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Load Tests: ${{ needs.load_test.outputs.load-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔒 Quality Gates" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Score: ${{ needs.quality_security.outputs.security-score }}/100" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Auto-Healing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Healing Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Patches Created: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Release" >> $GITHUB_STEP_SUMMARY
+          echo "- Release URL: ${{ needs.packaging.outputs.release-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [Release](${{ needs.packaging.outputs.release-url }})" >> $GITHUB_STEP_SUMMARY

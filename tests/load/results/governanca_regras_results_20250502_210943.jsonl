@@ -1,0 +1,1 @@
+{"timestamp": 1746230983.26765, "type": "POST", "endpoint": "/api/governanca/regras/editar", "status_code": 200, "response_time_ms": 3.576499999326188, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/editar"}

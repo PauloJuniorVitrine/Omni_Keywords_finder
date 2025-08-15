@@ -1,0 +1,700 @@
+# Multi-Region Configuration - Omni Keywords Finder
+# Tracing ID: MULTI_REGION_20250127_001
+# Data: 2025-01-27
+# Versão: 1.0.0
+
+# Configuração principal de multi-region
+multi_region:
+  # Configurações globais
+  global:
+    enabled: true
+    primary_region: "us-east-1"
+    failover_enabled: true
+    health_check_interval: 30  # segundos
+    failover_timeout: 60  # segundos
+    global_load_balancer: "aws_route53"
+    
+  # Definição das regiões
+  regions:
+    # América do Norte - Região Primária
+    us-east-1:
+      name: "US East (N. Virginia)"
+      country: "US"
+      priority: 1
+      enabled: true
+      primary: true
+      
+      # Configurações de infraestrutura
+      infrastructure:
+        provider: "aws"
+        vpc_id: "${AWS_VPC_US_EAST_1}"
+        subnet_ids: ["${AWS_SUBNET_US_EAST_1_A}", "${AWS_SUBNET_US_EAST_1_B}"]
+        availability_zones: ["us-east-1a", "us-east-1b", "us-east-1c"]
+        
+      # Configurações de aplicação
+      application:
+        auto_scaling:
+          min_instances: 2
+          max_instances: 10
+          target_cpu_utilization: 70
+          scale_up_cooldown: 300
+          scale_down_cooldown: 300
+        
+        load_balancer:
+          type: "application"
+          health_check_path: "/health"
+          health_check_interval: 30
+          health_check_timeout: 5
+          healthy_threshold: 2
+          unhealthy_threshold: 3
+          
+        database:
+          type: "rds"
+          engine: "postgresql"
+          instance_class: "db.r5.large"
+          multi_az: true
+          backup_retention: 7
+          maintenance_window: "sun:03:00-sun:04:00"
+          
+        cache:
+          type: "elasticache"
+          engine: "redis"
+          node_type: "cache.r5.large"
+          num_cache_nodes: 2
+          automatic_failover: true
+          
+      # Configurações de monitoramento
+      monitoring:
+        cloudwatch:
+          enabled: true
+          metrics:
+            - "CPUUtilization"
+            - "MemoryUtilization"
+            - "NetworkIn"
+            - "NetworkOut"
+            - "RequestCount"
+            - "TargetResponseTime"
+            
+        alarms:
+          - name: "HighCPU"
+            metric: "CPUUtilization"
+            threshold: 80
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighMemory"
+            metric: "MemoryUtilization"
+            threshold: 85
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighLatency"
+            metric: "TargetResponseTime"
+            threshold: 1000
+            period: 300
+            evaluation_periods: 2
+    
+    # América do Norte - Região Secundária
+    us-west-2:
+      name: "US West (Oregon)"
+      country: "US"
+      priority: 2
+      enabled: true
+      primary: false
+      
+      infrastructure:
+        provider: "aws"
+        vpc_id: "${AWS_VPC_US_WEST_2}"
+        subnet_ids: ["${AWS_SUBNET_US_WEST_2_A}", "${AWS_SUBNET_US_WEST_2_B}"]
+        availability_zones: ["us-west-2a", "us-west-2b", "us-west-2c"]
+        
+      application:
+        auto_scaling:
+          min_instances: 1
+          max_instances: 5
+          target_cpu_utilization: 70
+          scale_up_cooldown: 300
+          scale_down_cooldown: 300
+        
+        load_balancer:
+          type: "application"
+          health_check_path: "/health"
+          health_check_interval: 30
+          health_check_timeout: 5
+          healthy_threshold: 2
+          unhealthy_threshold: 3
+          
+        database:
+          type: "rds"
+          engine: "postgresql"
+          instance_class: "db.r5.large"
+          multi_az: true
+          backup_retention: 7
+          maintenance_window: "sun:03:00-sun:04:00"
+          
+        cache:
+          type: "elasticache"
+          engine: "redis"
+          node_type: "cache.r5.large"
+          num_cache_nodes: 1
+          automatic_failover: true
+          
+      monitoring:
+        cloudwatch:
+          enabled: true
+          metrics:
+            - "CPUUtilization"
+            - "MemoryUtilization"
+            - "NetworkIn"
+            - "NetworkOut"
+            - "RequestCount"
+            - "TargetResponseTime"
+            
+        alarms:
+          - name: "HighCPU"
+            metric: "CPUUtilization"
+            threshold: 80
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighMemory"
+            metric: "MemoryUtilization"
+            threshold: 85
+            period: 300
+            evaluation_periods: 2
+    
+    # Europa - Região Principal
+    eu-west-1:
+      name: "Europe (Ireland)"
+      country: "IE"
+      priority: 3
+      enabled: true
+      primary: false
+      
+      infrastructure:
+        provider: "aws"
+        vpc_id: "${AWS_VPC_EU_WEST_1}"
+        subnet_ids: ["${AWS_SUBNET_EU_WEST_1_A}", "${AWS_SUBNET_EU_WEST_1_B}"]
+        availability_zones: ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+        
+      application:
+        auto_scaling:
+          min_instances: 2
+          max_instances: 8
+          target_cpu_utilization: 70
+          scale_up_cooldown: 300
+          scale_down_cooldown: 300
+        
+        load_balancer:
+          type: "application"
+          health_check_path: "/health"
+          health_check_interval: 30
+          health_check_timeout: 5
+          healthy_threshold: 2
+          unhealthy_threshold: 3
+          
+        database:
+          type: "rds"
+          engine: "postgresql"
+          instance_class: "db.r5.large"
+          multi_az: true
+          backup_retention: 7
+          maintenance_window: "sun:03:00-sun:04:00"
+          
+        cache:
+          type: "elasticache"
+          engine: "redis"
+          node_type: "cache.r5.large"
+          num_cache_nodes: 2
+          automatic_failover: true
+          
+      monitoring:
+        cloudwatch:
+          enabled: true
+          metrics:
+            - "CPUUtilization"
+            - "MemoryUtilization"
+            - "NetworkIn"
+            - "NetworkOut"
+            - "RequestCount"
+            - "TargetResponseTime"
+            
+        alarms:
+          - name: "HighCPU"
+            metric: "CPUUtilization"
+            threshold: 80
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighMemory"
+            metric: "MemoryUtilization"
+            threshold: 85
+            period: 300
+            evaluation_periods: 2
+    
+    # América do Sul - Região Principal
+    sa-east-1:
+      name: "South America (São Paulo)"
+      country: "BR"
+      priority: 4
+      enabled: true
+      primary: false
+      
+      infrastructure:
+        provider: "aws"
+        vpc_id: "${AWS_VPC_SA_EAST_1}"
+        subnet_ids: ["${AWS_SUBNET_SA_EAST_1_A}", "${AWS_SUBNET_SA_EAST_1_B}"]
+        availability_zones: ["sa-east-1a", "sa-east-1b", "sa-east-1c"]
+        
+      application:
+        auto_scaling:
+          min_instances: 1
+          max_instances: 6
+          target_cpu_utilization: 70
+          scale_up_cooldown: 300
+          scale_down_cooldown: 300
+        
+        load_balancer:
+          type: "application"
+          health_check_path: "/health"
+          health_check_interval: 30
+          health_check_timeout: 5
+          healthy_threshold: 2
+          unhealthy_threshold: 3
+          
+        database:
+          type: "rds"
+          engine: "postgresql"
+          instance_class: "db.r5.large"
+          multi_az: true
+          backup_retention: 7
+          maintenance_window: "sun:03:00-sun:04:00"
+          
+        cache:
+          type: "elasticache"
+          engine: "redis"
+          node_type: "cache.r5.large"
+          num_cache_nodes: 1
+          automatic_failover: true
+          
+      monitoring:
+        cloudwatch:
+          enabled: true
+          metrics:
+            - "CPUUtilization"
+            - "MemoryUtilization"
+            - "NetworkIn"
+            - "NetworkOut"
+            - "RequestCount"
+            - "TargetResponseTime"
+            
+        alarms:
+          - name: "HighCPU"
+            metric: "CPUUtilization"
+            threshold: 80
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighMemory"
+            metric: "MemoryUtilization"
+            threshold: 85
+            period: 300
+            evaluation_periods: 2
+    
+    # Ásia-Pacífico - Região Principal
+    ap-southeast-1:
+      name: "Asia Pacific (Singapore)"
+      country: "SG"
+      priority: 5
+      enabled: true
+      primary: false
+      
+      infrastructure:
+        provider: "aws"
+        vpc_id: "${AWS_VPC_AP_SOUTHEAST_1}"
+        subnet_ids: ["${AWS_SUBNET_AP_SOUTHEAST_1_A}", "${AWS_SUBNET_AP_SOUTHEAST_1_B}"]
+        availability_zones: ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]
+        
+      application:
+        auto_scaling:
+          min_instances: 1
+          max_instances: 5
+          target_cpu_utilization: 70
+          scale_up_cooldown: 300
+          scale_down_cooldown: 300
+        
+        load_balancer:
+          type: "application"
+          health_check_path: "/health"
+          health_check_interval: 30
+          health_check_timeout: 5
+          healthy_threshold: 2
+          unhealthy_threshold: 3
+          
+        database:
+          type: "rds"
+          engine: "postgresql"
+          instance_class: "db.r5.large"
+          multi_az: true
+          backup_retention: 7
+          maintenance_window: "sun:03:00-sun:04:00"
+          
+        cache:
+          type: "elasticache"
+          engine: "redis"
+          node_type: "cache.r5.large"
+          num_cache_nodes: 1
+          automatic_failover: true
+          
+      monitoring:
+        cloudwatch:
+          enabled: true
+          metrics:
+            - "CPUUtilization"
+            - "MemoryUtilization"
+            - "NetworkIn"
+            - "NetworkOut"
+            - "RequestCount"
+            - "TargetResponseTime"
+            
+        alarms:
+          - name: "HighCPU"
+            metric: "CPUUtilization"
+            threshold: 80
+            period: 300
+            evaluation_periods: 2
+            
+          - name: "HighMemory"
+            metric: "MemoryUtilization"
+            threshold: 85
+            period: 300
+            evaluation_periods: 2
+  
+  # Configurações de load balancing global
+  global_load_balancer:
+    provider: "aws_route53"
+    domain: "omni-keywords-finder.com"
+    
+    # Configurações de health check
+    health_check:
+      enabled: true
+      path: "/health"
+      port: 443
+      protocol: "HTTPS"
+      interval: 30
+      timeout: 5
+      healthy_threshold: 3
+      unhealthy_threshold: 3
+      request_interval: 10
+      failure_threshold: 3
+      
+    # Configurações de failover
+    failover:
+      enabled: true
+      failover_type: "PRIMARY"  # PRIMARY, SECONDARY
+      health_check_id: "${ROUTE53_HEALTH_CHECK_ID}"
+      
+    # Configurações de geolocation
+    geolocation:
+      enabled: true
+      routing_policy: "GEO"
+      
+      # Mapeamento de países para regiões
+      country_mapping:
+        # América do Norte
+        US: "us-east-1"
+        CA: "us-east-1"
+        MX: "us-east-1"
+        
+        # América do Sul
+        BR: "sa-east-1"
+        AR: "sa-east-1"
+        CL: "sa-east-1"
+        CO: "sa-east-1"
+        PE: "sa-east-1"
+        
+        # Europa
+        GB: "eu-west-1"
+        DE: "eu-west-1"
+        FR: "eu-west-1"
+        IT: "eu-west-1"
+        ES: "eu-west-1"
+        NL: "eu-west-1"
+        IE: "eu-west-1"
+        
+        # Ásia-Pacífico
+        JP: "ap-southeast-1"
+        KR: "ap-southeast-1"
+        AU: "ap-southeast-1"
+        SG: "ap-southeast-1"
+        IN: "ap-southeast-1"
+        CN: "ap-southeast-1"
+        
+        # Default
+        "*": "us-east-1"
+      
+    # Configurações de latência
+    latency:
+      enabled: true
+      routing_policy: "LATENCY"
+      
+      # Regiões para routing baseado em latência
+      latency_regions:
+        - region: "us-east-1"
+          endpoint: "us-east-1.omni-keywords-finder.com"
+        - region: "us-west-2"
+          endpoint: "us-west-2.omni-keywords-finder.com"
+        - region: "eu-west-1"
+          endpoint: "eu-west-1.omni-keywords-finder.com"
+        - region: "sa-east-1"
+          endpoint: "sa-east-1.omni-keywords-finder.com"
+        - region: "ap-southeast-1"
+          endpoint: "ap-southeast-1.omni-keywords-finder.com"
+  
+  # Configurações de sincronização de dados
+  data_synchronization:
+    enabled: true
+    sync_interval: 300  # 5 minutos
+    
+    # Sincronização de banco de dados
+    database:
+      enabled: true
+      replication_type: "multi_az"
+      read_replicas:
+        us-east-1: 2
+        us-west-2: 1
+        eu-west-1: 2
+        sa-east-1: 1
+        ap-southeast-1: 1
+      
+      # Configurações de backup cross-region
+      cross_region_backup:
+        enabled: true
+        source_region: "us-east-1"
+        destination_regions: ["us-west-2", "eu-west-1"]
+        retention_days: 30
+        encryption: true
+        
+    # Sincronização de cache
+    cache:
+      enabled: true
+      replication_type: "cluster"
+      cross_region_replication:
+        enabled: true
+        regions: ["us-east-1", "eu-west-1"]
+        sync_interval: 60  # 1 minuto
+        
+    # Sincronização de arquivos estáticos
+    static_files:
+      enabled: true
+      storage_type: "s3"
+      cross_region_replication:
+        enabled: true
+        source_bucket: "omni-keywords-finder-assets-us-east-1"
+        destination_buckets:
+          - "omni-keywords-finder-assets-us-west-2"
+          - "omni-keywords-finder-assets-eu-west-1"
+          - "omni-keywords-finder-assets-sa-east-1"
+          - "omni-keywords-finder-assets-ap-southeast-1"
+  
+  # Configurações de monitoramento global
+  global_monitoring:
+    enabled: true
+    
+    # Métricas globais
+    metrics:
+      - name: "GlobalAvailability"
+        calculation: "weighted_average(regional_availability)"
+        threshold: 99.9
+        
+      - name: "GlobalLatency"
+        calculation: "weighted_average(regional_latency)"
+        threshold: 200  # ms
+        
+      - name: "GlobalThroughput"
+        calculation: "sum(regional_throughput)"
+        
+      - name: "CrossRegionLatency"
+        calculation: "average(inter_region_latency)"
+        threshold: 100  # ms
+        
+    # Alertas globais
+    alerts:
+      enabled: true
+      channels:
+        - type: "email"
+          recipients: ["devops@omni-keywords.com", "oncall@omni-keywords.com"]
+        - type: "slack"
+          webhook: "https://hooks.slack.com/services/..."
+        - type: "pagerduty"
+          service_key: "${PAGERDUTY_SERVICE_KEY}"
+          
+      thresholds:
+        global_availability_percent: 99.5
+        global_latency_ms: 500
+        failover_time_seconds: 60
+        data_sync_delay_seconds: 300
+        
+    # Dashboards globais
+    dashboards:
+      - name: "Global Overview"
+        description: "Visão geral de todas as regiões"
+        metrics:
+          - "GlobalAvailability"
+          - "GlobalLatency"
+          - "GlobalThroughput"
+          - "RegionalHealth"
+          
+      - name: "Regional Comparison"
+        description: "Comparação entre regiões"
+        metrics:
+          - "RegionalAvailability"
+          - "RegionalLatency"
+          - "RegionalThroughput"
+          - "RegionalErrors"
+          
+      - name: "Failover Status"
+        description: "Status de failover e health checks"
+        metrics:
+          - "FailoverEvents"
+          - "HealthCheckStatus"
+          - "CrossRegionLatency"
+          - "DataSyncStatus"
+  
+  # Configurações de disaster recovery
+  disaster_recovery:
+    enabled: true
+    
+    # Plano de disaster recovery
+    recovery_plan:
+      rto: 300  # 5 minutos
+      rpo: 60   # 1 minuto
+      
+      # Procedimentos de failover
+      failover_procedures:
+        automatic:
+          enabled: true
+          trigger_conditions:
+            - "health_check_failure"
+            - "high_latency"
+            - "high_error_rate"
+            - "region_unavailable"
+            
+        manual:
+          enabled: true
+          approval_required: true
+          approvers: ["devops-lead@omni-keywords.com"]
+          
+      # Procedimentos de recovery
+      recovery_procedures:
+        - name: "Database Recovery"
+          steps:
+            - "Promote read replica to primary"
+            - "Update DNS records"
+            - "Verify data integrity"
+            - "Restart applications"
+            
+        - name: "Cache Recovery"
+          steps:
+            - "Rebuild cache from database"
+            - "Verify cache consistency"
+            - "Enable cache writes"
+            
+        - name: "Application Recovery"
+          steps:
+            - "Scale up instances in backup region"
+            - "Update load balancer configuration"
+            - "Verify application health"
+            - "Update monitoring alerts"
+    
+    # Testes de disaster recovery
+    testing:
+      enabled: true
+      schedule: "monthly"
+      test_types:
+        - "failover_test"
+        - "recovery_test"
+        - "data_integrity_test"
+        - "performance_test"
+        
+      test_regions:
+        - "us-west-2"
+        - "eu-west-1"
+        
+      test_duration: 3600  # 1 hora
+      notification_channels:
+        - "email"
+        - "slack"
+  
+  # Configurações de compliance
+  compliance:
+    gdpr:
+      enabled: true
+      data_residency:
+        eu_citizens: "eu-west-1"
+        us_citizens: "us-east-1"
+        br_citizens: "sa-east-1"
+        
+      data_retention:
+        logs: 90  # dias
+        backups: 365  # dias
+        analytics: 30  # dias
+        
+    sox:
+      enabled: true
+      audit_logging:
+        enabled: true
+        retention_days: 2555  # 7 anos
+        cross_region_storage: true
+        
+    pci_dss:
+      enabled: false  # Não aplicável para este projeto
+      
+  # Configurações de custo
+  cost_optimization:
+    enabled: true
+    
+    # Estratégias de otimização
+    strategies:
+      - name: "Right Sizing"
+        enabled: true
+        target_cpu_utilization: 70
+        target_memory_utilization: 80
+        
+      - name: "Spot Instances"
+        enabled: true
+        max_spot_percentage: 50
+        regions: ["us-west-2", "sa-east-1"]
+        
+      - name: "Reserved Instances"
+        enabled: true
+        commitment: "1_year"
+        payment_option: "all_upfront"
+        
+      - name: "Auto Scaling"
+        enabled: true
+        scale_down_enabled: true
+        min_instances_per_region: 1
+        
+    # Alertas de custo
+    cost_alerts:
+      enabled: true
+      monthly_budget_usd: 1000
+      alert_threshold_percent: 80
+      regions:
+        us-east-1: 400
+        us-west-2: 200
+        eu-west-1: 200
+        sa-east-1: 150
+        ap-southeast-1: 150
+        
+    # Relatórios de custo
+    cost_reports:
+      enabled: true
+      frequency: "weekly"
+      recipients: ["finance@omni-keywords.com", "devops@omni-keywords.com"]
+      breakdown:
+        - "by_region"
+        - "by_service"
+        - "by_environment"
+        - "by_team" 

@@ -1,0 +1,1113 @@
+openapi: 3.0.1
+info:
+  title: Omni Keywords Finder API
+  version: "1.0.0"
+  description: API REST para governança, processamento e exportação de keywords
+servers:
+  - url: /api
+paths:
+  /processar_keywords:
+    post:
+      summary: Processa lista de keywords
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keywords:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      termo:
+                        type: string
+                        example: "python"
+                      volume_busca:
+                        type: integer
+                        example: 1000
+                      cpc:
+                        type: number
+                        example: 1.5
+                      concorrencia:
+                        type: number
+                        example: 0.7
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keywords:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        termo:
+                          type: string
+                        score:
+                          type: number
+                  relatorio:
+                    type: object
+        '400':
+          description: Erro de validação
+  /exportar_keywords:
+    get:
+      summary: Exporta keywords em JSON ou CSV
+      parameters:
+        - in: query
+          name: formato
+          schema:
+            type: string
+            enum: [json, csv]
+          required: false
+        - in: query
+          name: prefix
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    termo:
+                      type: string
+                    score:
+                      type: number
+            text/csv:
+              schema:
+                type: string
+        '400':
+          description: Formato inválido
+  /governanca/logs:
+    get:
+      summary: Consulta logs de governança
+      parameters:
+        - in: query
+          name: event
+          schema:
+            type: string
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            example: "Bearer token_valido"
+      responses:
+        '200':
+          description: Lista de logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                        event:
+                          type: string
+                        status:
+                          type: string
+                        details:
+                          type: object
+        '400':
+          description: Parâmetro inválido
+        '401':
+          description: Token inválido ou ausente
+  /governanca/regras/upload:
+    post:
+      summary: Upload de regras de governança (YAML ou JSON)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
+              properties:
+                score_minimo:
+                  type: number
+                blacklist:
+                  type: array
+                  items:
+                    type: string
+                whitelist:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Sucesso
+        '400':
+          description: Arquivo ou dados inválidos
+        '422':
+          description: Erro de validação
+  /governanca/regras/editar:
+    post:
+      summary: Edita regras de governança
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                score_minimo:
+                  type: number
+                blacklist:
+                  type: array
+                  items:
+                    type: string
+                whitelist:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Sucesso
+        '422':
+          description: Erro de validação
+  /governanca/regras/atual:
+    get:
+      summary: Consulta regras atuais de governança
+      responses:
+        '200':
+          description: Regras atuais
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score_minimo:
+                    type: number
+                  blacklist:
+                    type: array
+                    items:
+                      type: string
+                  whitelist:
+                    type: array
+                    items:
+                      type: string
+  /test/reset:
+    post:
+      summary: Reseta ambiente de teste
+      responses:
+        '200':
+          description: Reset OK
+  /externo/google_trends:
+    get:
+      summary: Consulta Google Trends (mock/simulação)
+      parameters:
+        - in: query
+          name: termo
+          schema:
+            type: string
+        - in: query
+          name: simular
+          schema:
+            type: string
+            enum: [timeout, erro_autenticacao, resposta_invalida]
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  termo:
+                    type: string
+                  volume:
+                    type: integer
+        '401':
+          description: Erro de autenticação
+        '502':
+          description: Resposta inválida
+        '503':
+          description: Serviço indisponível
+  /dashboard/metrics:
+    get:
+      summary: Métricas agregadas do sistema (dashboard)
+      parameters:
+        - in: query
+          name: nicho_id
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: categoria_id
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: dias
+          schema:
+            type: integer
+          required: false
+          description: Número de dias retroativos para análise (default: 7)
+      responses:
+        '200':
+          description: Métricas agregadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_execucoes:
+                    type: integer
+                  tempo_medio_execucao:
+                    type: number
+                  total_clusters:
+                    type: integer
+                  total_erros:
+                    type: integer
+                  logs_recentes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        tipo_operacao:
+                          type: string
+                        entidade:
+                          type: string
+                        id_referencia:
+                          type: integer
+                        usuario:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+                        detalhes:
+                          type: string
+  /blog_categorias:
+    get:
+      summary: Lista categorias de blog por domínio
+      parameters:
+        - in: query
+          name: dominio
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Lista de categorias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categorias:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Domínio inválido
+  /execucao_status:
+    get:
+      summary: Consulta status de execução de tarefas
+      responses:
+        '200':
+          description: Status atual
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        categoria:
+                          type: string
+                        status:
+                          type: string
+        '400':
+          description: Erro de consulta
+  /painel:
+    get:
+      summary: Consulta dados do painel de execuções
+      responses:
+        '200':
+          description: Dados do painel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  execucoes:
+                    type: array
+                    items:
+                      type: object
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  blogs:
+                    type: array
+                    items:
+                      type: string
+                  indicadores:
+                    type: object
+        '400':
+          description: Erro de consulta
+  /nichos:
+    get:
+      summary: Lista todos os nichos
+      responses:
+        '200':
+          description: Lista de nichos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    nome:
+                      type: string
+    post:
+      summary: Cria um novo nicho
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+      responses:
+        '201':
+          description: Nicho criado
+        '400':
+          description: Erro de validação
+        '409':
+          description: Nicho já existe
+  /nichos/{nicho_id}:
+    put:
+      summary: Edita um nicho existente
+      parameters:
+        - in: path
+          name: nicho_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+      responses:
+        '200':
+          description: Nicho editado
+        '400':
+          description: Erro de validação
+        '409':
+          description: Nicho já existe
+        '404':
+          description: Nicho não encontrado
+    delete:
+      summary: Remove um nicho
+      parameters:
+        - in: path
+          name: nicho_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Nicho removido
+        '404':
+          description: Nicho não encontrado
+  /categorias/{nicho_id}/:
+    get:
+      summary: Lista categorias de um nicho
+      parameters:
+        - in: path
+          name: nicho_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de categorias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    nome:
+                      type: string
+                    perfil_cliente:
+                      type: string
+                    cluster:
+                      type: string
+                    prompt_path:
+                      type: string
+    post:
+      summary: Cria uma nova categoria para um nicho
+      parameters:
+        - in: path
+          name: nicho_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                perfil_cliente:
+                  type: string
+                cluster:
+                  type: string
+                prompt:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Categoria criada
+        '400':
+          description: Erro de validação
+  /categorias/{categoria_id}:
+    put:
+      summary: Edita uma categoria
+      parameters:
+        - in: path
+          name: categoria_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                perfil_cliente:
+                  type: string
+                cluster:
+                  type: string
+      responses:
+        '200':
+          description: Categoria editada
+        '400':
+          description: Erro de validação
+        '404':
+          description: Categoria não encontrada
+    delete:
+      summary: Remove uma categoria
+      parameters:
+        - in: path
+          name: categoria_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Categoria removida
+        '404':
+          description: Categoria não encontrada
+  /execucoes:
+    post:
+      summary: Executa um prompt preenchendo lacunas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoria_id:
+                  type: integer
+                palavras_chave:
+                  type: array
+                  items:
+                    type: string
+                cluster:
+                  type: string
+      responses:
+        '200':
+          description: Execução realizada
+        '400':
+          description: Erro de validação
+        '404':
+          description: Categoria ou prompt não encontrado
+    get:
+      summary: Lista execuções
+      parameters:
+        - in: query
+          name: categoria_id
+          schema:
+            type: integer
+        - in: query
+          name: nicho_id
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de execuções
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    id_categoria:
+                      type: integer
+                    palavras_chave:
+                      type: array
+                      items:
+                        type: string
+                    cluster_usado:
+                      type: string
+                    status:
+                      type: string
+                    data_execucao:
+                      type: string
+                      format: date-time
+  /execucoes/lote:
+    post:
+      summary: Executa múltiplos prompts em lote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  categoria_id:
+                    type: integer
+                  palavras_chave:
+                    type: array
+                    items:
+                      type: string
+                  cluster:
+                    type: string
+      responses:
+        '200':
+          description: Execuções em lote realizadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultados:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        execucao_id:
+                          type: integer
+                        prompt_preenchido:
+                          type: string
+                        categoria_id:
+                          type: integer
+                        palavras_chave:
+                          type: array
+                          items:
+                            type: string
+                        cluster:
+                          type: string
+                        tempo_real:
+                          type: number
+                  tempo_total:
+                    type: number
+                  qtd_executada:
+                    type: integer
+        '400':
+          description: Erro de validação
+  /logs/execucoes:
+    get:
+      summary: Consulta logs de execuções
+      parameters:
+        - in: query
+          name: tipo_operacao
+          schema:
+            type: string
+        - in: query
+          name: entidade
+          schema:
+            type: string
+        - in: query
+          name: id_referencia
+          schema:
+            type: integer
+        - in: query
+          name: usuario
+          schema:
+            type: string
+        - in: query
+          name: data_inicio
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: data_fim
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Lista de logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    tipo_operacao:
+                      type: string
+                    entidade:
+                      type: string
+                    id_referencia:
+                      type: integer
+                    usuario:
+                      type: string
+                    timestamp:
+                      type: string
+                      format: date-time
+                    detalhes:
+                      type: string
+  /api/notificacoes:
+    get:
+      summary: Listar notificações
+      parameters:
+        - name: lida
+          in: query
+          schema: { type: boolean }
+        - name: tipo
+          in: query
+          schema: { type: string }
+        - name: usuario
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de notificações
+          content:
+            application/json:
+              example:
+                - id: 1
+                  titulo: Erro
+                  mensagem: Falha na execução
+                  tipo: error
+                  lida: false
+                  usuario: admin
+                  timestamp: '2024-06-12T12:00:00Z'
+    post:
+      summary: Criar notificação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              titulo: Erro
+              mensagem: Falha na execução
+              tipo: error
+              usuario: admin
+      responses:
+        '201':
+          description: Notificação criada
+          content:
+            application/json:
+              example: { id: 1 }
+  /api/execucoes/agendar:
+    post:
+      summary: Agendar execução futura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              categoria_id: 1
+              palavras_chave: ["keyword1", "keyword2"]
+              cluster: clusterA
+              data_agendada: '2024-06-13T10:00:00'
+              usuario: admin
+      responses:
+        '201':
+          description: Execução agendada
+          content:
+            application/json:
+              example: { id: 10 }
+  /api/execucoes/agendadas:
+    get:
+      summary: Listar execuções agendadas
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+        - name: usuario
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista de execuções agendadas
+          content:
+            application/json:
+              example:
+                - id: 10
+                  categoria_id: 1
+                  palavras_chave: ["keyword1", "keyword2"]
+                  cluster: clusterA
+                  data_agendada: '2024-06-13T10:00:00'
+                  status: pendente
+                  usuario: admin
+                  criado_em: '2024-06-12T09:00:00'
+                  executado_em: null
+                  erro: null
+  /api/execucoes/agendadas/{id}:
+    delete:
+      summary: Cancelar agendamento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Agendamento cancelado
+          content:
+            application/json:
+              example: { ok: true }
+  /api/clusters/sugerir:
+    get:
+      summary: Sugerir clusters
+      parameters:
+        - name: categoria_id
+          in: query
+          required: true
+          schema: { type: integer }
+        - name: palavras_chave
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Sugestões de clusters
+          content:
+            application/json:
+              example:
+                sugestoes: ["clusterA", "clusterB"]
+  /api/auth/login:
+    post:
+      summary: Login do usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '200':
+          description: Token JWT gerado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  user_id:
+                    type: integer
+        '400':
+          description: Usuário e senha obrigatórios
+        '401':
+          description: Credenciais inválidas
+        '403':
+          description: Usuário inativo
+  /api/auth/logout:
+    post:
+      summary: Logout do usuário (JWT)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout efetuado
+  /api/rbac/usuarios:
+    get:
+      summary: Listar usuários
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuários
+          x-rbac: role_required('admin') ou permission_required('gerenciar_usuarios')
+    post:
+      summary: Criar usuário
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                senha:
+                  type: string
+                roles:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Usuário criado
+        '400':
+          description: Dados obrigatórios ausentes
+        '409':
+          description: Usuário já existe
+  /api/rbac/usuarios/{id}:
+    put:
+      summary: Editar usuário
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                senha:
+                  type: string
+                ativo:
+                  type: boolean
+                roles:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Usuário editado
+        '404':
+          description: Usuário não encontrado
+    delete:
+      summary: Remover usuário
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuário removido
+        '404':
+          description: Usuário não encontrado
+  /api/rbac/papeis:
+    get:
+      summary: Listar papéis
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de papéis
+    post:
+      summary: Criar papel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                descricao:
+                  type: string
+                permissoes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Papel criado
+        '400':
+          description: Nome obrigatório
+        '409':
+          description: Papel já existe
+  /api/rbac/papeis/{id}:
+    put:
+      summary: Editar papel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                descricao:
+                  type: string
+                permissoes:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Papel editado
+        '404':
+          description: Papel não encontrado
+    delete:
+      summary: Remover papel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Papel removido
+        '404':
+          description: Papel não encontrado
+  /api/rbac/permissoes:
+    get:
+      summary: Listar permissões
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de permissões
+    post:
+      summary: Criar permissão
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                descricao:
+                  type: string
+      responses:
+        '201':
+          description: Permissão criada
+        '400':
+          description: Nome obrigatório
+        '409':
+          description: Permissão já existe
+  /api/rbac/permissoes/{id}:
+    put:
+      summary: Editar permissão
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                descricao:
+                  type: string
+      responses:
+        '200':
+          description: Permissão editada
+        '404':
+          description: Permissão não encontrada
+    delete:
+      summary: Remover permissão
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Permissão removida
+        '404':
+          description: Permissão não encontrada 

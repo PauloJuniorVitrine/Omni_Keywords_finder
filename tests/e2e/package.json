@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "cypress": "^14.3.2"
+  },
+  "devDependencies": {
+    "@types/cypress": "^0.1.6"
+  }
+}

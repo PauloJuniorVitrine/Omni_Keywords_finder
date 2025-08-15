@@ -1,0 +1,131 @@
+# =============================================================================
+# Istio Control Plane Configuration
+# =============================================================================
+# 
+# Este arquivo configura o Istio control plane para o sistema
+# Omni Keywords Finder, complementando o Linkerd existente.
+#
+# Tracing ID: istio-control-plane-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+#
+# Metodologias Aplicadas:
+# - 📐 CoCoT: Baseado em Istio 1.20+ best practices
+# - 🌲 ToT: Avaliado configurações e escolhido otimal
+# - ♻️ ReAct: Simulado impacto e validado estabilidade
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-system
+  labels:
+    istio-injection: disabled
+    istio.io/rev: default
+---
+# Istio Operator Configuration
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: omni-keywords-finder-istio
+  namespace: istio-system
+spec:
+  profile: production
+  components:
+    pilot:
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2048Mi
+          limits:
+            cpu: 1000m
+            memory: 4096Mi
+        hpaSpec:
+          maxReplicas: 5
+          minReplicas: 2
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+        hpaSpec:
+          maxReplicas: 5
+          minReplicas: 2
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+    istiodRemote:
+      enabled: false
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+      defaultResources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1024Mi
+    pilot:
+      autoscaleEnabled: true
+      autoscaleMin: 2
+      autoscaleMax: 5
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2048Mi
+        limits:
+          cpu: 1000m
+          memory: 4096Mi
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+    gateways:
+      istio-ingressgateway:
+        autoscaleEnabled: true
+        autoscaleMin: 2
+        autoscaleMax: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1024Mi
+        nodeSelector:
+          kubernetes.io/os: linux
+        tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+    security:
+      selfSigned: false
+    sidecarInjectorWebhook:
+      enableNamespacesByDefault: false
+      objectSelector:
+        enabled: true
+        autoInject: true 

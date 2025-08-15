@@ -1,0 +1,304 @@
+# 🔒 SSL/TLS CONFIGURAÇÃO - OMNİ KEYWORDS FINDER
+# 📅 Criado: 2025-01-27
+# 🔧 Tracing ID: CHECKLIST_99_PERCENT_20250127_001
+# 🎯 Objetivo: Configuração enterprise-grade SSL/TLS
+
+# =============================================================================
+# 🚨 CONFIGURAÇÃO CRÍTICA DE SEGURANÇA
+# =============================================================================
+
+ssl_tls:
+  version: "1.3"  # TLS 1.3 obrigatório
+  minimum_version: "1.2"  # Suporte mínimo
+  cipher_suite: "modern"  # Cipher suites modernos
+  certificate_authority: "lets_encrypt"  # ou "digicert", "comodo"
+  auto_renewal: true
+  hsts_enabled: true
+  hsts_max_age: 31536000  # 1 ano
+  hsts_include_subdomains: true
+  hsts_preload: true
+
+# =============================================================================
+# 📜 CERTIFICADOS SSL/TLS
+# =============================================================================
+
+certificates:
+  primary:
+    domain: "omni-keywords-finder.com"
+    certificate_file: "/etc/ssl/certs/omni-keywords-finder.com.crt"
+    private_key_file: "/etc/ssl/private/omni-keywords-finder.com.key"
+    certificate_chain_file: "/etc/ssl/certs/omni-keywords-finder.com.chain.crt"
+    full_chain_file: "/etc/ssl/certs/omni-keywords-finder.com.fullchain.crt"
+    
+  wildcard:
+    domain: "*.omni-keywords-finder.com"
+    certificate_file: "/etc/ssl/certs/wildcard.omni-keywords-finder.com.crt"
+    private_key_file: "/etc/ssl/private/wildcard.omni-keywords-finder.com.key"
+    
+  api:
+    domain: "api.omni-keywords-finder.com"
+    certificate_file: "/etc/ssl/certs/api.omni-keywords-finder.com.crt"
+    private_key_file: "/etc/ssl/private/api.omni-keywords-finder.com.key"
+    
+  cdn:
+    domain: "cdn.omni-keywords-finder.com"
+    certificate_file: "/etc/ssl/certs/cdn.omni-keywords-finder.com.crt"
+    private_key_file: "/etc/ssl/private/cdn.omni-keywords-finder.com.key"
+
+# =============================================================================
+# 🔐 CONFIGURAÇÕES DE CHAVES
+# =============================================================================
+
+key_configuration:
+  algorithm: "RSA"
+  key_size: 4096  # Mínimo 2048, recomendado 4096
+  key_format: "PEM"
+  passphrase_protected: true
+  key_rotation_interval: "90d"  # Rotação a cada 90 dias
+
+# =============================================================================
+# 🛡️ CONFIGURAÇÕES DE SEGURANÇA AVANÇADA
+# =============================================================================
+
+security_settings:
+  # Cipher Suites (TLS 1.3)
+  cipher_suites:
+    - "TLS_AES_256_GCM_SHA384"
+    - "TLS_CHACHA20_POLY1305_SHA256"
+    - "TLS_AES_128_GCM_SHA256"
+  
+  # Cipher Suites (TLS 1.2 - Fallback)
+  cipher_suites_tls12:
+    - "ECDHE-RSA-AES256-GCM-SHA384"
+    - "ECDHE-RSA-AES128-GCM-SHA256"
+    - "ECDHE-RSA-AES256-SHA384"
+    - "ECDHE-RSA-AES128-SHA256"
+  
+  # Curves ECDHE
+  elliptic_curves:
+    - "X25519"
+    - "P-256"
+    - "P-384"
+  
+  # Configurações de Sessão
+  session_ticket_lifetime: 300  # 5 minutos
+  session_cache_size: 10000
+  session_timeout: 300  # 5 minutos
+
+# =============================================================================
+# 🔍 CONFIGURAÇÕES DE OCSP
+# =============================================================================
+
+ocsp:
+  enabled: true
+  responder_url: "http://ocsp.int-x3.letsencrypt.org"
+  stapling_enabled: true
+  stapling_cache_timeout: 3600  # 1 hora
+  stapling_response_timeout: 5  # 5 segundos
+
+# =============================================================================
+# 📋 CONFIGURAÇÕES DE VALIDAÇÃO
+# =============================================================================
+
+validation:
+  # Validação de Certificado
+  certificate_validation: true
+  certificate_revocation_check: true
+  certificate_chain_validation: true
+  
+  # Validação de Nome
+  hostname_validation: true
+  wildcard_validation: true
+  
+  # Validação de Tempo
+  certificate_expiry_warning: 30  # Dias antes do vencimento
+  certificate_expiry_critical: 7  # Dias antes do vencimento
+
+# =============================================================================
+# 🔄 CONFIGURAÇÕES DE RENOVAÇÃO AUTOMÁTICA
+# =============================================================================
+
+auto_renewal:
+  enabled: true
+  provider: "certbot"  # ou "acme.sh"
+  renewal_window: 30  # Dias antes do vencimento
+  renewal_attempts: 3
+  renewal_interval: 86400  # 24 horas
+  
+  # Configurações do Certbot
+  certbot:
+    email: "admin@omni-keywords-finder.com"
+    agree_tos: true
+    staging: false  # false para produção
+    webroot_path: "/var/www/html/.well-known/acme-challenge"
+    post_hook: "/etc/ssl/renewal/post-renewal.sh"
+
+# =============================================================================
+# 🌐 CONFIGURAÇÕES DE REDIRECIONAMENTO
+# =============================================================================
+
+redirects:
+  http_to_https: true
+  www_to_non_www: true
+  non_www_to_www: false
+  redirect_status_code: 301  # Permanent redirect
+  
+  # Domínios para redirecionamento
+  redirect_domains:
+    - "www.omni-keywords-finder.com"
+    - "http://omni-keywords-finder.com"
+    - "http://www.omni-keywords-finder.com"
+
+# =============================================================================
+# 🔧 CONFIGURAÇÕES DE SERVIDOR WEB
+# =============================================================================
+
+web_server:
+  nginx:
+    ssl_protocols: "TLSv1.2 TLSv1.3"
+    ssl_ciphers: "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256"
+    ssl_prefer_server_ciphers: true
+    ssl_session_cache: "shared:SSL:10m"
+    ssl_session_timeout: "10m"
+    ssl_stapling: true
+    ssl_stapling_verify: true
+    
+  apache:
+    ssl_protocol: "all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1"
+    ssl_cipher_suite: "EECDH+AESGCM:EDH+AESGCM"
+    ssl_honor_cipher_order: true
+    ssl_session_cache: "shmcb:/var/cache/mod_ssl/scache(512000)"
+    ssl_session_timeout: 300
+
+# =============================================================================
+# 📊 CONFIGURAÇÕES DE MONITORAMENTO
+# =============================================================================
+
+monitoring:
+  # Verificação de Certificado
+  certificate_expiry_monitoring: true
+  certificate_validation_monitoring: true
+  ocsp_monitoring: true
+  
+  # Alertas
+  expiry_warning_days: 30
+  expiry_critical_days: 7
+  validation_failure_alert: true
+  ocsp_failure_alert: true
+  
+  # Métricas
+  ssl_handshake_time: true
+  certificate_validation_time: true
+  ocsp_response_time: true
+
+# =============================================================================
+# 🚨 CONFIGURAÇÕES DE EMERGÊNCIA
+# =============================================================================
+
+emergency:
+  # Certificado de Backup
+  backup_certificate:
+    enabled: true
+    certificate_file: "/etc/ssl/certs/backup.omni-keywords-finder.com.crt"
+    private_key_file: "/etc/ssl/private/backup.omni-keywords-finder.com.key"
+    auto_fallback: true
+  
+  # Procedimentos de Emergência
+  emergency_procedures:
+    - "1. Verificar status do certificado: openssl x509 -in cert.crt -text -noout"
+    - "2. Verificar conectividade SSL: openssl s_client -connect domain:443"
+    - "3. Forçar renovação: certbot renew --force-renewal"
+    - "4. Reiniciar serviços web: systemctl reload nginx"
+    - "5. Verificar logs: tail -f /var/log/nginx/error.log"
+
+# =============================================================================
+# 🔍 CONFIGURAÇÕES DE TESTE
+# =============================================================================
+
+testing:
+  # Ferramentas de Teste
+  ssl_labs_test: true
+  ssllabs_api_key: "your_ssllabs_api_key_here"
+  test_frequency: "weekly"
+  
+  # Testes Automáticos
+  automated_tests:
+    - "openssl s_client -connect omni-keywords-finder.com:443 -servername omni-keywords-finder.com"
+    - "curl -I https://omni-keywords-finder.com"
+    - "nmap --script ssl-enum-ciphers -p 443 omni-keywords-finder.com"
+    - "testssl.sh omni-keywords-finder.com"
+  
+  # Critérios de Aprovação
+  approval_criteria:
+    ssl_labs_grade: "A+"  # Mínimo A
+    certificate_validity: "valid"
+    ocsp_stapling: "enabled"
+    hsts: "enabled"
+    perfect_forward_secrecy: "enabled"
+
+# =============================================================================
+# 📝 CONFIGURAÇÕES DE LOGS
+# =============================================================================
+
+logging:
+  ssl_log_level: "info"
+  ssl_log_file: "/var/log/ssl/ssl.log"
+  ssl_error_log: "/var/log/ssl/ssl_error.log"
+  log_ssl_handshakes: true
+  log_certificate_errors: true
+  log_ocsp_errors: true
+
+# =============================================================================
+# 🎯 CONFIGURAÇÕES ESPECÍFICAS DO DOMÍNIO
+# =============================================================================
+
+domain_specific:
+  omni_keywords_finder_com:
+    certificate_type: "multi_domain"
+    san_domains:
+      - "omni-keywords-finder.com"
+      - "www.omni-keywords-finder.com"
+      - "api.omni-keywords-finder.com"
+      - "cdn.omni-keywords-finder.com"
+    redirects:
+      - from: "http://omni-keywords-finder.com"
+        to: "https://omni-keywords-finder.com"
+      - from: "http://www.omni-keywords-finder.com"
+        to: "https://omni-keywords-finder.com"
+
+# =============================================================================
+# 📋 CHECKLIST DE VALIDAÇÃO SSL/TLS
+# =============================================================================
+
+validation_checklist:
+  - "✅ Certificado válido e não expirado"
+  - "✅ Cadeia de certificados completa"
+  - "✅ Chave privada protegida"
+  - "✅ TLS 1.3 habilitado"
+  - "✅ Cipher suites modernos configurados"
+  - "✅ HSTS habilitado"
+  - "✅ OCSP Stapling habilitado"
+  - "✅ Redirecionamento HTTP para HTTPS"
+  - "✅ Certificado de backup configurado"
+  - "✅ Monitoramento de expiração ativo"
+  - "✅ Testes SSL Labs com nota A+"
+  - "✅ Logs SSL configurados"
+  - "✅ Procedimentos de emergência documentados"
+  - "✅ Renovação automática configurada"
+  - "✅ Validação de hostname ativa"
+
+# =============================================================================
+# ⚠️ AVISOS IMPORTANTES
+# =============================================================================
+
+warnings:
+  - "Manter chaves privadas seguras e com permissões restritas (600)"
+  - "Nunca commitar certificados ou chaves privadas no Git"
+  - "Monitorar logs de SSL regularmente"
+  - "Configurar alertas para expiração de certificados"
+  - "Testar renovação automática em ambiente de staging"
+  - "Manter backup seguro dos certificados"
+  - "Documentar procedimentos de emergência"
+  - "Treinar equipe em segurança SSL/TLS"
+  - "Auditar configurações SSL regularmente"
+  - "Implementar rotação de certificados" 

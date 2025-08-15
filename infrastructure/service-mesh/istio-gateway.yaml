@@ -1,0 +1,71 @@
+# =============================================================================
+# Istio Gateway Configuration
+# =============================================================================
+# 
+# Este arquivo configura o Gateway do Istio para ingress traffic
+# no Omni Keywords Finder.
+#
+# Tracing ID: istio-gateway-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+# =============================================================================
+
+---
+# Gateway para HTTPS
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: omni-keywords-finder-gateway
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder
+    environment: production
+    traffic-management: istio
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*.omni-keywords-finder.com"
+    - "omni-keywords-finder.com"
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "*.omni-keywords-finder.com"
+    - "omni-keywords-finder.com"
+    tls:
+      mode: SIMPLE
+      credentialName: omni-keywords-finder-tls-cert
+      minProtocolVersion: TLSV1_2
+      maxProtocolVersion: TLSV1_3
+
+---
+# Gateway para API interna
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: omni-keywords-finder-internal-gateway
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder
+    environment: production
+    traffic-management: istio
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 8080
+      name: http-internal
+      protocol: HTTP
+    hosts:
+    - "internal.omni-keywords-finder.com"
+    - "*.internal.omni-keywords-finder.com" 

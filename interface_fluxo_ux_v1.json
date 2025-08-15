@@ -1,0 +1,24 @@
+[
+  {
+    "modulo_id": "dashboard",
+    "acoes": [
+      { "tipo": "visualizar", "permite": ["admin", "user"], "ref": "endpoint:/api/v1/keywords" },
+      { "tipo": "criar", "permite": ["admin"], "ref": "endpoint:/api/v1/keywords/extract" }
+    ],
+    "ui": [
+      { "tipo": "card", "nome": "Resumo de Keywords", "coCot": { "comprovacao": "api/keywords", "causalidade": "visão geral", "contexto": "dashboard", "tendencia": "cards SaaS" }, "prototipo": { "posicao": "main", "layer": 1, "anima": "fade-in" } },
+      { "tipo": "botao", "nome": "Criar Keyword", "coCot": { "comprovacao": "api/keywords/extract", "causalidade": "ação primária", "contexto": "dashboard", "tendencia": "UI SaaS" }, "prototipo": { "posicao": "header", "layer": 2, "anima": "fade-in" } }
+    ]
+  },
+  {
+    "modulo_id": "governanca",
+    "acoes": [
+      { "tipo": "upload", "permite": ["admin"], "ref": "endpoint:/api/governanca/upload" },
+      { "tipo": "visualizar_logs", "permite": ["admin", "user"], "ref": "endpoint:/api/governanca/logs" }
+    ],
+    "ui": [
+      { "tipo": "botao", "nome": "Upload Regras", "coCot": { "comprovacao": "testes_e2e", "causalidade": "ação crítica", "contexto": "painel governança", "tendencia": "modal + loader" }, "prototipo": { "posicao": "header", "layer": 2, "anima": "fade-in" } },
+      { "tipo": "tabela", "nome": "Logs de Auditoria", "coCot": { "comprovacao": "api/governanca/logs", "causalidade": "rastreabilidade", "contexto": "logs", "tendencia": "tabela filtrável" }, "prototipo": { "posicao": "main", "layer": 1, "anima": "slide" } }
+    ]
+  }
+] 

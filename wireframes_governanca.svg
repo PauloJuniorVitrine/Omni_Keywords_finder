@@ -1,0 +1,37 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1200" height="800" fill="#f7f8fa"/>
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="800" fill="#e3e6eb"/>
+  <text x="40" y="60" font-size="24" font-family="Arial" fill="#333">Menu</text>
+  <rect x="0" y="100" width="200" height="50" fill="#e3e6eb"/>
+  <text x="40" y="130" font-size="18" font-family="Arial" fill="#333">Dashboard</text>
+  <rect x="0" y="160" width="200" height="50" fill="#d1d5db"/>
+  <text x="40" y="190" font-size="18" font-family="Arial" fill="#333">Governança</text>
+  <!-- Header -->
+  <rect x="200" y="0" width="1000" height="80" fill="#fff"/>
+  <text x="240" y="50" font-size="32" font-family="Arial" fill="#222">Governança</text>
+  <!-- Botão Upload -->
+  <rect x="950" y="20" width="150" height="40" rx="8" fill="#4f8cff"/>
+  <text x="970" y="48" font-size="16" font-family="Arial" fill="#fff">Upload Regras</text>
+  <!-- Tabela de Logs -->
+  <rect x="240" y="120" width="900" height="400" rx="12" fill="#fff" stroke="#d1d5db"/>
+  <text x="260" y="150" font-size="18" font-family="Arial" fill="#333">Logs de Auditoria</text>
+  <!-- Filtros -->
+  <rect x="240" y="540" width="200" height="40" rx="8" fill="#e3e6eb"/>
+  <text x="250" y="565" font-size="16" font-family="Arial" fill="#333">Filtro: Data</text>
+  <rect x="460" y="540" width="200" height="40" rx="8" fill="#e3e6eb"/>
+  <text x="470" y="565" font-size="16" font-family="Arial" fill="#333">Filtro: Usuário</text>
+  <!-- Modal de Confirmação -->
+  <rect x="600" y="300" width="350" height="180" rx="16" fill="#fff" stroke="#4f8cff" stroke-width="3"/>
+  <text x="630" y="350" font-size="20" font-family="Arial" fill="#222">Confirmar Upload?</text>
+  <rect x="650" y="400" width="120" height="40" rx="8" fill="#22c55e"/>
+  <text x="670" y="428" font-size="16" font-family="Arial" fill="#fff">Sim</text>
+  <rect x="790" y="400" width="120" height="40" rx="8" fill="#ef4444"/>
+  <text x="820" y="428" font-size="16" font-family="Arial" fill="#fff">Cancelar</text>
+  <!-- Loader -->
+  <circle cx="1120" cy="320" r="18" fill="#4f8cff" opacity="0.3"/>
+  <text x="1110" y="325" font-size="14" font-family="Arial" fill="#4f8cff">⏳</text>
+  <!-- Badge -->
+  <rect x="1120" y="360" width="60" height="28" rx="8" fill="#eab308"/>
+  <text x="1130" y="380" font-size="14" font-family="Arial" fill="#fff">Pendente</text>
+</svg> 

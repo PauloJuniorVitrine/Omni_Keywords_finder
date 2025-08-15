@@ -1,0 +1,360 @@
+# 📊 PROMETHEUS CONFIGURATION - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: prometheus-config-2025-01-27-001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Configuração completa do Prometheus para monitoramento
+# de métricas customizadas, alertas e observabilidade
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: "omni-keywords-finder"
+    environment: "production"
+    version: "1.0"
+
+rule_files:
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Omni Keywords Finder API
+  - job_name: 'omni-keywords-api'
+    static_configs:
+      - targets: ['omni-keywords-api:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    honor_labels: true
+    scrape_timeout: 10s
+    params:
+      format: ['prometheus']
+
+  # Service Mesh (Linkerd)
+  - job_name: 'linkerd'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+  # Database Metrics
+  - job_name: 'database'
+    static_configs:
+      - targets: ['database:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Cache Metrics (Redis)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Queue Metrics (Celery)
+  - job_name: 'celery'
+    static_configs:
+      - targets: ['celery-worker:5555']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Infrastructure Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Custom Application Metrics
+  - job_name: 'omni-keywords-custom'
+    static_configs:
+      - targets: ['omni-keywords-api:8000']
+    metrics_path: '/custom-metrics'
+    scrape_interval: 10s
+    honor_labels: true
+
+# Alerting Configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+      scheme: http
+      timeout: 10s
+      api_version: v1
+
+# Storage Configuration
+storage:
+  tsdb:
+    path: /prometheus/data
+    retention.time: 30d
+    retention.size: 50GB
+    wal:
+      retention.period: 12h
+      retention.size: 10GB
+
+# Remote Write Configuration (for long-term storage)
+remote_write:
+  - url: "http://thanos-receive:10908/api/v1/receive"
+    remote_timeout: 30s
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'up|job:up'
+        action: drop
+
+# Remote Read Configuration
+remote_read:
+  - url: "http://thanos-query:10904/api/v1/read"
+    read_timeout: 5m
+
+# Recording Rules
+recording_rules:
+  - record: job:up
+    expr: up
+
+  - record: instance:up
+    expr: up
+
+  - record: omni_keywords_api_requests_total
+    expr: sum(rate(http_requests_total{job="omni-keywords-api"}[5m])) by (method, endpoint)
+
+  - record: omni_keywords_api_response_time_seconds
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="omni-keywords-api"}[5m])) by (le, method, endpoint))
+
+  - record: omni_keywords_api_error_rate
+    expr: sum(rate(http_requests_total{job="omni-keywords-api", status=~"5.."}[5m])) by (method, endpoint) / sum(rate(http_requests_total{job="omni-keywords-api"}[5m])) by (method, endpoint)
+
+  - record: omni_keywords_database_connections
+    expr: sum(database_connections{job="database"})
+
+  - record: omni_keywords_cache_hit_ratio
+    expr: sum(rate(cache_hits_total[5m])) / sum(rate(cache_requests_total[5m]))
+
+  - record: omni_keywords_queue_length
+    expr: sum(celery_queue_length{job="celery"})
+
+  - record: omni_keywords_processing_time_seconds
+    expr: histogram_quantile(0.95, sum(rate(keyword_processing_duration_seconds_bucket[5m])) by (le, collector_type))
+
+  - record: omni_keywords_collector_success_rate
+    expr: sum(rate(collector_requests_total{status="success"}[5m])) by (collector_type) / sum(rate(collector_requests_total[5m])) by (collector_type)
+
+  - record: omni_keywords_rate_limit_violations
+    expr: sum(rate(rate_limit_violations_total[5m])) by (endpoint, user_id)
+
+  - record: omni_keywords_circuit_breaker_state
+    expr: sum(circuit_breaker_state) by (service_name)
+
+  - record: omni_keywords_service_mesh_success_rate
+    expr: sum(rate(linkerd_proxy_request_total{response_class!="5xx"}[5m])) by (dst_service) / sum(rate(linkerd_proxy_request_total[5m])) by (dst_service)
+
+# Custom Metrics Configuration
+custom_metrics:
+  # Keyword Collection Metrics
+  - name: "omni_keywords_collected_total"
+    help: "Total number of keywords collected"
+    type: "counter"
+    labels: ["collector_type", "source", "status"]
+
+  - name: "omni_keywords_processing_duration_seconds"
+    help: "Time spent processing keywords"
+    type: "histogram"
+    labels: ["collector_type", "processing_stage"]
+
+  - name: "omni_keywords_quality_score"
+    help: "Quality score of collected keywords"
+    type: "gauge"
+    labels: ["collector_type", "keyword_type"]
+
+  # API Performance Metrics
+  - name: "omni_keywords_api_request_duration_seconds"
+    help: "API request duration"
+    type: "histogram"
+    labels: ["method", "endpoint", "status_code"]
+
+  - name: "omni_keywords_api_requests_in_flight"
+    help: "Number of API requests currently being processed"
+    type: "gauge"
+    labels: ["method", "endpoint"]
+
+  # Rate Limiting Metrics
+  - name: "omni_keywords_rate_limit_remaining"
+    help: "Remaining rate limit quota"
+    type: "gauge"
+    labels: ["endpoint", "user_id", "rate_limit_type"]
+
+  - name: "omni_keywords_rate_limit_reset_time"
+    help: "Time until rate limit resets"
+    type: "gauge"
+    labels: ["endpoint", "user_id"]
+
+  # Circuit Breaker Metrics
+  - name: "omni_keywords_circuit_breaker_failures"
+    help: "Number of failures in circuit breaker"
+    type: "counter"
+    labels: ["service_name", "failure_type"]
+
+  - name: "omni_keywords_circuit_breaker_state_changes"
+    help: "Number of circuit breaker state changes"
+    type: "counter"
+    labels: ["service_name", "from_state", "to_state"]
+
+  # Cache Performance Metrics
+  - name: "omni_keywords_cache_operations_total"
+    help: "Total cache operations"
+    type: "counter"
+    labels: ["operation", "cache_type", "status"]
+
+  - name: "omni_keywords_cache_size_bytes"
+    help: "Current cache size in bytes"
+    type: "gauge"
+    labels: ["cache_type"]
+
+  # Service Mesh Metrics
+  - name: "omni_keywords_service_mesh_request_duration_seconds"
+    help: "Service mesh request duration"
+    type: "histogram"
+    labels: ["src_service", "dst_service", "response_class"]
+
+  - name: "omni_keywords_service_mesh_active_connections"
+    help: "Active connections in service mesh"
+    type: "gauge"
+    labels: ["src_service", "dst_service"]
+
+# Performance Tuning
+performance:
+  # Memory Configuration
+  memory:
+    max_usage: "4GB"
+    target_usage: "2GB"
+    gc_interval: "5m"
+
+  # CPU Configuration
+  cpu:
+    max_cores: 4
+    target_utilization: 70
+
+  # Network Configuration
+  network:
+    max_connections: 1000
+    timeout: "30s"
+
+# Security Configuration
+security:
+  # TLS Configuration
+  tls:
+    cert_file: "/etc/prometheus/certs/prometheus.crt"
+    key_file: "/etc/prometheus/certs/prometheus.key"
+    ca_file: "/etc/prometheus/certs/ca.crt"
+
+  # Authentication
+  auth:
+    basic_auth:
+      username: "prometheus"
+      password_file: "/etc/prometheus/auth/password"
+
+  # Authorization
+  authorization:
+    type: "bearer"
+    credentials_file: "/etc/prometheus/auth/token"
+
+# Logging Configuration
+logging:
+  level: "info"
+  format: "json"
+  output: "stdout"
+
+# Health Check Configuration
+health_check:
+  enabled: true
+  path: "/-/healthy"
+  timeout: "5s"
+  interval: "30s"
+
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention: "7d"
+  storage:
+    type: "s3"
+    bucket: "omni-keywords-prometheus-backup"
+    region: "us-east-1"
+
+# Maintenance Configuration
+maintenance:
+  # Data Retention
+  retention:
+    time: "30d"
+    size: "50GB"
+
+  # Compaction
+  compaction:
+    enabled: true
+    schedule: "0 1 * * *"  # Daily at 1 AM
+    max_parallel: 2
+
+  # Cleanup
+  cleanup:
+    enabled: true
+    schedule: "0 3 * * *"  # Daily at 3 AM
+    max_age: "7d"
+
+# Monitoring Configuration
+monitoring:
+  # Self-Monitoring
+  self_monitoring:
+    enabled: true
+    metrics_path: "/metrics"
+    scrape_interval: "30s"
+
+  # Health Checks
+  health_checks:
+    - name: "prometheus_health"
+      url: "http://localhost:9090/-/healthy"
+      timeout: "5s"
+      interval: "30s"
+
+    - name: "storage_health"
+      url: "http://localhost:9090/api/v1/status/storage"
+      timeout: "10s"
+      interval: "60s"
+
+    - name: "target_health"
+      url: "http://localhost:9090/api/v1/targets"
+      timeout: "10s"
+      interval: "60s"
+
+# Documentation
+documentation:
+  version: "1.0"
+  last_updated: "2025-01-27"
+  maintainer: "DevOps Team"
+  description: "Prometheus configuration for Omni Keywords Finder monitoring"
+  contact: "devops@omni-keywords.com" 

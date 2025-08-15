@@ -1,0 +1,550 @@
+# 🚨 ALERTMANAGER CONFIGURATION - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: alertmanager-config-2025-01-27-001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Configuração completa do AlertManager para sistema de alertas automáticos
+# com integração PagerDuty, Slack, Email e políticas de escalação
+
+global:
+  resolve_timeout: 5m
+  slack_api_url: 'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@omni-keywords.com'
+  smtp_auth_username: 'alerts@omni-keywords.com'
+  smtp_auth_password: 'your-secure-password'
+
+# Configuração de templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Configuração de rotas de alertas
+route:
+  group_by: ['alertname', 'severity', 'team', 'component']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'slack-notifications'
+  
+  routes:
+    # Alertas críticos - PagerDuty apenas fora do horário comercial
+    - match:
+        severity: critical
+      receiver: 'pagerduty-critical'
+      time_intervals:
+        - name: business_hours
+          not: true
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+      continue: true
+    
+    # Alertas críticos - Email durante horário comercial
+    - match:
+        severity: critical
+      receiver: 'email-critical'
+      time_intervals:
+        - name: business_hours
+      group_wait: 30s
+      group_interval: 2m
+      repeat_interval: 30m
+      continue: true
+    
+    # Alertas de alta prioridade - Slack + Email
+    - match:
+        severity: warning
+      receiver: 'slack-warnings'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 2h
+      continue: true
+    
+    # Alertas de negócio - Canal específico
+    - match:
+        team: business
+      receiver: 'business-alerts'
+      group_wait: 2m
+      group_interval: 10m
+      repeat_interval: 1h
+    
+    # Alertas de infraestrutura - DevOps
+    - match:
+        team: devops
+      receiver: 'devops-alerts'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 2h
+    
+    # Alertas de backend - Time de desenvolvimento
+    - match:
+        team: backend
+      receiver: 'backend-alerts'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 2h
+
+# Configuração de intervalos de tempo
+time_intervals:
+  - name: business_hours
+    time_intervals:
+      - weekdays: ['monday:friday']
+        times:
+          - start_time: 09:00
+            end_time: 18:00
+        location: 'America/Sao_Paulo'
+  
+  - name: maintenance_window
+    time_intervals:
+      - weekdays: ['sunday']
+        times:
+          - start_time: 02:00
+            end_time: 06:00
+        location: 'America/Sao_Paulo'
+
+# Configuração de receivers (destinatários)
+receivers:
+  # Slack - Notificações gerais
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#alerts'
+        send_resolved: true
+        title: '{{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: '{{ template "slack.grafana_url" . }}'
+          - type: button
+            text: 'View Runbook'
+            url: '{{ template "slack.runbook_url" . }}'
+        fields:
+          - title: 'Severity'
+            value: '{{ .CommonLabels.severity }}'
+            short: true
+          - title: 'Team'
+            value: '{{ .CommonLabels.team }}'
+            short: true
+          - title: 'Component'
+            value: '{{ .CommonLabels.component }}'
+            short: true
+          - title: 'Environment'
+            value: '{{ .CommonLabels.environment }}'
+            short: true
+
+  # Slack - Alertas de warning
+  - name: 'slack-warnings'
+    slack_configs:
+      - channel: '#alerts-warnings'
+        send_resolved: true
+        title: '{{ template "slack.warning_title" . }}'
+        text: '{{ template "slack.warning_text" . }}'
+        color: 'warning'
+
+  # PagerDuty - Alertas críticos
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - routing_key: 'your-pagerduty-routing-key'
+        description: '{{ template "pagerduty.description" . }}'
+        severity: '{{ if eq .CommonLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
+        class: '{{ .CommonLabels.component }}'
+        group: '{{ .CommonLabels.team }}'
+        details:
+          firing: '{{ template "pagerduty.firing" . }}'
+          status: '{{ template "pagerduty.status" . }}'
+          description: '{{ template "pagerduty.description" . }}'
+          runbook_url: '{{ template "pagerduty.runbook_url" . }}'
+          grafana_url: '{{ template "pagerduty.grafana_url" . }}'
+
+  # Email - Alertas críticos
+  - name: 'email-critical'
+    email_configs:
+      - to: 'oncall@omni-keywords.com'
+        send_resolved: true
+        subject: '{{ template "email.critical_subject" . }}'
+        body: '{{ template "email.critical_body" . }}'
+        headers:
+          X-Priority: '1'
+          X-MSMail-Priority: 'High'
+          Importance: 'High'
+
+  # Email - Alertas de negócio
+  - name: 'business-alerts'
+    email_configs:
+      - to: 'business@omni-keywords.com'
+        send_resolved: true
+        subject: '{{ template "email.business_subject" . }}'
+        body: '{{ template "email.business_body" . }}'
+
+  # Slack - Alertas de negócio
+  - name: 'business-alerts'
+    slack_configs:
+      - channel: '#business-alerts'
+        send_resolved: true
+        title: '{{ template "slack.business_title" . }}'
+        text: '{{ template "slack.business_text" . }}'
+        color: 'good'
+
+  # Slack - Alertas de DevOps
+  - name: 'devops-alerts'
+    slack_configs:
+      - channel: '#devops-alerts'
+        send_resolved: true
+        title: '{{ template "slack.devops_title" . }}'
+        text: '{{ template "slack.devops_text" . }}'
+
+  # Slack - Alertas de Backend
+  - name: 'backend-alerts'
+    slack_configs:
+      - channel: '#backend-alerts'
+        send_resolved: true
+        title: '{{ template "slack.backend_title" . }}'
+        text: '{{ template "slack.backend_text" . }}'
+
+# Configuração de inibição (supressão de alertas)
+inhibit_rules:
+  # Se a API estiver down, suprimir alertas de componentes dependentes
+  - source_match:
+      alertname: 'OmniKeywordsAPIDown'
+    target_match:
+      component: 'api'
+    equal: ['instance']
+  
+  # Se o database estiver down, suprimir alertas de alta latência
+  - source_match:
+      alertname: 'DatabaseDown'
+    target_match:
+      alertname: 'APIResponseTimeHigh'
+    equal: ['instance']
+  
+  # Se houver erro crítico, suprimir warnings relacionados
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+# Configuração de silêncio (muting)
+silence_rules:
+  # Silenciar alertas durante manutenção
+  - matchers:
+      - name: 'alertname'
+        value: '.*'
+        isRegex: true
+    time_intervals:
+      - name: maintenance_window
+    comment: 'Scheduled maintenance'
+
+# Configuração de templates personalizados
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Configuração de persistência
+storage:
+  path: /alertmanager/data
+  retention: 120h
+
+# Configuração de cluster (para alta disponibilidade)
+cluster:
+  listen_address: 0.0.0.0:9094
+  peer_id: alertmanager-0
+  peer_url: http://alertmanager-0:9094
+  peers:
+    - alertmanager-0:9094
+    - alertmanager-1:9094
+    - alertmanager-2:9094
+
+# Configuração de logs
+log:
+  level: info
+  format: json
+
+# Configuração de métricas
+metrics:
+  path: /metrics
+  port: 9093
+
+# Configuração de health checks
+health_check:
+  path: /-/healthy
+  port: 9093
+
+# Configuração de segurança
+security:
+  tls:
+    cert_file: /etc/alertmanager/certs/alertmanager.crt
+    key_file: /etc/alertmanager/certs/alertmanager.key
+    ca_file: /etc/alertmanager/certs/ca.crt
+  
+  basic_auth:
+    username: admin
+    password: your-secure-password
+
+# Configuração de backup
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Diário às 2h
+  retention: "7d"
+  storage:
+    type: "s3"
+    bucket: "omni-keywords-alertmanager-backup"
+    region: "us-east-1"
+
+# Configuração de notificações customizadas
+notifications:
+  # Webhook para integração com sistemas externos
+  webhooks:
+    - name: 'custom-webhook'
+      url: 'https://api.omni-keywords.com/webhooks/alerts'
+      timeout: 10s
+      http_config:
+        basic_auth:
+          username: 'webhook-user'
+          password: 'webhook-password'
+  
+  # Integração com Jira
+  jira:
+    - name: 'jira-integration'
+      url: 'https://omni-keywords.atlassian.net'
+      username: 'jira-user'
+      password: 'jira-password'
+      project_key: 'ALERT'
+      issue_type: 'Bug'
+  
+  # Integração com ServiceNow
+  servicenow:
+    - name: 'servicenow-integration'
+      url: 'https://omni-keywords.service-now.com'
+      username: 'servicenow-user'
+      password: 'servicenow-password'
+      table: 'incident'
+
+# Configuração de escalação
+escalation:
+  # Política de escalação para alertas críticos
+  critical:
+    - delay: 5m
+      receiver: 'pagerduty-critical'
+    - delay: 15m
+      receiver: 'email-critical'
+    - delay: 30m
+      receiver: 'slack-notifications'
+  
+  # Política de escalação para alertas de warning
+  warning:
+    - delay: 10m
+      receiver: 'slack-warnings'
+    - delay: 30m
+      receiver: 'email-critical'
+
+# Configuração de relatórios
+reporting:
+  # Relatórios diários
+  daily:
+    enabled: true
+    schedule: "0 8 * * *"  # Diário às 8h
+    receivers:
+      - 'business-alerts'
+    template: "daily_report"
+    include:
+      - alert_count_by_severity
+      - alert_count_by_team
+      - mttr_metrics
+      - slo_violations
+  
+  # Relatórios semanais
+  weekly:
+    enabled: true
+    schedule: "0 9 * * 1"  # Segunda às 9h
+    receivers:
+      - 'business-alerts'
+    template: "weekly_report"
+    include:
+      - trend_analysis
+      - performance_metrics
+      - slo_compliance
+      - improvement_recommendations
+  
+  # Relatórios mensais
+  monthly:
+    enabled: true
+    schedule: "0 10 1 * *"  # Primeiro dia do mês às 10h
+    receivers:
+      - 'business-alerts'
+    template: "monthly_report"
+    include:
+      - comprehensive_analysis
+      - slo_performance
+      - incident_review
+      - capacity_planning
+
+# Configuração de métricas de alertas
+alert_metrics:
+  # Métricas de MTTR (Mean Time To Resolution)
+  mttr:
+    enabled: true
+    calculation_method: "median"
+    time_window: "30d"
+  
+  # Métricas de MTTA (Mean Time To Acknowledge)
+  mtta:
+    enabled: true
+    calculation_method: "median"
+    time_window: "30d"
+  
+  # Métricas de alertas por time
+  team_metrics:
+    enabled: true
+    aggregation: "daily"
+    dimensions:
+      - team
+      - severity
+      - component
+  
+  # Métricas de SLOs
+  slo_metrics:
+    enabled: true
+    calculation_method: "rolling_window"
+    time_window: "30d"
+    include:
+      - availability
+      - latency
+      - error_rate
+
+# Configuração de dashboards
+dashboards:
+  # Dashboard de alertas ativos
+  active_alerts:
+    enabled: true
+    url: "https://grafana.omni-keywords.com/d/alertmanager/active-alerts"
+    refresh_interval: "30s"
+  
+  # Dashboard de histórico de alertas
+  alert_history:
+    enabled: true
+    url: "https://grafana.omni-keywords.com/d/alertmanager/alert-history"
+    retention: "90d"
+  
+  # Dashboard de métricas de alertas
+  alert_metrics:
+    enabled: true
+    url: "https://grafana.omni-keywords.com/d/alertmanager/alert-metrics"
+    refresh_interval: "5m"
+
+# Configuração de documentação
+documentation:
+  # Runbooks
+  runbooks:
+    enabled: true
+    base_url: "https://docs.omni-keywords.com/runbooks"
+    templates:
+      - name: "api_down"
+        url: "/api-down"
+      - name: "database_down"
+        url: "/database-down"
+      - name: "high_error_rate"
+        url: "/high-error-rate"
+      - name: "high_latency"
+        url: "/high-latency"
+      - name: "memory_usage"
+        url: "/memory-usage"
+      - name: "cpu_usage"
+        url: "/cpu-usage"
+      - name: "disk_space"
+        url: "/disk-space"
+  
+  # Playbooks
+  playbooks:
+    enabled: true
+    base_url: "https://docs.omni-keywords.com/playbooks"
+    templates:
+      - name: "incident_response"
+        url: "/incident-response"
+      - name: "escalation_procedure"
+        url: "/escalation-procedure"
+      - name: "communication_protocol"
+        url: "/communication-protocol"
+
+# Configuração de compliance
+compliance:
+  # GDPR Compliance
+  gdpr:
+    enabled: true
+    data_retention: "30d"
+    data_anonymization: true
+  
+  # SOC 2 Compliance
+  soc2:
+    enabled: true
+    audit_logging: true
+    access_controls: true
+  
+  # ISO 27001 Compliance
+  iso27001:
+    enabled: true
+    security_controls: true
+    risk_assessment: true
+
+# Configuração de auto-monitoramento
+self_monitoring:
+  # Health checks
+  health_checks:
+    enabled: true
+    interval: "30s"
+    timeout: "10s"
+    checks:
+      - name: "alertmanager_health"
+        url: "http://localhost:9093/-/healthy"
+      - name: "prometheus_connectivity"
+        url: "http://prometheus:9090/-/healthy"
+      - name: "slack_connectivity"
+        url: "https://hooks.slack.com/services/test"
+  
+  # Métricas internas
+  metrics:
+    enabled: true
+    path: "/metrics"
+    port: 9093
+    include:
+      - alertmanager_alerts
+      - alertmanager_notifications
+      - alertmanager_silences
+      - alertmanager_peers
+
+# Configuração de testes
+testing:
+  # Testes de conectividade
+  connectivity_tests:
+    enabled: true
+    schedule: "*/5 * * * *"  # A cada 5 minutos
+    tests:
+      - name: "slack_test"
+        receiver: "slack-notifications"
+        message: "Test message from AlertManager"
+      - name: "pagerduty_test"
+        receiver: "pagerduty-critical"
+        message: "Test incident from AlertManager"
+      - name: "email_test"
+        receiver: "email-critical"
+        message: "Test email from AlertManager"
+  
+  # Testes de configuração
+  config_tests:
+    enabled: true
+    schedule: "0 * * * *"  # A cada hora
+    tests:
+      - name: "route_validation"
+        description: "Validate alert routing configuration"
+      - name: "receiver_validation"
+        description: "Validate receiver configurations"
+      - name: "template_validation"
+        description: "Validate notification templates"
+
+# Configuração de documentação final
+documentation:
+  version: "1.0"
+  last_updated: "2025-01-27"
+  maintainer: "DevOps Team"
+  description: "AlertManager configuration for Omni Keywords Finder automated alerting system"
+  contact: "devops@omni-keywords.com" 

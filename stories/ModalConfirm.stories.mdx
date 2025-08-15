@@ -1,0 +1,22 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+
+<Meta title="Comum/ModalConfirm" component={ModalConfirm} />
+
+# ModalConfirm
+
+Modal de confirmação para ações críticas, como upload de regras ou exclusão.
+
+<Canvas>
+  <Story name="Confirmação de Upload">
+    <ModalConfirm open message="Confirmar Upload?" confirmLabel="Sim" cancelLabel="Cancelar" />
+  </Story>
+  <Story name="Confirmação de Exclusão">
+    <ModalConfirm open message="Deseja excluir este item?" confirmLabel="Excluir" cancelLabel="Cancelar" confirmColor="#ef4444" />
+  </Story>
+</Canvas>
+
+<ArgsTable story="Confirmação de Upload" />
+
+## Referência Visual
+- Consulte `wireframes_governanca.svg` para layout e layer
+- Consulte `interface_proposta_v1.md` para animação e layer 

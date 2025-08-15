@@ -1,0 +1,1 @@
+{"timestamp": 1746230951.4031873, "type": "GET", "endpoint": "/api/governanca/logs", "status_code": 200, "response_time_ms": 3.4603000021888874, "response_length": 104, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/logs"}

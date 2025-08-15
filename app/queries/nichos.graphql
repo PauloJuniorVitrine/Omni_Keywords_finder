@@ -1,0 +1,62 @@
+# Queries para Nichos
+# Arquivo de exemplo para GraphQL Codegen
+
+query GetNichos($ativo: Boolean) {
+  nichos(ativo: $ativo) {
+    id
+    nome
+    descricao
+    ativo
+    dataCriacao
+    categorias {
+      id
+      nome
+      descricao
+      ativo
+    }
+  }
+}
+
+query GetNicho($id: ID!) {
+  nicho(id: $id) {
+    id
+    nome
+    descricao
+    ativo
+    dataCriacao
+    categorias {
+      id
+      nome
+      descricao
+      ativo
+    }
+  }
+}
+
+mutation CreateNicho($input: NichoInput!) {
+  createNicho(input: $input) {
+    nicho {
+      id
+      nome
+      descricao
+      ativo
+      dataCriacao
+    }
+    success
+    message
+  }
+}
+
+mutation UpdateNicho($id: ID!, $input: NichoInput!) {
+  updateNicho(id: $id, input: $input) {
+    nicho {
+      id
+      nome
+      descricao
+      ativo
+      dataCriacao
+    }
+    success
+    message
+  }
+} 

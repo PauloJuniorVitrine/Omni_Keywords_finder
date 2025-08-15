@@ -1,0 +1,673 @@
+# 🌍 MULTI-REGION CLUSTER CONFIGURATION - OMNİ KEYWORDS FINDER
+# 
+# Tracing ID: multi-region-config-2025-01-27-001
+# Versão: 1.0
+# Status: 🚀 IMPLEMENTAÇÃO
+# 
+# Configuração completa de multi-region para alta disponibilidade
+# e performance global do sistema Omni Keywords Finder
+
+# ============================================================================
+# 🏗️ CONFIGURAÇÃO DE CLUSTERS MULTI-REGION
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: multi-region
+  labels:
+    name: multi-region
+    system: omni-keywords-finder
+    environment: production
+
+---
+# Configuração do Cluster Principal (us-east-1)
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: omni-keywords-primary
+  namespace: multi-region
+  labels:
+    region: us-east-1
+    role: primary
+    system: omni-keywords-finder
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+        - 10.244.0.0/16
+    services:
+      cidrBlocks:
+        - 10.96.0.0/12
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: omni-keywords-primary-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: omni-keywords-primary
+
+---
+# Configuração do Cluster Secundário (us-west-2)
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: omni-keywords-secondary
+  namespace: multi-region
+  labels:
+    region: us-west-2
+    role: secondary
+    system: omni-keywords-finder
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+        - 10.245.0.0/16
+    services:
+      cidrBlocks:
+        - 10.97.0.0/12
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: omni-keywords-secondary-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: omni-keywords-secondary
+
+---
+# Configuração do Cluster Europeu (eu-west-1)
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: omni-keywords-europe
+  namespace: multi-region
+  labels:
+    region: eu-west-1
+    role: secondary
+    system: omni-keywords-finder
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+        - 10.246.0.0/16
+    services:
+      cidrBlocks:
+        - 10.98.0.0/12
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: omni-keywords-europe-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: omni-keywords-europe
+
+# ============================================================================
+# 🌐 LOAD BALANCER GLOBAL (AWS Global Accelerator)
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-load-balancer-config
+  namespace: multi-region
+  labels:
+    component: load-balancer
+    system: omni-keywords-finder
+data:
+  # Configuração do AWS Global Accelerator
+  global-accelerator.yaml: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: omni-keywords-global-accelerator
+      namespace: multi-region
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-path: "/health"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-port: "8080"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-protocol: "HTTP"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-interval: "30"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-timeout: "5"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-healthy-threshold: "2"
+        service.beta.kubernetes.io/aws-load-balancer-health-check-unhealthy-threshold: "2"
+    spec:
+      type: LoadBalancer
+      ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+          protocol: TCP
+        - name: https
+          port: 443
+          targetPort: 8443
+          protocol: TCP
+      selector:
+        app: omni-keywords-api
+        system: omni-keywords-finder
+
+  # Configuração de Route53 para DNS global
+  route53-config.yaml: |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: route53-global-dns
+      namespace: multi-region
+    data:
+      # Configuração de DNS global com failover
+      dns-config.yaml: |
+        apiVersion: externaldns.kubernetes.io/v1alpha1
+        kind: DNSEndpoint
+        metadata:
+          name: omni-keywords-global-dns
+          namespace: multi-region
+        spec:
+          endpoints:
+            - dnsName: api.omni-keywords.com
+              recordTTL: 300
+              recordType: A
+              targets:
+                - "PRIMARY_LOAD_BALANCER_IP"
+              labels:
+                region: us-east-1
+                role: primary
+            - dnsName: api.omni-keywords.com
+              recordTTL: 300
+              recordType: A
+              targets:
+                - "SECONDARY_LOAD_BALANCER_IP"
+              labels:
+                region: us-west-2
+                role: secondary
+                failover: true
+            - dnsName: api.omni-keywords.com
+              recordTTL: 300
+              recordType: A
+              targets:
+                - "EUROPE_LOAD_BALANCER_IP"
+              labels:
+                region: eu-west-1
+                role: secondary
+                failover: true
+
+# ============================================================================
+# 🔄 CONFIGURAÇÃO DE FAILOVER AUTOMÁTICO
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: failover-config
+  namespace: multi-region
+  labels:
+    component: failover
+    system: omni-keywords-finder
+data:
+  # Configuração de health checks globais
+  health-check.yaml: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: omni-keywords-health-check
+      namespace: multi-region
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      type: ClusterIP
+      ports:
+        - name: health
+          port: 8080
+          targetPort: 8080
+          protocol: TCP
+      selector:
+        app: omni-keywords-health-check
+
+  # Configuração de failover automático
+  failover-automation.yaml: |
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: failover-monitor
+      namespace: multi-region
+    spec:
+      schedule: "*/30 * * * *"  # A cada 30 segundos
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              containers:
+                - name: failover-monitor
+                  image: omni-keywords/failover-monitor:latest
+                  env:
+                    - name: PRIMARY_REGION
+                      value: "us-east-1"
+                    - name: SECONDARY_REGIONS
+                      value: "us-west-2,eu-west-1"
+                    - name: HEALTH_CHECK_ENDPOINT
+                      value: "/health"
+                    - name: FAILOVER_THRESHOLD
+                      value: "3"
+                    - name: RECOVERY_THRESHOLD
+                      value: "5"
+                  resources:
+                    limits:
+                      cpu: 100m
+                      memory: 128Mi
+                    requests:
+                      cpu: 50m
+                      memory: 64Mi
+              restartPolicy: OnFailure
+
+# ============================================================================
+# 📊 MONITORAMENTO MULTI-REGION
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multi-region-monitoring
+  namespace: multi-region
+  labels:
+    component: monitoring
+    system: omni-keywords-finder
+data:
+  # Configuração de métricas por região
+  region-metrics.yaml: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: region-metrics-exporter
+      namespace: multi-region
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      type: ClusterIP
+      ports:
+        - name: metrics
+          port: 9090
+          targetPort: 9090
+          protocol: TCP
+      selector:
+        app: region-metrics-exporter
+
+  # Configuração de alertas por região
+  region-alerts.yaml: |
+    apiVersion: monitoring.coreos.com/v1alpha1
+    kind: PrometheusRule
+    metadata:
+      name: multi-region-alerts
+      namespace: multi-region
+    spec:
+      groups:
+        - name: multi-region.rules
+          rules:
+            - alert: RegionDown
+              expr: up{region=~".*"} == 0
+              for: 2m
+              labels:
+                severity: critical
+                team: devops
+                component: multi-region
+              annotations:
+                summary: "Region {{ $labels.region }} is down"
+                description: "Region {{ $labels.region }} has been down for more than 2 minutes"
+            
+            - alert: HighLatencyBetweenRegions
+              expr: histogram_quantile(0.95, rate(region_latency_seconds_bucket[5m])) > 1
+              for: 5m
+              labels:
+                severity: warning
+                team: devops
+                component: multi-region
+              annotations:
+                summary: "High latency between regions"
+                description: "95th percentile of latency between regions is above 1 second"
+            
+            - alert: FailoverTriggered
+              expr: failover_status{status="active"} == 1
+              for: 1m
+              labels:
+                severity: critical
+                team: devops
+                component: multi-region
+              annotations:
+                summary: "Failover has been triggered"
+                description: "Automatic failover has been activated for region {{ $labels.region }}"
+
+# ============================================================================
+# 🔐 SEGURANÇA MULTI-REGION
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multi-region-security
+  namespace: multi-region
+  labels:
+    component: security
+    system: omni-keywords-finder
+data:
+  # Configuração de Network Policies
+  network-policies.yaml: |
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: multi-region-network-policy
+      namespace: multi-region
+    spec:
+      podSelector:
+        matchLabels:
+          system: omni-keywords-finder
+      policyTypes:
+        - Ingress
+        - Egress
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  name: multi-region
+          ports:
+            - protocol: TCP
+              port: 8080
+            - protocol: TCP
+              port: 8443
+      egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  name: multi-region
+          ports:
+            - protocol: TCP
+              port: 8080
+            - protocol: TCP
+              port: 8443
+
+  # Configuração de Security Context
+  security-context.yaml: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: omni-keywords-multi-region-pod
+      namespace: multi-region
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+      containers:
+        - name: omni-keywords-api
+          image: omni-keywords/api:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+# ============================================================================
+# 📦 DEPLOYMENT MULTI-REGION
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omni-keywords-multi-region
+  namespace: multi-region
+  labels:
+    app: omni-keywords-api
+    system: omni-keywords-finder
+    multi-region: "true"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: omni-keywords-api
+      system: omni-keywords-finder
+  template:
+    metadata:
+      labels:
+        app: omni-keywords-api
+        system: omni-keywords-finder
+        multi-region: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - omni-keywords-api
+                topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/worker
+                    operator: Exists
+      containers:
+        - name: omni-keywords-api
+          image: omni-keywords/api:latest
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          env:
+            - name: REGION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['region']
+            - name: CLUSTER_ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['role']
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: omni-keywords-db-secret
+                  key: url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: omni-keywords-redis-secret
+                  key: url
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: config
+          configMap:
+            name: omni-keywords-config
+        - name: logs
+          emptyDir: {}
+
+# ============================================================================
+# 🔍 SERVICE DISCOVERY MULTI-REGION
+# ============================================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: omni-keywords-multi-region-service
+  namespace: multi-region
+  labels:
+    app: omni-keywords-api
+    system: omni-keywords-finder
+    multi-region: "true"
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-path: "/health"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-port: "8080"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-protocol: "HTTP"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-interval: "30"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-timeout: "5"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-health-check-unhealthy-threshold: "2"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 8443
+      protocol: TCP
+  selector:
+    app: omni-keywords-api
+    system: omni-keywords-finder
+    multi-region: "true"
+
+# ============================================================================
+# 📋 CONFIGURAÇÃO DE BACKUP E RECOVERY
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-recovery-config
+  namespace: multi-region
+  labels:
+    component: backup
+    system: omni-keywords-finder
+data:
+  # Configuração de backup automático
+  backup-schedule.yaml: |
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: multi-region-backup
+      namespace: multi-region
+    spec:
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              containers:
+                - name: backup
+                  image: omni-keywords/backup-tool:latest
+                  env:
+                    - name: BACKUP_S3_BUCKET
+                      value: "omni-keywords-backup"
+                    - name: BACKUP_RETENTION_DAYS
+                      value: "30"
+                    - name: REGIONS
+                      value: "us-east-1,us-west-2,eu-west-1"
+                  resources:
+                    limits:
+                      cpu: 500m
+                      memory: 1Gi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+              restartPolicy: OnFailure
+
+  # Configuração de recovery
+  recovery-procedure.yaml: |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: recovery-procedure
+      namespace: multi-region
+    data:
+      recovery-steps.md: |
+        # Procedimento de Recovery Multi-Region
+        
+        ## 1. Detecção de Falha
+        - Monitoramento automático detecta falha na região primária
+        - Health checks falham por mais de 2 minutos
+        
+        ## 2. Ativação do Failover
+        - DNS é atualizado automaticamente para região secundária
+        - Load balancer redireciona tráfego
+        - Alertas são enviados para a equipe
+        
+        ## 3. Validação do Failover
+        - Verificar se a região secundária está funcionando
+        - Validar conectividade de banco de dados
+        - Testar funcionalidades críticas
+        
+        ## 4. Recuperação da Região Primária
+        - Investigar causa raiz da falha
+        - Corrigir problemas identificados
+        - Restaurar serviços na região primária
+        
+        ## 5. Failback (Opcional)
+        - Retornar tráfego para região primária
+        - Validar funcionamento normal
+        - Atualizar documentação
+
+# Documentação
+documentation:
+  version: "1.0"
+  last_updated: "2025-01-27"
+  maintainer: "DevOps Team"
+  description: "Multi-region configuration for Omni Keywords Finder high availability"
+  contact: "devops@omni-keywords.com"
+  regions:
+    - name: "us-east-1"
+      role: "primary"
+      description: "Região principal - Virginia"
+    - name: "us-west-2"
+      role: "secondary"
+      description: "Região secundária - Oregon"
+    - name: "eu-west-1"
+      role: "secondary"
+      description: "Região secundária - Irlanda" 

@@ -1,0 +1,296 @@
+Prompt Cursor — Sistema de Geração de Clusters e Conteúdo SEO com IA
+Você é um engenheiro de software sênior. Crie um sistema completo em Python com interface web via Flask que automatize a geração de conteúdo SEO com base em palavras-chave de cauda longa, organizadas em clusters semânticos, e integradas a um fluxo editorial completo. O sistema deve ser robusto, testável, modular e adaptativo.
+
+A interface será desenvolvida em HTML com Flask, e deve seguir as melhores práticas possíveis de usabilidade, acessibilidade e responsividade, respeitando os limites da stack escolhida. O layout deve ser limpo, com boa hierarquia visual, botões bem posicionados, uso correto de formulários, campos explicativos e feedback visual para o usuário. A estrutura deve facilitar o uso sequencial de múltiplos blogs e categorias.
+
+A interface deve conter as seguintes páginas e componentes:
+/cadastro_blog
+Formulário para cadastro de novos blogs
+
+Campos: domínio, nome, descrição, público-alvo, tom de voz, até 7 categorias (checkbox ou input dinâmico)
+
+Botão: "Salvar Blog"
+
+/configuracoes
+Campos para cadastrar chave da API do modelo IA (DeepSeek, OpenAI, Claude)
+
+Seletor de modelo padrão
+
+Checkbox para ativar/desativar fallback automático
+
+Botão: "Salvar Configurações"
+
+/executar_busca
+Seletor de blog e múltiplas categorias cadastradas (checkbox)
+
+Campo para selecionar prompt base (upload ou lista)
+
+Seletor de modo: geração real ou dry-run
+
+Botão: "Executar geração"
+
+Exibição em tempo real da fila de execução com status
+
+/executar_lote
+Botão único: "Executar todos os blogs e categorias marcadas"
+
+Seleção de quantas categorias por blog devem ser geradas
+
+Indicação de progresso por blog/categoria (com logs visíveis)
+
+/painel (opcional)
+Dashboard de monitoramento das execuções, tempo médio, falhas, clusters repetidos evitados, prompts gerados com sucesso
+
+2. Estratégia de Coleta e Geração
+Fontes de Coleta
+O sistema deve coletar dados de palavras-chave a partir das seguintes fontes, usando APIs públicas, scraping legal e estratégias contextuais:
+
+Google Suggest (autocomplete)
+
+Google Trends (tendências por local e categoria)
+
+Google PAA (People Also Ask / “As pessoas também perguntam”)
+
+Google Related Searches (buscas relacionadas)
+
+YouTube (tópicos e linguagem usada nos vídeos)
+
+Reddit (tópicos orgânicos por nicho e subreddit)
+
+Pinterest (tendências visuais e descritivas)
+
+TikTok (hashtags e busca semântica emergente)
+
+Discord (tópicos em comunidades técnicas ou de nicho)
+
+Amazon (pesquisas e produtos com alta intenção de compra)
+
+Google Search Console (queries reais do blog conectado)
+
+Expansão e Validação
+Aplicar heurísticas de expansão semântica para transformar termos curtos em palavras-chave de cauda longa
+
+Usar padrões como:
+
+“como [verbo] [termo] para [segmento]”
+
+“melhor [produto] em [ano] para [perfil]”
+
+Validar cada termo com o Google Keyword Planner, extraindo:
+
+Volume mensal de busca
+
+Custo por clique (CPC)
+
+Concorrência
+
+Classificar intenção: informacional, comercial, navegacional ou transacional
+
+python
+Copiar
+Editar
+score = 0.4 * volume + 0.3 * cpc + 0.2 * intenção + 0.1 * concorrência
+Registrar a justificativa da escolha: por que o termo foi aceito (ex: “alta intenção comercial, baixo CPC”)
+
+Permitir blacklist de termos para evitar palavras irrelevantes ou já testadas sem sucesso
+
+. Clusterização e Geração de Prompt
+Clusterização
+Cada cluster deve conter 6 termos semanticamente conectados, sendo:
+
+1 head keyword (maior volume/contexto)
+
+5 long-tail keywords
+
+Utilizar embeddings semânticos com sentence-transformers para garantir agrupamento por intenção e contexto, não apenas similaridade léxica
+
+Cada termo deve ser associado a uma fase do funil de conversão:
+
+Descoberta
+
+Curiosidade
+
+Consideração
+
+Comparação
+
+Decisão
+
+Autoridade
+
+A ordem dos termos no cluster define a ordem dos artigos no prompt
+
+Geração do Prompt (.prompt.txt)
+Para cada cluster, gerar um único .prompt.txt contendo:
+
+6 artigos de 3.500 palavras cada
+
+Cada artigo deve:
+
+Ter 1 palavra-chave principal (long-tail obrigatória)
+
+Incluir pelo menos 3 palavras-chave secundárias relacionadas
+
+Ser posicionado numa fase do funil
+
+Estar numerado de 1 a 6 explicitamente, para controle de agendamento
+
+Obedecer à estrutura editorial:
+
+H1, H2, H3
+
+Meta descrição
+
+Introdução, subtítulos, conclusão com CTA
+
+Densidade de palavra-chave ~1,5%
+
+8 FAQs por artigo
+
+Indicação da fase do funil discretamente no texto
+
+Instrução fixa dentro do prompt
+
+Você deve gerar 6 artigos distintos com base nas palavras-chave a seguir.
+
+Cada artigo deve estar numerado de 1 a 6, em ordem crescente, respeitando a sequência abaixo, pois serão publicados com 4 horas de intervalo. Cada artigo pertence a uma fase da jornada de conteúdo:
+
+1. Artigo 1 — Fase: Descoberta — Palavra-chave principal: [...]
+2. Artigo 2 — Fase: Curiosidade — Palavra-chave principal: [...]
+3. Artigo 3 — Fase: Consideração — Palavra-chave principal: [...]
+4. Artigo 4 — Fase: Comparação — Palavra-chave principal: [...]
+5. Artigo 5 — Fase: Decisão — Palavra-chave principal: [...]
+6. Artigo 6 — Fase: Autoridade — Palavra-chave principal: [...]
+
+Todos os artigos devem seguir o estilo definido no arquivo `prompt_base.txt` deste blog.
+
+Extras no prompt:
+Resumo final com estrutura JSON no final do .txt, contendo:
+
+Termo principal
+
+Intenção
+
+Fase do funil
+
+Racional de escolha
+
+Checklist automático no fim do prompt validando:
+
+Inclusão de CTA
+
+Densidade de palavra-chave
+
+Uso de H2 e H3
+
+Inclusão de FAQ
+
+Conexão lógica com fase do funil
+
+ Funcionalidades Complementares
+Fallback de Modelos IA
+Se o modelo IA principal (ex: DeepSeek) falhar:
+
+Tentar automaticamente o próximo modelo definido (OpenAI GPT-4o, Claude, etc.)
+
+Suportar até 3 tentativas por prompt
+
+Registrar logs de fallback por blog/categoria com timestamp e modelo utilizado
+
+Modo Dry Run
+Modo de execução que realiza:
+
+Coleta
+
+Enriquecimento
+
+Validação
+
+Clusterização
+
+Não chama modelos IA — útil para auditoria, simulação, análise sem custos
+
+Gera saída .json com estrutura de preview
+
+Aprendizado Adaptativo (ML)
+Armazena todos os clusters já usados, suas keywords e desempenho
+
+Impede repetição de clusters com similaridade ≥ 70%
+
+Sugere novos temas baseando-se em:
+
+Gaps identificados entre categorias
+
+Baixo volume recente em determinadas fases
+
+Alta performance histórica por intenção e tipo de público
+
+Google Search Console (GSC) Feedback
+Consulta o GSC para os domínios cadastrados
+
+Identifica:
+
+Termos que geraram impressões e cliques
+
+Páginas com baixo CTR ou baixa posição média
+
+Gera relatórios por categoria com sugestões para:
+
+Reforço de cluster
+
+Ajuste de termo
+
+Correção de intenção ou fase do funil
+
+Orquestração e Execução Sequencial
+Todo o fluxo é executado via pipeline coordenado (por categoria ou blog completo)
+
+Suporte a paralelismo com segurança via:
+
+Celery (fila assíncrona)
+
+asyncio (opcional)
+
+Cada execução gera:
+
+Log em JSON
+
+Histórico de termos usados
+
+Arquivo .zip com os .prompt.txt gerados
+
+[document original mantido acima]
+
+---
+
+## **Critérios Avançados de Qualidade**
+
+Além dos princípios CoCoT, RISK, CRISP, FAIIR, DRY, SRP, KISS e SOLID, o sistema deve adotar também os seguintes frameworks e boas práticas adicionais, altamente pertinentes à arquitetura e finalidade deste projeto:
+
+### **RAIL (Responsiveness, Animation, Idle, Load)**
+> Otimização da experiência do usuário na interface
+- **Responsiveness**: respostas imediatas a interações do usuário (ex: feedback ao clicar "Executar")
+- **Animation**: fluidez visual em carregamento e progresso
+- **Idle**: uso inteligente do tempo ocioso para pré-carregamento
+- **Load**: carregamento eficiente e progressivo de componentes da interface
+
+### **Twelve-Factor App Principles (adaptado para serviços modulares)**
+> Melhores práticas para software escalável e robusto
+- **Configuração isolada por ambiente (config.py, .env)**
+- **Logs persistentes e legíveis por execução**
+- **Execução stateless por ciclo de geração (blog + categoria)**
+- **Separação clara entre build, release e run**
+
+### **CQRS (Command Query Responsibility Segregation)**
+> Separar lógica de execução de geração (comando) da leitura e consulta de histórico (query)
+- Melhora organização e desempenho
+- Facilita testes e manutenção das interfaces e da lógica de geração
+
+### **AQR (Accuracy, Quality, Reliability)**
+> Validação qualitativa do conteúdo gerado por IA
+- **Accuracy**: aderência do texto ao termo e intenção
+- **Quality**: profundidade, estrutura, clareza e SEO
+- **Reliability**: consistência textual, ausência de contradições, coerência narrativa
+
+> Todos os critérios acima devem ser usados como **guia permanente de manutenção e evolução do sistema** sem comprometer modularidade, desempenho, auditabilidade ou qualidade final dos prompts e artigos gerados.
+

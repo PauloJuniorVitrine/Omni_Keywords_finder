@@ -1,0 +1,750 @@
+{
+  "timestamp": "2025-07-01T21:25:05.560623",
+  "arquivos_removidos": [],
+  "total_arquivos_removidos": 0,
+  "dead_code_identificado": [
+    {
+      "linha": 19,
+      "conteudo": "# TODO: Implementar integração real com API/login do Instagram",
+      "arquivo": "infrastructure\\coleta\\instagram_auth.py"
+    },
+    {
+      "linha": 17,
+      "conteudo": "# TODO: Implementar parsing real conforme estrutura do Instagram",
+      "arquivo": "infrastructure\\coleta\\instagram_media_parser.py"
+    },
+    {
+      "linha": 17,
+      "conteudo": "# TODO: Implementar integração real com banco/storage",
+      "arquivo": "infrastructure\\coleta\\instagram_storage.py"
+    },
+    {
+      "linha": 30,
+      "conteudo": "# TODO: Implementar busca real",
+      "arquivo": "infrastructure\\coleta\\instagram_storage.py"
+    },
+    {
+      "linha": 261,
+      "conteudo": "# TODO: Implementar carregamento de arquivo YAML/JSON",
+      "arquivo": "infrastructure\\orchestrator\\config.py"
+    },
+    {
+      "linha": 268,
+      "conteudo": "# TODO: Implementar salvamento em arquivo YAML/JSON",
+      "arquivo": "infrastructure\\orchestrator\\config.py"
+    },
+    {
+      "linha": 461,
+      "conteudo": "# TODO: Implementar deserialização completa",
+      "arquivo": "infrastructure\\orchestrator\\progress_tracker.py"
+    },
+    {
+      "linha": 236,
+      "conteudo": "# TODO: Integrar com sistema de coleta existente",
+      "arquivo": "infrastructure\\orchestrator\\fluxo_completo_orchestrator.py"
+    },
+    {
+      "linha": 276,
+      "conteudo": "# TODO: Integrar com Google Keyword Planner",
+      "arquivo": "infrastructure\\orchestrator\\fluxo_completo_orchestrator.py"
+    },
+    {
+      "linha": 316,
+      "conteudo": "# TODO: Integrar com sistema de processamento existente",
+      "arquivo": "infrastructure\\orchestrator\\fluxo_completo_orchestrator.py"
+    },
+    {
+      "linha": 356,
+      "conteudo": "# TODO: Integrar com sistema de prompts existente",
+      "arquivo": "infrastructure\\orchestrator\\fluxo_completo_orchestrator.py"
+    },
+    {
+      "linha": 396,
+      "conteudo": "# TODO: Integrar com sistema de exportação existente",
+      "arquivo": "infrastructure\\orchestrator\\fluxo_completo_orchestrator.py"
+    },
+    {
+      "linha": 74,
+      "conteudo": "# TODO: Adicionar outros validadores conforme necessário",
+      "arquivo": "infrastructure\\orchestrator\\etapas\\etapa_validacao.py"
+    },
+    {
+      "linha": 228,
+      "conteudo": "# TODO: Implementar busca no banco de dados",
+      "arquivo": "infrastructure\\notifications\\avancado\\notification_manager.py"
+    },
+    {
+      "linha": 341,
+      "conteudo": "# TODO: Implementar busca no banco de dados",
+      "arquivo": "infrastructure\\notifications\\avancado\\notification_manager.py"
+    },
+    {
+      "linha": 560,
+      "conteudo": "# TODO: Implementar busca no banco de dados",
+      "arquivo": "infrastructure\\notifications\\avancado\\notification_manager.py"
+    },
+    {
+      "linha": 356,
+      "conteudo": "# TODO: Implementar busca no banco de dados",
+      "arquivo": "infrastructure\\notifications\\avancado\\channels\\email_channel.py"
+    },
+    {
+      "linha": 143,
+      "conteudo": "# TODO: Implementar busca no banco de dados",
+      "arquivo": "infrastructure\\notifications\\avancado\\channels\\sms_channel.py"
+    },
+    {
+      "linha": 253,
+      "conteudo": "# TODO: Implementar integração real com Twilio API",
+      "arquivo": "infrastructure\\notifications\\avancado\\channels\\sms_channel.py"
+    },
+    {
+      "linha": 271,
+      "conteudo": "# TODO: Implementar integração real com AWS SNS",
+      "arquivo": "infrastructure\\notifications\\avancado\\channels\\sms_channel.py"
+    },
+    {
+      "linha": 289,
+      "conteudo": "# TODO: Implementar integração real com Google Cloud",
+      "arquivo": "infrastructure\\notifications\\avancado\\channels\\sms_channel.py"
+    },
+    {
+      "linha": 33,
+      "conteudo": "# TODO: Atualizar coletores, processadores e domínio para usar estas funções (🔶 pendente de testes)",
+      "arquivo": "shared\\keyword_utils.py"
+    },
+    {
+      "linha": 244,
+      "conteudo": "// TODO: remove this in the next major version",
+      "arquivo": "tests\\e2e\\node_modules\\ansi-escapes\\index.d.ts"
+    },
+    {
+      "linha": 3,
+      "conteudo": "// TODO: remove this in the next major version",
+      "arquivo": "tests\\e2e\\node_modules\\ansi-escapes\\index.js"
+    },
+    {
+      "linha": 104,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\get-stream\\index.d.ts"
+    },
+    {
+      "linha": 56,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\get-stream\\index.js"
+    },
+    {
+      "linha": 16,
+      "conteudo": "// TODO: Remove the `.reduce` call.",
+      "arquivo": "tests\\e2e\\node_modules\\global-dirs\\index.js"
+    },
+    {
+      "linha": 1289,
+      "conteudo": "// TODO: allow reseeding after first request",
+      "arquivo": "tests\\e2e\\node_modules\\jsbn\\index.js"
+    },
+    {
+      "linha": 54,
+      "conteudo": "// TODO: use media-typer",
+      "arquivo": "tests\\e2e\\node_modules\\mime-types\\index.js"
+    },
+    {
+      "linha": 78,
+      "conteudo": "// TODO: should this even be in this module?",
+      "arquivo": "tests\\e2e\\node_modules\\mime-types\\index.js"
+    },
+    {
+      "linha": 91,
+      "conteudo": "// TODO: use content-type or other module",
+      "arquivo": "tests\\e2e\\node_modules\\mime-types\\index.js"
+    },
+    {
+      "linha": 112,
+      "conteudo": "// TODO: use media-typer",
+      "arquivo": "tests\\e2e\\node_modules\\mime-types\\index.js"
+    },
+    {
+      "linha": 41,
+      "conteudo": "// TODO: Remove this for the next major release, refactor the whole definition to:",
+      "arquivo": "tests\\e2e\\node_modules\\mimic-fn\\index.d.ts"
+    },
+    {
+      "linha": 12,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\mimic-fn\\index.js"
+    },
+    {
+      "linha": 85,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\npm-run-path\\index.d.ts"
+    },
+    {
+      "linha": 31,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\npm-run-path\\index.js"
+    },
+    {
+      "linha": 60,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\onetime\\index.d.ts"
+    },
+    {
+      "linha": 35,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\onetime\\index.js"
+    },
+    {
+      "linha": 34,
+      "conteudo": "// TODO: Remove this for the next major release, refactor the whole definition to:",
+      "arquivo": "tests\\e2e\\node_modules\\path-key\\index.d.ts"
+    },
+    {
+      "linha": 15,
+      "conteudo": "// TODO: Remove this for the next major release",
+      "arquivo": "tests\\e2e\\node_modules\\path-key\\index.js"
+    },
+    {
+      "linha": 106,
+      "conteudo": "// TODO: Should we be stricter and perform validation?",
+      "arquivo": "tests\\e2e\\node_modules\\proxy-from-env\\test.js"
+    },
+    {
+      "linha": 1,
+      "conteudo": "// XXX remove in v8 or beyond",
+      "arquivo": "tests\\e2e\\node_modules\\semver\\preload.js"
+    },
+    {
+      "linha": 23,
+      "conteudo": "// TODO: remove this in the next major version, refactor the whole definition to:",
+      "arquivo": "tests\\e2e\\node_modules\\string-width\\index.d.ts"
+    },
+    {
+      "linha": 46,
+      "conteudo": "// TODO: remove this in the next major version",
+      "arquivo": "tests\\e2e\\node_modules\\string-width\\index.js"
+    },
+    {
+      "linha": 2160,
+      "conteudo": "// TODO: Completely remove this in v0.15.",
+      "arquivo": "tests\\e2e\\node_modules\\tweetnacl\\nacl-fast.js"
+    },
+    {
+      "linha": 947,
+      "conteudo": "// TODO: Completely remove this in v0.15.",
+      "arquivo": "tests\\e2e\\node_modules\\tweetnacl\\nacl.js"
+    },
+    {
+      "linha": 204,
+      "conteudo": "// TODO(@KhafraDev): a type could likely be implemented that can infer the return type",
+      "arquivo": "tests\\e2e\\node_modules\\undici-types\\webidl.d.ts"
+    },
+    {
+      "linha": 571,
+      "conteudo": "// TODO: the inflateFilter may cause a memory leak. see Issue #27.",
+      "arquivo": "tests\\e2e\\node_modules\\yauzl\\index.js"
+    },
+    {
+      "linha": 3,
+      "conteudo": "// TODO: This can just be `export type Primitive = not object` when the `not` keyword is out.",
+      "arquivo": "tests\\e2e\\node_modules\\type-fest\\source\\basic.d.ts"
+    },
+    {
+      "linha": 16,
+      "conteudo": "// TODO: Remove the `= unknown` sometime  in the future when most users are on TS 3.5 as it's now the default",
+      "arquivo": "tests\\e2e\\node_modules\\type-fest\\source\\basic.d.ts"
+    },
+    {
+      "linha": 1,
+      "conteudo": "// TODO: Remove this when we target TypeScript >=3.5.",
+      "arquivo": "tests\\e2e\\node_modules\\type-fest\\source\\require-exactly-one.d.ts"
+    },
+    {
+      "linha": 39,
+      "conteudo": "// TODO: It's weird that `allowSpecialUseDomain` defaults to false with no callback,",
+      "arquivo": "tests\\e2e\\node_modules\\tough-cookie\\dist\\memstore.js"
+    },
+    {
+      "linha": 347,
+      "conteudo": "// TODO: It feels weird to be manipulating the store as a side effect of a method.",
+      "arquivo": "tests\\e2e\\node_modules\\tough-cookie\\dist\\cookie\\cookieJar.js"
+    },
+    {
+      "linha": 403,
+      "conteudo": "// TODO: Refactor to avoid using a callback",
+      "arquivo": "tests\\e2e\\node_modules\\tough-cookie\\dist\\cookie\\cookieJar.js"
+    },
+    {
+      "linha": 555,
+      "conteudo": "// TODO persist lastAccessed",
+      "arquivo": "tests\\e2e\\node_modules\\tough-cookie\\dist\\cookie\\cookieJar.js"
+    },
+    {
+      "linha": 847,
+      "conteudo": "// TODO: Refactor to avoid using callback",
+      "arquivo": "tests\\e2e\\node_modules\\tough-cookie\\dist\\cookie\\cookieJar.js"
+    },
+    {
+      "linha": 487,
+      "conteudo": "// TODO build?",
+      "arquivo": "tests\\e2e\\node_modules\\semver\\classes\\range.js"
+    },
+    {
+      "linha": 8,
+      "conteudo": "// TODO: When this enum is removed, replace it with a type alias. See #4556.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\Notification.ts"
+    },
+    {
+      "linha": 175,
+      "conteudo": "// TODO: consider removing this check. The only way to cause this would be to",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\Notification.ts"
+    },
+    {
+      "linha": 38,
+      "conteudo": "// HACK: Since TypeScript inherits static properties too, we have to",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\Observable.ts"
+    },
+    {
+      "linha": 337,
+      "conteudo": "// HACK: As of TS 4.2.2, The provided types for the iterator results of a `ReadableStreamDefaultReader`",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\types.ts"
+    },
+    {
+      "linha": 346,
+      "conteudo": "// TODO: Remove this as we move away from deprecated signatures",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\observable\\generate.ts"
+    },
+    {
+      "linha": 97,
+      "conteudo": "// DEPRECATED PATH",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\delayWhen.ts"
+    },
+    {
+      "linha": 73,
+      "conteudo": "// DEPRECATED PATH",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\exhaustMap.ts"
+    },
+    {
+      "linha": 67,
+      "conteudo": "// TODO: This try/finally was only added for `useDeprecatedSynchronousErrorHandling`.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\finalize.ts"
+    },
+    {
+      "linha": 68,
+      "conteudo": "// REMOVE THIS WHEN THAT HOT GARBAGE IS REMOVED IN V8.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\finalize.ts"
+    },
+    {
+      "linha": 87,
+      "conteudo": "// DEPRECATED PATH",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\mergeMap.ts"
+    },
+    {
+      "linha": 9,
+      "conteudo": "// TODO: link to a \"redux pattern\" section in the guide (location TBD)",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\scan.ts"
+    },
+    {
+      "linha": 5,
+      "conteudo": "// TODO: Generate a marble diagram for these docs.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\switchScan.ts"
+    },
+    {
+      "linha": 59,
+      "conteudo": "// TODO(benlesh): make this an interface, export the interface, but not the implemented class,",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\timeInterval.ts"
+    },
+    {
+      "linha": 100,
+      "conteudo": "// TODO: We need to figure out if this really makes sense. We're technically",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\windowCount.ts"
+    },
+    {
+      "linha": 66,
+      "conteudo": "// TODO: At somepoint, we should investigate the performance implications here, and look",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\operators\\withLatestFrom.ts"
+    },
+    {
+      "linha": 122,
+      "conteudo": "// HACK: Since code elsewhere is relying on the \"truthiness\" of the",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\scheduler\\AsyncAction.ts"
+    },
+    {
+      "linha": 124,
+      "conteudo": "// TODO: Clean this up when we refactor schedulers mid-version-8 or so.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\scheduler\\AsyncAction.ts"
+    },
+    {
+      "linha": 38,
+      "conteudo": "// HACK: In the past, this was returning `void`. However, `void` isn't a valid",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\scheduler\\QueueAction.ts"
+    },
+    {
+      "linha": 6,
+      "conteudo": "// TODO: We should create error codes that can be looked up, so this can be less verbose.",
+      "arquivo": "tests\\e2e\\node_modules\\rxjs\\src\\internal\\util\\throwUnobservableError.ts"
+    },
+    {
+      "linha": 122,
+      "conteudo": "// TODO: Looks like there is bug in Node fs.createReadStream",
+      "arquivo": "tests\\e2e\\node_modules\\form-data\\lib\\form_data.js"
+    },
+    {
+      "linha": 9,
+      "conteudo": "// TODO: Remove `|| spawned.stdin === undefined` once we drop support for Node.js <=12.2.0",
+      "arquivo": "tests\\e2e\\node_modules\\execa\\lib\\stream.js"
+    },
+    {
+      "linha": 15,
+      "conteudo": "// TODO if(x.compareTo(q) >= 0) error",
+      "arquivo": "tests\\e2e\\node_modules\\ecc-jsbn\\lib\\ec.js"
+    },
+    {
+      "linha": 162,
+      "conteudo": "// TODO: optimized handling of constants",
+      "arquivo": "tests\\e2e\\node_modules\\ecc-jsbn\\lib\\ec.js"
+    },
+    {
+      "linha": 189,
+      "conteudo": "// TODO: modularize the multiplication algorithm",
+      "arquivo": "tests\\e2e\\node_modules\\ecc-jsbn\\lib\\ec.js"
+    },
+    {
+      "linha": 150,
+      "conteudo": "// TODO: make this into a proper hashtable",
+      "arquivo": "tests\\e2e\\node_modules\\ecc-jsbn\\lib\\sec.js"
+    },
+    {
+      "linha": 209,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 225,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 254,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 16,
+      "conteudo": "// TODO it would be nice if all error objects could be enforced via types",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\lib\\errors.js"
+    },
+    {
+      "linha": 204,
+      "conteudo": "// TODO: raise minimum required TypeScript version to 3.7",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\cypress.d.ts"
+    },
+    {
+      "linha": 488,
+      "conteudo": "// TODO: Why is Subject unused?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\net-stubbing.d.ts"
+    },
+    {
+      "linha": 4393,
+      "conteudo": "// TODO: Consider whether forcing this is required.  Review failing tests when removed.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 4717,
+      "conteudo": "// TODO: Should this be for STATEMENT as well?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 5451,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the this._input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 6501,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 7318,
+      "conteudo": "// TODO the cast can be removed when @types/js-beautify will be up-to-date",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 8532,
+      "conteudo": "// TODO: Borrow typings from vue-router-next",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 8648,
+      "conteudo": "// TODO: get the real displayName and props from VTU shallowMount",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 4373,
+      "conteudo": "// TODO: Consider whether forcing this is required.  Review failing tests when removed.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 4697,
+      "conteudo": "// TODO: Should this be for STATEMENT as well?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 5431,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the this._input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 6481,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 7298,
+      "conteudo": "// TODO the cast can be removed when @types/js-beautify will be up-to-date",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 8512,
+      "conteudo": "// TODO: Borrow typings from vue-router-next",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 8628,
+      "conteudo": "// TODO: get the real displayName and props from VTU shallowMount",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 4393,
+      "conteudo": "// TODO: Consider whether forcing this is required.  Review failing tests when removed.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 4717,
+      "conteudo": "// TODO: Should this be for STATEMENT as well?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 5451,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the this._input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 6501,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 7318,
+      "conteudo": "// TODO the cast can be removed when @types/js-beautify will be up-to-date",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 8532,
+      "conteudo": "// TODO: Borrow typings from vue-router-next",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 8648,
+      "conteudo": "// TODO: get the real displayName and props from VTU shallowMount",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.cjs.js"
+    },
+    {
+      "linha": 4373,
+      "conteudo": "// TODO: Consider whether forcing this is required.  Review failing tests when removed.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 4697,
+      "conteudo": "// TODO: Should this be for STATEMENT as well?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 5431,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the this._input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 6481,
+      "conteudo": "// HACK: newline parsing inconsistent. This brute force normalizes the input.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 7298,
+      "conteudo": "// TODO the cast can be removed when @types/js-beautify will be up-to-date",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 8512,
+      "conteudo": "// TODO: Borrow typings from vue-router-next",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 8628,
+      "conteudo": "// TODO: get the real displayName and props from VTU shallowMount",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\vue\\vue\\dist\\cypress-vue.esm-bundler.js"
+    },
+    {
+      "linha": 777,
+      "conteudo": "// TODO how to model promisifyAll?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\bluebird\\index.d.ts"
+    },
+    {
+      "linha": 792,
+      "conteudo": "// TODO: After https://github.com/Microsoft/TypeScript/issues/2983 is implemented, we can use",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\bluebird\\index.d.ts"
+    },
+    {
+      "linha": 853,
+      "conteudo": "// TODO enable more overloads",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\bluebird\\index.d.ts"
+    },
+    {
+      "linha": 1211,
+      "conteudo": "// TODO specify resolver callback",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\bluebird\\index.d.ts"
+    },
+    {
+      "linha": 86,
+      "conteudo": "// TODO: The return type should reflect newly selected types.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\jquery\\JQuery.d.ts"
+    },
+    {
+      "linha": 68,
+      "conteudo": "// HACK: This is the factory function returned when importing jQuery without a DOM. Declaring it separately breaks using the type parameter on JQueryStatic.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\jquery\\JQueryStatic.d.ts"
+    },
+    {
+      "linha": 69,
+      "conteudo": "// HACK: The discriminator parameter handles the edge case of passing a Window object to JQueryStatic. It doesn't actually exist on the factory function.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\jquery\\JQueryStatic.d.ts"
+    },
+    {
+      "linha": 3943,
+      "conteudo": "// TODO: Is the first element always a string or is that specific to the 'fx' queue?",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\jquery\\misc.d.ts"
+    },
+    {
+      "linha": 1777,
+      "conteudo": "// TODO: Probably should just put all these methods on Object and forget about it.",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\types\\lodash\\common\\object.d.ts"
+    },
+    {
+      "linha": 19,
+      "conteudo": "// TODO handle this error using our standard",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\lib\\tasks\\state.js"
+    },
+    {
+      "linha": 33,
+      "conteudo": "// TODO handle this error using our standard",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\lib\\tasks\\state.js"
+    },
+    {
+      "linha": 47,
+      "conteudo": "// TODO handle this error using our standard",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\lib\\tasks\\state.js"
+    },
+    {
+      "linha": 95,
+      "conteudo": "// TODO: when execa > 1.1 is released",
+      "arquivo": "tests\\e2e\\node_modules\\cypress\\lib\\tasks\\verify.js"
+    },
+    {
+      "linha": 5,
+      "conteudo": "// TODO: including these in blob-util.ts causes typedoc to generate docs for them,",
+      "arquivo": "tests\\e2e\\node_modules\\blob-util\\dist\\blob-util.cjs.js"
+    },
+    {
+      "linha": 1,
+      "conteudo": "// TODO: including these in blob-util.ts causes typedoc to generate docs for them,",
+      "arquivo": "tests\\e2e\\node_modules\\blob-util\\dist\\blob-util.es.js"
+    },
+    {
+      "linha": 7,
+      "conteudo": "// TODO: including these in blob-util.ts causes typedoc to generate docs for them,",
+      "arquivo": "tests\\e2e\\node_modules\\blob-util\\dist\\blob-util.js"
+    },
+    {
+      "linha": 439,
+      "conteudo": "// TODO: In next major @types/node version, change default TReturn to undefined.",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\globals.d.ts"
+    },
+    {
+      "linha": 446,
+      "conteudo": "// TODO: In next major @types/node version, change default TReturn to undefined.",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\globals.d.ts"
+    },
+    {
+      "linha": 759,
+      "conteudo": "// TODO: consider removing in a future major version update",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\module.d.ts"
+    },
+    {
+      "linha": 46,
+      "conteudo": "// TODO: remove empty ConnectOpts placeholder at next major @types/node version.",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\net.d.ts"
+    },
+    {
+      "linha": 2275,
+      "conteudo": "// TODO: change the export to a wrapper function once node@0db38f0 is merged (breaking change)",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\test.d.ts"
+    },
+    {
+      "linha": 69,
+      "conteudo": "// TODO: remove in a future major version bump",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\timers.d.ts"
+    },
+    {
+      "linha": 2,
+      "conteudo": "// TODO: remove once this package no longer supports TS 5.1, and replace with a",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\compatibility\\disposable.d.ts"
+    },
+    {
+      "linha": 2,
+      "conteudo": "// TODO: these methods are not used within @types/node, and should be removed at the next",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\compatibility\\indexable.d.ts"
+    },
+    {
+      "linha": 6,
+      "conteudo": "// TODO: remove once this package no longer supports TS 5.5, and replace NodeJS.BuiltinIteratorReturn with BuiltinIteratorReturn.",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\compatibility\\iterators.d.ts"
+    },
+    {
+      "linha": 90,
+      "conteudo": "// TODO: Add `EventEmitter` close",
+      "arquivo": "tests\\e2e\\node_modules\\@types\\node\\fs\\promises.d.ts"
+    },
+    {
+      "linha": 242,
+      "conteudo": "// DEPRECATED: Warning for users of the old Unix Sockets URL Scheme",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\request\\request.js"
+    },
+    {
+      "linha": 934,
+      "conteudo": "// XXX This is different on 0.10, because SSL is strict by default",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\request\\request.js"
+    },
+    {
+      "linha": 118,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\xvfb\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 135,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\xvfb\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 163,
+      "conteudo": "// XXX (@Qix-) should we be logging these?",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\xvfb\\node_modules\\debug\\src\\browser.js"
+    },
+    {
+      "linha": 51,
+      "conteudo": "// TODO: More complete implementation of RFC 2617.",
+      "arquivo": "tests\\e2e\\node_modules\\@cypress\\request\\lib\\auth.js"
+    }
+  ],
+  "total_dead_code": 148,
+  "erros": [],
+  "total_erros": 0
+}

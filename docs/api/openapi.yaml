@@ -1,0 +1,570 @@
+openapi: 3.0.3
+info:
+  title: Omni Keywords Finder API
+  description: |
+    API completa para análise e descoberta de palavras-chave otimizadas para SEO.
+    Sistema avançado de análise semântica e otimização de conteúdo.
+  version: 2.0.0
+  contact:
+    name: Omni Keywords Finder Team
+    email: support@omnikeywords.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.omnikeywords.com/v2
+    description: Production server
+  - url: https://staging-api.omnikeywords.com/v2
+    description: Staging server
+  - url: http://localhost:8000/v2
+    description: Local development server
+
+tags:
+  - name: Keywords
+    description: Operações relacionadas à análise e descoberta de palavras-chave
+  - name: Content Analysis
+    description: Análise semântica e otimização de conteúdo
+  - name: SEO Tools
+    description: Ferramentas de otimização para SEO
+  - name: Analytics
+    description: Métricas e análises de performance
+  - name: Authentication
+    description: Autenticação e autorização
+  - name: Health
+    description: Monitoramento de saúde do sistema
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Verificar saúde do sistema
+      description: Endpoint para verificar o status de saúde da API
+      responses:
+        '200':
+          description: Sistema saudável
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Sistema indisponível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Autenticar usuário
+      description: Realizar login e obter token de acesso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /keywords/analyze:
+    post:
+      tags:
+        - Keywords
+      summary: Analisar palavras-chave
+      description: Analisar palavras-chave e gerar insights de SEO
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeywordAnalysisRequest'
+      responses:
+        '200':
+          description: Análise concluída com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeywordAnalysisResponse'
+        '400':
+          description: Dados de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /keywords/discover:
+    post:
+      tags:
+        - Keywords
+      summary: Descobrir novas palavras-chave
+      description: Descobrir palavras-chave relacionadas e oportunidades
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeywordDiscoveryRequest'
+      responses:
+        '200':
+          description: Descoberta concluída com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeywordDiscoveryResponse'
+        '400':
+          description: Dados de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /content/optimize:
+    post:
+      tags:
+        - Content Analysis
+      summary: Otimizar conteúdo
+      description: Otimizar conteúdo para SEO baseado em palavras-chave
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentOptimizationRequest'
+      responses:
+        '200':
+          description: Otimização concluída com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentOptimizationResponse'
+        '400':
+          description: Dados de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /analytics/performance:
+    get:
+      tags:
+        - Analytics
+      summary: Obter métricas de performance
+      description: Obter métricas de performance do sistema
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: start_date
+          in: query
+          description: Data de início (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Data de fim (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Métricas obtidas com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetricsResponse'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        uptime:
+          type: number
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+            cache:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+            ml_models:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        trace_id:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        token_type:
+          type: string
+          default: Bearer
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin, premium]
+        created_at:
+          type: string
+          format: date-time
+
+    KeywordAnalysisRequest:
+      type: object
+      required:
+        - keyword
+      properties:
+        keyword:
+          type: string
+          minLength: 1
+          maxLength: 100
+        language:
+          type: string
+          default: pt-BR
+        market:
+          type: string
+          default: BR
+        include_competitors:
+          type: boolean
+          default: true
+        include_trends:
+          type: boolean
+          default: true
+
+    KeywordAnalysisResponse:
+      type: object
+      properties:
+        keyword:
+          type: string
+        analysis:
+          $ref: '#/components/schemas/KeywordAnalysis'
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competitor'
+        trends:
+          $ref: '#/components/schemas/Trends'
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    KeywordAnalysis:
+      type: object
+      properties:
+        search_volume:
+          type: integer
+        difficulty:
+          type: number
+          minimum: 0
+          maximum: 100
+        cpc:
+          type: number
+        competition:
+          type: number
+          minimum: 0
+          maximum: 1
+        intent:
+          type: string
+          enum: [informational, navigational, transactional, commercial]
+
+    Competitor:
+      type: object
+      properties:
+        domain:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        rank:
+          type: integer
+        authority:
+          type: number
+
+    Trends:
+      type: object
+      properties:
+        monthly_trend:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              volume:
+                type: integer
+        seasonal_pattern:
+          type: string
+        growth_rate:
+          type: number
+
+    KeywordDiscoveryRequest:
+      type: object
+      required:
+        - seed_keywords
+      properties:
+        seed_keywords:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 10
+        language:
+          type: string
+          default: pt-BR
+        market:
+          type: string
+          default: BR
+        max_results:
+          type: integer
+          default: 50
+          maximum: 100
+
+    KeywordDiscoveryResponse:
+      type: object
+      properties:
+        discovered_keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiscoveredKeyword'
+        clusters:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeywordCluster'
+        opportunities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Opportunity'
+
+    DiscoveredKeyword:
+      type: object
+      properties:
+        keyword:
+          type: string
+        search_volume:
+          type: integer
+        difficulty:
+          type: number
+        cpc:
+          type: number
+        relevance_score:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    KeywordCluster:
+      type: object
+      properties:
+        name:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        avg_volume:
+          type: number
+        avg_difficulty:
+          type: number
+
+    Opportunity:
+      type: object
+      properties:
+        keyword:
+          type: string
+        opportunity_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        reasoning:
+          type: string
+        estimated_traffic:
+          type: integer
+
+    ContentOptimizationRequest:
+      type: object
+      required:
+        - content
+        - target_keywords
+      properties:
+        content:
+          type: string
+          minLength: 100
+        target_keywords:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+        content_type:
+          type: string
+          enum: [blog, product, landing, article]
+          default: blog
+        language:
+          type: string
+          default: pt-BR
+
+    ContentOptimizationResponse:
+      type: object
+      properties:
+        optimized_content:
+          type: string
+        seo_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptimizationSuggestion'
+        keyword_density:
+          type: object
+          additionalProperties:
+            type: number
+
+    OptimizationSuggestion:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [title, heading, content, meta, technical]
+        priority:
+          type: string
+          enum: [high, medium, low]
+        description:
+          type: string
+        current_value:
+          type: string
+        suggested_value:
+          type: string
+
+    PerformanceMetricsResponse:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            start_date:
+              type: string
+              format: date
+            end_date:
+              type: string
+              format: date
+        metrics:
+          type: object
+          properties:
+            total_analyses:
+              type: integer
+            avg_response_time:
+              type: number
+            success_rate:
+              type: number
+            user_satisfaction:
+              type: number
+        trends:
+          type: object
+          properties:
+            daily_usage:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  count:
+                    type: integer 

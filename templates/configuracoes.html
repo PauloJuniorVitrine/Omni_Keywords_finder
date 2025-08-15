@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Configurações de IA</h1>
+        <form id="form-configuracoes" method="post" action="/configuracoes">
+            <label for="api_key">Chave da API do modelo IA:</label>
+            <input type="password" id="api_key" name="api_key" required placeholder="Cole sua chave aqui">
+
+            <label for="modelo">Modelo padrão:</label>
+            <select id="modelo" name="modelo" required>
+                <option value="deepseek">DeepSeek</option>
+                <option value="openai">OpenAI GPT-4o</option>
+                <option value="claude">Claude</option>
+            </select>
+
+            <label for="fallback">Fallback automático:</label>
+            <input type="checkbox" id="fallback" name="fallback">
+            <span class="desc-campo">Ativar fallback para outro modelo em caso de falha</span>
+
+            <button type="submit">Salvar Configurações</button>
+        </form>
+        <div id="feedback" aria-live="polite">
+            {% if feedback %}
+                <div class="feedback {{ feedback_status }}">{{ feedback }}</div>
+            {% endif %}
+        </div>
+    </main>
+    <script src="/static/js/configuracoes.js"></script>
+</body>
+</html> 

@@ -1,0 +1,356 @@
+# 📋 IMP-010: Docker Compose Principal - Omni Keywords Finder
+# 🎯 Objetivo: Orquestração completa de serviços
+# 📅 Criado: 2024-12-27
+# 🔄 Versão: 2.0
+
+version: '3.8'
+
+services:
+  # ========================================
+  # 🚀 API PRINCIPAL
+  # ========================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: omni-keywords-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      - MONGODB_URI=mongodb://mongodb:27017/omni_keywords
+      - REDIS_URI=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    volumes:
+      - ./logs:/app/logs
+      - ./infrastructure/cache/dados:/app/infrastructure/cache/dados
+      - ./infrastructure/backup:/app/infrastructure/backup
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ========================================
+  # 🧪 API DE TESTES
+  # ========================================
+  api-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    container_name: omni-keywords-api-test
+    environment:
+      - ENVIRONMENT=testing
+      - LOG_LEVEL=debug
+      - TEST_MODE=true
+      - MONGODB_URI=mongodb://mongodb-test:27017/omni_keywords_test
+      - REDIS_URI=redis://redis-test:6379/1
+    depends_on:
+      - mongodb-test
+      - redis-test
+    networks:
+      - omni-network
+    profiles:
+      - test
+
+  # ========================================
+  # 🔧 API DE DESENVOLVIMENTO
+  # ========================================
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: omni-keywords-api-dev
+    ports:
+      - "8001:8000"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug
+      - DEBUG=true
+      - MONGODB_URI=mongodb://mongodb-dev:27017/omni_keywords_dev
+      - REDIS_URI=redis://redis-dev:6379/2
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    depends_on:
+      - mongodb-dev
+      - redis-dev
+    networks:
+      - omni-network
+    profiles:
+      - dev
+
+  # ========================================
+  # 🗄️ MONGODB PRINCIPAL
+  # ========================================
+  mongodb:
+    image: mongo:6.0
+    container_name: omni-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=omni2024
+      - MONGO_INITDB_DATABASE=omni_keywords
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ========================================
+  # 🗄️ MONGODB TESTE
+  # ========================================
+  mongodb-test:
+    image: mongo:6.0
+    container_name: omni-mongodb-test
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=omni2024
+      - MONGO_INITDB_DATABASE=omni_keywords_test
+    volumes:
+      - mongodb_test_data:/data/db
+    networks:
+      - omni-network
+    profiles:
+      - test
+
+  # ========================================
+  # 🗄️ MONGODB DESENVOLVIMENTO
+  # ========================================
+  mongodb-dev:
+    image: mongo:6.0
+    container_name: omni-mongodb-dev
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=omni2024
+      - MONGO_INITDB_DATABASE=omni_keywords_dev
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - omni-network
+    profiles:
+      - dev
+
+  # ========================================
+  # 🔴 REDIS PRINCIPAL
+  # ========================================
+  redis:
+    image: redis:7.2-alpine
+    container_name: omni-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass omni2024
+    volumes:
+      - redis_data:/data
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ========================================
+  # 🔴 REDIS TESTE
+  # ========================================
+  redis-test:
+    image: redis:7.2-alpine
+    container_name: omni-redis-test
+    command: redis-server --appendonly yes --requirepass omni2024
+    volumes:
+      - redis_test_data:/data
+    networks:
+      - omni-network
+    profiles:
+      - test
+
+  # ========================================
+  # 🔴 REDIS DESENVOLVIMENTO
+  # ========================================
+  redis-dev:
+    image: redis:7.2-alpine
+    container_name: omni-redis-dev
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes --requirepass omni2024
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - omni-network
+    profiles:
+      - dev
+
+  # ========================================
+  # 📊 PROMETHEUS
+  # ========================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: omni-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/telemetry/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # 📈 GRAFANA
+  # ========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: omni-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=omni2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/telemetry/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/telemetry/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - omni-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # 🔍 JAEGER (TRACING)
+  # ========================================
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: omni-jaeger
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP Collector
+      - "14250:14250"  # gRPC Collector
+      - "6831:6831/udp"  # UDP Agent
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    volumes:
+      - jaeger_data:/tmp
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/api/services"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # 📝 LOKI (LOGS)
+  # ========================================
+  loki:
+    image: grafana/loki:latest
+    container_name: omni-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - omni-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========================================
+  # 🔄 PROMTAIL (COLETA DE LOGS)
+  # ========================================
+  promtail:
+    image: grafana/promtail:latest
+    container_name: omni-promtail
+    volumes:
+      - ./config/telemetry/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - omni-network
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+# ========================================
+# 💾 VOLUMES
+# ========================================
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_test_data:
+    driver: local
+  mongodb_dev_data:
+    driver: local
+  redis_data:
+    driver: local
+  redis_test_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  jaeger_data:
+    driver: local
+  loki_data:
+    driver: local
+
+# ========================================
+# 🌐 NETWORKS
+# ========================================
+networks:
+  omni-network:
+    driver: bridge
+    name: omni-keywords-network 

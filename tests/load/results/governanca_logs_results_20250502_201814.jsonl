@@ -1,0 +1,3 @@
+{"timestamp": 1746227894.2750053, "type": "GET", "endpoint": "/api/governanca/logs?event=@@@@", "status_code": 200, "response_time_ms": 8.250800005043857, "response_length": 104, "exception": "Esperado 400/422, obtido 200", "url": "http://127.0.0.1:5000/api/governanca/logs?event=@@@@"}
+{"timestamp": 1746227894.2903411, "type": "GET", "endpoint": "/api/governanca/logs", "status_code": 200, "response_time_ms": 4.930600000079721, "response_length": 104, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/logs"}
+{"timestamp": 1746227894.5571573, "type": "GET", "endpoint": "/api/governanca/logs", "status_code": 200, "response_time_ms": 6.589599994185846, "response_length": 104, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/logs"}

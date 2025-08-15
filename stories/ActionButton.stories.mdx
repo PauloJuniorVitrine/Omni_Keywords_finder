@@ -1,0 +1,28 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+
+<Meta title="Comum/ActionButton" component={ActionButton} />
+
+# ActionButton
+
+Botão de ação utilizado no header e modais, conforme wireframes e proposta de interface.
+
+<Canvas>
+  <Story name="Primário (Criar)">
+    <ActionButton label="Criar" variant="primary" />
+  </Story>
+  <Story name="Secundário (Exportar)">
+    <ActionButton label="Exportar" variant="secondary" />
+  </Story>
+  <Story name="Upload Regras">
+    <ActionButton label="Upload Regras" variant="primary" />
+  </Story>
+  <Story name="Desabilitado">
+    <ActionButton label="Criar" variant="primary" disabled />
+  </Story>
+</Canvas>
+
+<ArgsTable story="Primário (Criar)" />
+
+## Referência Visual
+- Consulte `wireframes_dashboard.svg` e `wireframes_governanca.svg` para layout
+- Consulte `interface_proposta_v1.md` para animações e layer 

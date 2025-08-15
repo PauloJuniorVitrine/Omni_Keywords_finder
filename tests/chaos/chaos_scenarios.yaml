@@ -1,0 +1,352 @@
+# 🧪 INT-010: Cenários de Chaos Engineering - Omni Keywords Finder
+#
+# Tracing ID: INT_010_CHAOS_SCENARIOS_001
+# Data/Hora: 2025-01-27 17:00:00 UTC
+# Versão: 1.0
+# Status: 🚀 EM IMPLEMENTAÇÃO
+#
+# Objetivo: Cenários de caos realistas para testar resiliência
+# do sistema Omni Keywords Finder em condições extremas.
+
+scenarios:
+  # ========================================
+  # CENÁRIOS DE REDE
+  # ========================================
+  
+  - name: "Network Partition - Low Severity"
+    scenario: "network_partition"
+    severity: "low"
+    duration: 120
+    timeout: 300
+    description: "Simula partição de rede leve entre 30% dos nós"
+    partition_percentage: 0.3
+    partition_duration: 60
+    auto_recovery_enabled: true
+    recovery_timeout: 120
+    recovery_attempts: 2
+    
+  - name: "Network Partition - High Severity"
+    scenario: "network_partition"
+    severity: "high"
+    duration: 300
+    timeout: 600
+    description: "Simula partição de rede severa entre 70% dos nós"
+    partition_percentage: 0.7
+    partition_duration: 180
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS DE SERVIÇO
+  # ========================================
+  
+  - name: "Service Crash - Low Severity"
+    scenario: "service_failure"
+    severity: "low"
+    duration: 60
+    timeout: 180
+    description: "Simula crash de serviço não crítico"
+    service_name: "analytics_service"
+    failure_type: "crash"
+    auto_recovery_enabled: true
+    recovery_timeout: 60
+    recovery_attempts: 2
+    
+  - name: "Service Crash - Critical Severity"
+    scenario: "service_failure"
+    severity: "critical"
+    duration: 180
+    timeout: 600
+    description: "Simula crash de serviço crítico"
+    service_name: "omni_keywords_finder"
+    failure_type: "crash"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 5
+    
+  - name: "Service Slow Response"
+    scenario: "service_failure"
+    severity: "medium"
+    duration: 240
+    timeout: 480
+    description: "Simula serviço com resposta lenta"
+    service_name: "api_gateway"
+    failure_type: "slow"
+    auto_recovery_enabled: true
+    recovery_timeout: 120
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS DE BANCO DE DADOS
+  # ========================================
+  
+  - name: "Database Connection Failure"
+    scenario: "database_failure"
+    severity: "high"
+    duration: 180
+    timeout: 600
+    description: "Simula falha de conexão com banco de dados"
+    db_host: "localhost"
+    db_port: 5432
+    db_failure_type: "connection_refused"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  - name: "Database Slow Queries"
+    scenario: "database_failure"
+    severity: "medium"
+    duration: 300
+    timeout: 600
+    description: "Simula queries lentas no banco de dados"
+    db_host: "localhost"
+    db_port: 5432
+    db_failure_type: "slow_queries"
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+    
+  # ========================================
+  # CENÁRIOS DE RECURSOS
+  # ========================================
+  
+  - name: "Memory Leak - Low Severity"
+    scenario: "memory_leak"
+    severity: "low"
+    duration: 300
+    timeout: 600
+    description: "Simula vazamento de memória leve"
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+    
+  - name: "Memory Leak - High Severity"
+    scenario: "memory_leak"
+    severity: "high"
+    duration: 180
+    timeout: 600
+    description: "Simula vazamento de memória severo"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  - name: "CPU Spike - Medium Severity"
+    scenario: "cpu_spike"
+    severity: "medium"
+    duration: 240
+    timeout: 480
+    description: "Simula pico de CPU de 70%"
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+    
+  - name: "CPU Spike - High Severity"
+    scenario: "cpu_spike"
+    severity: "high"
+    duration: 180
+    timeout: 600
+    description: "Simula pico de CPU de 90%"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  - name: "Disk Full - Critical Severity"
+    scenario: "disk_full"
+    severity: "critical"
+    duration: 120
+    timeout: 600
+    description: "Simula disco cheio (98% de uso)"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS DE CACHE
+  # ========================================
+  
+  - name: "Cache Failure"
+    scenario: "cache_failure"
+    severity: "medium"
+    duration: 180
+    timeout: 480
+    description: "Simula falha completa do sistema de cache"
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+    
+  # ========================================
+  # CENÁRIOS DE API
+  # ========================================
+  
+  - name: "API Timeout"
+    scenario: "api_timeout"
+    severity: "medium"
+    duration: 240
+    timeout: 480
+    description: "Simula timeouts em APIs externas"
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+    
+  - name: "Rate Limit Exceeded"
+    scenario: "rate_limit_exceeded"
+    severity: "high"
+    duration: 180
+    timeout: 600
+    description: "Simula exceder rate limits de APIs externas"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS DE CARGA
+  # ========================================
+  
+  - name: "Concurrent Users Spike"
+    scenario: "concurrent_users_spike"
+    severity: "high"
+    duration: 300
+    timeout: 600
+    description: "Simula pico de usuários concorrentes"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS DE DEPENDÊNCIAS
+  # ========================================
+  
+  - name: "Dependency Failure"
+    scenario: "dependency_failure"
+    severity: "critical"
+    duration: 180
+    timeout: 600
+    description: "Simula falha de dependência externa crítica"
+    auto_recovery_enabled: true
+    recovery_timeout: 300
+    recovery_attempts: 3
+    
+  # ========================================
+  # CENÁRIOS ALEATÓRIOS
+  # ========================================
+  
+  - name: "Random Failures"
+    scenario: "random_failures"
+    severity: "medium"
+    duration: 300
+    timeout: 600
+    description: "Simula falhas aleatórias em diferentes componentes"
+    fault_probability: 0.15
+    fault_duration: 30
+    fault_interval: 60
+    auto_recovery_enabled: true
+    recovery_timeout: 180
+    recovery_attempts: 2
+
+# ========================================
+# CONFIGURAÇÕES GLOBAIS
+# ========================================
+
+global_config:
+  # Configurações de monitoramento
+  monitoring_enabled: true
+  metrics_collection: true
+  alerting_enabled: true
+  
+  # Configurações de relatórios
+  report_enabled: true
+  report_format: "json"  # json, yaml, html
+  report_path: "chaos_reports"
+  
+  # Configurações de segurança
+  safety_checks_enabled: true
+  max_concurrent_tests: 1
+  cooldown_period: 300  # segundos entre testes
+  
+  # Configurações de notificação
+  notification_enabled: true
+  notification_channels:
+    - "slack"
+    - "email"
+    - "webhook"
+  
+  # Configurações de rollback
+  auto_rollback_enabled: true
+  rollback_timeout: 600
+  rollback_attempts: 3
+
+# ========================================
+# MÉTRICAS DE SUCESSO
+# ========================================
+
+success_criteria:
+  # Critérios de disponibilidade
+  availability_threshold: 0.99  # 99%
+  response_time_threshold: 2000  # ms
+  error_rate_threshold: 0.05  # 5%
+  
+  # Critérios de recuperação
+  recovery_time_threshold: 300  # segundos
+  auto_recovery_success_rate: 0.8  # 80%
+  
+  # Critérios de degradação
+  max_performance_degradation: 0.3  # 30%
+  max_functionality_loss: 0.1  # 10%
+
+# ========================================
+# ALERTAS E NOTIFICAÇÕES
+# ========================================
+
+alerts:
+  - name: "High Error Rate"
+    condition: "error_rate > 0.1"
+    severity: "high"
+    notification_channels: ["slack", "email"]
+    
+  - name: "Long Recovery Time"
+    condition: "recovery_time > 300"
+    severity: "medium"
+    notification_channels: ["slack"]
+    
+  - name: "Auto-Recovery Failed"
+    condition: "auto_recovery_success == false"
+    severity: "critical"
+    notification_channels: ["slack", "email", "webhook"]
+    
+  - name: "System Unavailable"
+    condition: "availability < 0.95"
+    severity: "critical"
+    notification_channels: ["slack", "email", "webhook"]
+
+# ========================================
+# SCHEDULE DE TESTES
+# ========================================
+
+schedule:
+  # Testes diários (baixa severidade)
+  daily:
+    time: "02:00"
+    scenarios:
+      - "Network Partition - Low Severity"
+      - "Service Crash - Low Severity"
+      - "Memory Leak - Low Severity"
+  
+  # Testes semanais (média severidade)
+  weekly:
+    day: "sunday"
+    time: "03:00"
+    scenarios:
+      - "Network Partition - High Severity"
+      - "Service Crash - Critical Severity"
+      - "Database Connection Failure"
+      - "CPU Spike - High Severity"
+  
+  # Testes mensais (alta severidade)
+  monthly:
+    day: "first_sunday"
+    time: "04:00"
+    scenarios:
+      - "Disk Full - Critical Severity"
+      - "Dependency Failure"
+      - "Random Failures" 

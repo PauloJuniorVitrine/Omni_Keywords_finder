@@ -1,0 +1,148 @@
+# =============================================================================
+# Istio Security Policies Configuration
+# =============================================================================
+# 
+# Este arquivo configura as políticas de segurança do Istio para
+# mTLS e authorization no Omni Keywords Finder.
+#
+# Tracing ID: istio-security-policies-2025-01-27-001
+# Versão: 1.0
+# Responsável: DevOps Team
+# =============================================================================
+
+---
+# Peer Authentication - mTLS
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: omni-keywords-finder-peer-auth
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder
+    environment: production
+    security: mTLS
+spec:
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    8000:
+      mode: STRICT
+    8001:
+      mode: STRICT
+    8002:
+      mode: STRICT
+
+---
+# Authorization Policy - API Access
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: omni-keywords-finder-api-auth
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-api
+    environment: production
+    security: authorization
+spec:
+  selector:
+    matchLabels:
+      app: omni-keywords-finder-api
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords-finder/sa/omni-keywords-finder-api"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/v1/keywords/*"]
+  - from:
+    - source:
+        namespaces: ["omni-keywords-finder"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+
+---
+# Authorization Policy - ML Service
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: omni-keywords-finder-ml-auth
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-ml
+    environment: production
+    security: authorization
+spec:
+  selector:
+    matchLabels:
+      app: omni-keywords-finder-ml
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords-finder/sa/omni-keywords-finder-api"]
+    to:
+    - operation:
+        methods: ["POST"]
+        paths: ["/api/v1/ml/predict"]
+  - from:
+    - source:
+        namespaces: ["omni-keywords-finder"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+
+---
+# Authorization Policy - Analytics Service
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: omni-keywords-finder-analytics-auth
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder-analytics
+    environment: production
+    security: authorization
+spec:
+  selector:
+    matchLabels:
+      app: omni-keywords-finder-analytics
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/omni-keywords-finder/sa/omni-keywords-finder-api"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/v1/analytics/*"]
+  - from:
+    - source:
+        namespaces: ["omni-keywords-finder"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+
+---
+# Request Authentication - JWT
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: omni-keywords-finder-jwt-auth
+  namespace: omni-keywords-finder
+  labels:
+    app: omni-keywords-finder
+    environment: production
+    security: JWT
+spec:
+  selector:
+    matchLabels:
+      app: omni-keywords-finder-api
+  jwtRules:
+  - issuer: "https://auth.omni-keywords-finder.com"
+    audiences:
+    - "omni-keywords-finder-api"
+    jwksUri: "https://auth.omni-keywords-finder.com/.well-known/jwks.json"
+    forwardOriginalToken: true 

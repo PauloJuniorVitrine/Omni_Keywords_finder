@@ -1,0 +1,1 @@
+{"timestamp": 1746231630.9659758, "type": "POST", "endpoint": "/api/governanca/regras/upload", "status_code": 200, "response_time_ms": 3.245699997933116, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/upload"}

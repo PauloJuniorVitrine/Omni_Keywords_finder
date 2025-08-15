@@ -1,0 +1,2 @@
+{"timestamp": 1746230954.2371051, "type": "GET", "endpoint": "/api/governanca/logs?event=validacao_keywords", "status_code": 200, "response_time_ms": 3.7847000057809055, "response_length": 104, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/logs?event=validacao_keywords"}
+{"timestamp": 1746230954.5347269, "type": "GET", "endpoint": "/api/governanca/logs?event=@@@@", "status_code": 200, "response_time_ms": 3.65359999705106, "response_length": 104, "exception": "Esperado 400/422, obtido 200", "url": "http://127.0.0.1:5000/api/governanca/logs?event=@@@@"}

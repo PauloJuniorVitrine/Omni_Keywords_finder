@@ -1,0 +1,78 @@
+// 📁 Arquivo: .cursor/rules/omni_rules.mdc.json
+// 🎯 Regras avançadas derivadas do geral_rules_melhorado.yaml, adaptadas ao formato MDC
+{
+  "name": "Omni Project Execution Rules",
+  "scope": "project",
+  "triggers": [
+    "onOpenProject",
+    "onRun",
+    "beforeGenerate",
+    "beforeSave"
+  ],
+  "description": "Regras críticas para execução automatizada e refinamento iterativo de projetos Omni com foco em completude, validação e versionamento seguro.",
+  "rules": [
+    {
+      "id": "plan-before-execute",
+      "description": "Gerar plano de execução detalhado antes de qualquer código.",
+      "trigger": "beforeGenerate",
+      "severity": "critical",
+      "action": "Gerar plano com objetivos, etapas, recursos, riscos e só prosseguir com aprovação."
+    },
+    {
+      "id": "auto-refine-cycle",
+      "description": "Refinar automaticamente até atingir 100% de conformidade.",
+      "trigger": "onFailure",
+      "severity": "error",
+      "action": "Executar até 5 ciclos iterativos seguros antes de fallback."
+    },
+    {
+      "id": "validate-structure-and-directories",
+      "description": "Confirmar se o prompt inclui estrutura de diretórios e plano sequencial.",
+      "trigger": "beforeGenerate",
+      "severity": "critical",
+      "action": "Bloquear geração se faltar seção '🗂️ Estrutura de Diretórios' no prompt."
+    },
+    {
+      "id": "save-with-versioning",
+      "description": "Salvar automaticamente com versionamento não destrutivo.",
+      "trigger": "beforeSave",
+      "severity": "error",
+      "action": "Salvar todos os artefatos com versão incremental (v1, v2, etc)."
+    },
+    {
+      "id": "full-orchestrated-execution",
+      "description": "Executar o plano completo com rastreabilidade entre as etapas.",
+      "trigger": "onRun",
+      "severity": "critical",
+      "action": "Executar plano aprovado do STEP-001 ao STEP-N sem interrupção. Gerar logs por etapa."
+    },
+    {
+      "id": "non-destructive-review",
+      "description": "Toda melhoria deve preservar conteúdo existente.",
+      "trigger": "onReview",
+      "severity": "error",
+      "action": "Refatorar apenas se for comprovadamente seguro. Nada pode ser apagado sem justificativa."
+    },
+    {
+      "id": "test-coverage-threshold",
+      "description": "Validar cobertura mínima de testes obrigatórios.",
+      "trigger": "afterTest",
+      "severity": "error",
+      "action": "Unitários ≥ 98%, Integração ≥ 95%, E2E ≥ 85%. Caso contrário, bloquear entrega."
+    },
+    {
+      "id": "generate-doc-and-changelog",
+      "description": "Gerar documentação e changelog automaticamente.",
+      "trigger": "afterGenerate",
+      "severity": "warning",
+      "action": "Criar docs/explanation.md e atualizar CHANGELOG.md."
+    },
+    {
+      "id": "auto-rollback-regressions",
+      "description": "Reverter automaticamente em caso de regressão por novos commits.",
+      "trigger": "afterTest",
+      "severity": "critical",
+      "action": "Detectar regressões e restaurar versão anterior."
+    }
+  ]
+}

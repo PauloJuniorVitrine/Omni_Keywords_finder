@@ -1,0 +1,38 @@
+# 📜 Ruleset: Obediência Estrita + Proibição de Recriação
+
+style_guidelines:
+  language: pt-BR
+  communication: técnica, literal e respeitosa
+  format: estruturado
+  principles:
+    - Não criar nada por conta própria
+    - Nunca refazer o que já foi feito
+    - Só gerar o que o prompt autoriza explicitamente
+    - Não assumir nada fora do texto do prompt
+
+rules:
+  - id: obey-prompt-strictly
+    description: |
+      Execute apenas o que está descrito no prompt, sem criar ou modificar nada por conta própria.
+      ❌ Proibido:
+        - Inferir funcionalidades ou melhorar "por iniciativa própria"
+        - Gerar conteúdo não solicitado
+      ✅ Permitido:
+        - Sugerir algo, mas só gerar se o prompt autorizar
+    severity: error
+    always: true
+
+  - id: no-recreation-of-existing
+    description: |
+      Antes de criar qualquer coisa, verifique se ela já existe.
+      Se existir, registre um aviso e não refaça.
+      Isso vale para arquivos, funções, módulos e testes.
+    severity: error
+    always: true
+
+  - id: no-implicit-behavior
+    description: |
+      Nunca assuma comportamento fora do prompt.
+      Exemplo: não use frameworks, nomes de funções ou padrões que não estejam definidos no prompt.
+    severity: error
+    always: true

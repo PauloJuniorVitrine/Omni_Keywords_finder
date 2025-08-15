@@ -1,0 +1,381 @@
+# 🚨 SISTEMA DE ALERTAS - OMNI KEYWORDS FINDER
+# 🎯 Objetivo: Alertas automáticos enterprise-grade
+# 📅 Data: 2025-01-27
+# 🔧 Versão: 1.0
+# 🏷️ Tracing ID: ALERTS_CONFIG_20250127_001
+
+# Configuração global do Alertmanager
+global:
+  resolve_timeout: 5m
+  slack_api_url: ${SLACK_WEBHOOK_URL}
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@omni-keywords-finder.com'
+  smtp_auth_username: ${EMAIL_USERNAME}
+  smtp_auth_password: ${EMAIL_PASSWORD}
+
+# Configuração de templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Configuração de rotas
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'slack-notifications'
+  routes:
+    # Alertas críticos - notificação imediata
+    - match:
+        severity: critical
+      receiver: 'pager-duty-critical'
+      continue: true
+      group_wait: 0s
+      group_interval: 5s
+      repeat_interval: 30m
+    
+    # Alertas de segurança - equipe de segurança
+    - match:
+        alertname: SecurityBreach
+      receiver: 'security-team'
+      continue: true
+    
+    # Alertas de performance - equipe de performance
+    - match:
+        alertname: HighLatency
+      receiver: 'performance-team'
+      continue: true
+    
+    # Alertas de banco de dados - DBA team
+    - match:
+        alertname: DatabaseIssue
+      receiver: 'dba-team'
+      continue: true
+
+# Configuração de receivers
+receivers:
+  # Notificações Slack
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#monitoring-alerts'
+        title: '🚨 {{ .GroupLabels.alertname }}'
+        text: |
+          **Alerta**: {{ .GroupLabels.alertname }}
+          **Serviço**: {{ .GroupLabels.service }}
+          **Severidade**: {{ .CommonLabels.severity }}
+          **Descrição**: {{ .CommonAnnotations.description }}
+          **Valor**: {{ .CommonAnnotations.value }}
+          **Tempo**: {{ .StartsAt | since }}
+          
+          {{ range .Alerts }}
+          **Instância**: {{ .Labels.instance }}
+          **Status**: {{ .Status }}
+          {{ end }}
+        
+        actions:
+          - type: button
+            text: 'Ver no Grafana'
+            url: '{{ .CommonAnnotations.grafana_url }}'
+          - type: button
+            text: 'Ver no Jaeger'
+            url: '{{ .CommonAnnotations.jaeger_url }}'
+        
+        send_resolved: true
+        icon_url: 'https://omni-keywords-finder.com/logo.png'
+        username: 'Omni Keywords Alerts'
+
+  # PagerDuty para alertas críticos
+  - name: 'pager-duty-critical'
+    pagerduty_configs:
+      - service_key: ${PAGERDUTY_SERVICE_KEY}
+        description: '{{ .GroupLabels.alertname }} - {{ .CommonAnnotations.description }}'
+        severity: '{{ if eq .CommonLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
+        client: 'Omni Keywords Finder'
+        client_url: '{{ .CommonAnnotations.grafana_url }}'
+        details:
+          firing: '{{ .Alerts.Firing | len }}'
+          status: '{{ .Status }}'
+          description: '{{ .CommonAnnotations.description }}'
+
+  # Equipe de segurança
+  - name: 'security-team'
+    slack_configs:
+      - channel: '#security-alerts'
+        title: '🔒 ALERTA DE SEGURANÇA'
+        text: |
+          **ALERTA CRÍTICO DE SEGURANÇA**
+          **Tipo**: {{ .GroupLabels.alertname }}
+          **Descrição**: {{ .CommonAnnotations.description }}
+          **Ação Imediata**: {{ .CommonAnnotations.action_required }}
+          
+          {{ range .Alerts }}
+          **IP**: {{ .Labels.source_ip }}
+          **Usuário**: {{ .Labels.user_id }}
+          **Timestamp**: {{ .StartsAt }}
+          {{ end }}
+        
+        send_resolved: false
+        icon_emoji: ':warning:'
+
+  # Equipe de performance
+  - name: 'performance-team'
+    slack_configs:
+      - channel: '#performance-alerts'
+        title: '⚡ ALERTA DE PERFORMANCE'
+        text: |
+          **ALERTA DE PERFORMANCE**
+          **Métrica**: {{ .GroupLabels.alertname }}
+          **Valor Atual**: {{ .CommonAnnotations.value }}
+          **Threshold**: {{ .CommonAnnotations.threshold }}
+          **Impacto**: {{ .CommonAnnotations.impact }}
+          
+          {{ range .Alerts }}
+          **Endpoint**: {{ .Labels.endpoint }}
+          **Latência**: {{ .Labels.response_time }}
+          {{ end }}
+        
+        send_resolved: true
+        icon_emoji: ':zap:'
+
+  # Equipe de DBA
+  - name: 'dba-team'
+    slack_configs:
+      - channel: '#database-alerts'
+        title: '🗄️ ALERTA DE BANCO DE DADOS'
+        text: |
+          **ALERTA DE BANCO DE DADOS**
+          **Problema**: {{ .GroupLabels.alertname }}
+          **Database**: {{ .Labels.database }}
+          **Descrição**: {{ .CommonAnnotations.description }}
+          
+          {{ range .Alerts }}
+          **Conexões**: {{ .Labels.connections }}
+          **Queries**: {{ .Labels.queries }}
+          {{ end }}
+        
+        send_resolved: true
+        icon_emoji: ':database:'
+
+# Configuração de inibição
+inhibit_rules:
+  # Se o sistema estiver down, não alertar sobre latência alta
+  - source_match:
+      alertname: SystemDown
+    target_match:
+      alertname: HighLatency
+    equal: ['instance']
+  
+  # Se a API estiver down, não alertar sobre erros de API
+  - source_match:
+      alertname: APIDown
+    target_match:
+      alertname: APIErrors
+    equal: ['api_name']
+  
+  # Se o banco estiver down, não alertar sobre queries lentas
+  - source_match:
+      alertname: DatabaseDown
+    target_match:
+      alertname: SlowQueries
+    equal: ['database']
+
+# Configuração de timeouts
+time_intervals:
+  - name: workdays
+    time_intervals:
+      - weekdays: ['monday:friday']
+        times:
+          - start_time: 09:00
+            end_time: 17:00
+        location: 'America/Sao_Paulo'
+  
+  - name: weekends
+    time_intervals:
+      - weekdays: ['saturday', 'sunday']
+        times:
+          - start_time: 00:00
+            end_time: 23:59
+        location: 'America/Sao_Paulo'
+
+# Configuração de alertas específicos do Omni Keywords Finder
+alerts:
+  # Alertas de disponibilidade
+  - name: SystemDown
+    condition: up == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: omni-keywords-finder
+    annotations:
+      description: "Sistema Omni Keywords Finder está down"
+      summary: "Sistema indisponível"
+      action_required: "Verificar status do serviço imediatamente"
+      grafana_url: "https://grafana.omni-keywords-finder.com/d/overview"
+      jaeger_url: "https://jaeger.omni-keywords-finder.com"
+
+  - name: APIDown
+    condition: rate(api_requests_total[5m]) == 0
+    for: 2m
+    labels:
+      severity: critical
+      service: api
+    annotations:
+      description: "API não está recebendo requisições"
+      summary: "API indisponível"
+      action_required: "Verificar logs da API e restart se necessário"
+
+  - name: DatabaseDown
+    condition: pg_up == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: database
+    annotations:
+      description: "Banco de dados PostgreSQL está down"
+      summary: "Database indisponível"
+      action_required: "Verificar conexão e restart do PostgreSQL"
+
+  # Alertas de performance
+  - name: HighLatency
+    condition: histogram_quantile(0.95, rate(api_requests_duration_seconds_bucket[5m])) > 2
+    for: 5m
+    labels:
+      severity: warning
+      service: performance
+    annotations:
+      description: "Latência P95 acima de 2 segundos"
+      summary: "Latência alta detectada"
+      threshold: "2s"
+      impact: "Experiência do usuário degradada"
+      value: "{{ $value }}s"
+
+  - name: HighCPU
+    condition: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+      service: system
+    annotations:
+      description: "CPU acima de 80%"
+      summary: "Alto uso de CPU"
+      threshold: "80%"
+      value: "{{ $value }}%"
+
+  - name: HighMemory
+    condition: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+      service: system
+    annotations:
+      description: "Memória acima de 90%"
+      summary: "Alto uso de memória"
+      threshold: "90%"
+      value: "{{ $value }}%"
+
+  # Alertas de erro
+  - name: HighErrorRate
+    condition: rate(api_requests_total{status_code=~"5.."}[5m]) / rate(api_requests_total[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+      service: errors
+    annotations:
+      description: "Taxa de erro acima de 5%"
+      summary: "Alta taxa de erros"
+      threshold: "5%"
+      value: "{{ $value | humanizePercentage }}"
+
+  - name: DatabaseConnections
+    condition: pg_stat_database_numbackends > 100
+    for: 2m
+    labels:
+      severity: warning
+      service: database
+    annotations:
+      description: "Muitas conexões de banco de dados"
+      summary: "Conexões DB altas"
+      threshold: "100"
+      value: "{{ $value }}"
+
+  # Alertas de segurança
+  - name: SecurityBreach
+    condition: rate(security_violations_total[5m]) > 0
+    for: 0m
+    labels:
+      severity: critical
+      service: security
+    annotations:
+      description: "Violação de segurança detectada"
+      summary: "Breach de segurança"
+      action_required: "Investigar imediatamente e bloquear IP se necessário"
+
+  - name: RateLimitExceeded
+    condition: rate(rate_limit_exceeded_total[5m]) > 10
+    for: 2m
+    labels:
+      severity: warning
+      service: security
+    annotations:
+      description: "Rate limit sendo excedido frequentemente"
+      summary: "Rate limit excessivo"
+      action_required: "Verificar se é ataque ou uso legítimo"
+
+  # Alertas de negócio
+  - name: LowKeywordProcessing
+    condition: rate(keywords_processed_total[5m]) < 10
+    for: 10m
+    labels:
+      severity: warning
+      service: business
+    annotations:
+      description: "Processamento de keywords muito baixo"
+      summary: "Baixo processamento"
+      threshold: "10/min"
+      value: "{{ $value }}/min"
+
+  - name: HighUserSessions
+    condition: user_sessions_active > 2000
+    for: 5m
+    labels:
+      severity: info
+      service: business
+    annotations:
+      description: "Muitas sessões de usuário ativas"
+      summary: "Alto número de usuários"
+      threshold: "2000"
+      value: "{{ $value }}"
+
+# Configuração de escalação
+escalation:
+  # Escalação automática para alertas críticos não resolvidos
+  - name: critical_escalation
+    condition: alertname =~ "SystemDown|APIDown|DatabaseDown|SecurityBreach"
+    duration: 15m
+    action: "escalate_to_manager"
+    notification:
+      - receiver: "manager-team"
+        channel: "#management-alerts"
+        message: "Alerta crítico não resolvido em 15 minutos - Escalação para gerência"
+
+# Configuração de backup de alertas
+backup:
+  enabled: true
+  storage:
+    type: s3
+    bucket: "omni-keywords-alerts-backup"
+    region: "us-east-1"
+    prefix: "alerts/"
+  retention: 90d
+  schedule: "0 3 * * *"
+
+# Configuração de métricas de alertas
+metrics:
+  enabled: true
+  endpoint: "/metrics"
+  port: 9093
+  path: "/metrics"
+  labels:
+    service: "alertmanager"
+    environment: "production"
+    application: "omni-keywords-finder" 

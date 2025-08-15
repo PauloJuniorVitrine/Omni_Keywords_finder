@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Omni Keywords Finder API - Documentação</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="redoc-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@2.1.3/bundles/redoc.standalone.js"></script>
+    <script>
+      Redoc.init('swagger.yaml', {
+        scrollYOffset: 0,
+        hideDownloadButton: false,
+        hideHostname: false,
+        hideInfoSection: false,
+        hideLoading: false,
+        hideSingleRequestSampleTab: false,
+        expandResponses: "200,201",
+        expandSingleSchemaField: false,
+        jsonSampleExpandLevel: 2,
+        hideSchemaTitles: false,
+        simpleOneOfTypeLabel: false,
+        sortPropsAlphabetically: false,
+        showExtensions: false,
+        showObjectSchemaExamples: true,
+        theme: {
+          colors: {
+            primary: {
+              main: '#1976d2'
+            }
+          },
+          typography: {
+            fontSize: '14px',
+            lineHeight: '1.5em',
+            code: {
+              fontSize: '13px',
+              fontFamily: 'Courier, monospace',
+              fontWeight: '400',
+              color: '#e53935',
+              backgroundColor: 'rgba(38, 50, 56, 0.04)',
+              wrap: false
+            },
+            headings: {
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '400'
+            },
+            links: {
+              color: '#1976d2',
+              visited: '#1976d2',
+              hover: '#1565c0'
+            }
+          },
+          sidebar: {
+            backgroundColor: '#fafafa',
+            textColor: '#333333'
+          },
+          rightPanel: {
+            backgroundColor: '#263238',
+            textColor: '#ffffff'
+          }
+        }
+      }, document.getElementById('redoc-container'));
+    </script>
+  </body>
+</html> 

@@ -1,0 +1,105 @@
+{
+  "name": "omni-keywords-finder",
+  "version": "2.0.0",
+  "description": "Sistema enterprise para análise e processamento de keywords com IA",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "generate-types": "openapi-typescript http://localhost:5000/api/docs/openapi.json -o app/types/api-generated.d.ts",
+    "generate-types:dev": "npm run generate-types && echo 'Types generated successfully'",
+    "generate-types:watch": "nodemon --exec 'npm run generate-types' --watch backend/app/api --ext py",
+    "generate-graphql": "graphql-codegen --config codegen.yml",
+    "generate-graphql:watch": "graphql-codegen --config codegen.yml --watch",
+    "api:docs": "echo 'OpenAPI docs available at: http://localhost:5000/api/docs/swagger'",
+    "api:types": "echo 'TypeScript types available at: http://localhost:5000/api/docs/typescript'",
+    "graphql:types": "echo 'GraphQL types available at: app/types/graphql-generated.ts'",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/runtime": "^7.27.4",
+    "@sentry/react": "^7.0.0",
+    "@sentry/tracing": "^7.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-operations": "^4.0.1",
+    "@graphql-codegen/typescript-react-apollo": "^5.0.0",
+    "@playwright/test": "^1.52.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "babel-jest": "^30.0.0-beta.3",
+    "cypress": "^14.3.2",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
+    "exit": "^0.1.2",
+    "graphql": "^16.8.1",
+    "husky": "^8.0.0",
+    "is-arrayish": "^0.3.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.0-beta.3",
+    "lint-staged": "^15.0.0",
+    "nodemon": "^3.0.0",
+    "openapi-typescript": "^7.8.0",
+    "playwright": "^1.52.0",
+    "prettier": "^3.0.0",
+    "source-map": "^0.7.4",
+    "source-map-support": "^0.5.21",
+    "vite": "^6.3.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,json,md}": [
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

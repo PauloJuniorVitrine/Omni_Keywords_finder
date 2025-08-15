@@ -1,0 +1,2 @@
+{"timestamp": 1746231489.3830152, "type": "POST", "endpoint": "/api/governanca/regras/upload", "status_code": 200, "response_time_ms": 3.9777999991201796, "response_length": 16, "exception": "Esperado 400/422, obtido 200", "url": "http://127.0.0.1:5000/api/governanca/regras/upload"}
+{"timestamp": 1746231489.9627302, "type": "POST", "endpoint": "/api/governanca/regras/editar", "status_code": 200, "response_time_ms": 5.191600001126062, "response_length": 16, "exception": null, "url": "http://127.0.0.1:5000/api/governanca/regras/editar"}

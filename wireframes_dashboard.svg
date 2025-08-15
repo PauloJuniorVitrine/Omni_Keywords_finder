@@ -1,0 +1,34 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1200" height="800" fill="#f7f8fa"/>
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="800" fill="#e3e6eb"/>
+  <text x="40" y="60" font-size="24" font-family="Arial" fill="#333">Menu</text>
+  <rect x="0" y="100" width="200" height="50" fill="#d1d5db"/>
+  <text x="40" y="130" font-size="18" font-family="Arial" fill="#333">Dashboard</text>
+  <rect x="0" y="160" width="200" height="50" fill="#e3e6eb"/>
+  <text x="40" y="190" font-size="18" font-family="Arial" fill="#333">Governança</text>
+  <!-- Header -->
+  <rect x="200" y="0" width="1000" height="80" fill="#fff"/>
+  <text x="240" y="50" font-size="32" font-family="Arial" fill="#222">Dashboard</text>
+  <!-- Botões Header -->
+  <rect x="950" y="20" width="100" height="40" rx="8" fill="#4f8cff"/>
+  <text x="970" y="48" font-size="16" font-family="Arial" fill="#fff">Criar</text>
+  <rect x="1060" y="20" width="100" height="40" rx="8" fill="#eab308"/>
+  <text x="1080" y="48" font-size="16" font-family="Arial" fill="#fff">Exportar</text>
+  <!-- Cards -->
+  <rect x="240" y="120" width="220" height="120" rx="16" fill="#fff" stroke="#d1d5db"/>
+  <text x="260" y="160" font-size="20" font-family="Arial" fill="#333">Resumo de Keywords</text>
+  <rect x="480" y="120" width="220" height="120" rx="16" fill="#fff" stroke="#d1d5db"/>
+  <text x="500" y="160" font-size="20" font-family="Arial" fill="#333">Clusters</text>
+  <rect x="720" y="120" width="220" height="120" rx="16" fill="#fff" stroke="#d1d5db"/>
+  <text x="740" y="160" font-size="20" font-family="Arial" fill="#333">Performance</text>
+  <!-- Tabela -->
+  <rect x="240" y="280" width="900" height="400" rx="12" fill="#fff" stroke="#d1d5db"/>
+  <text x="260" y="310" font-size="18" font-family="Arial" fill="#333">Tabela de Keywords</text>
+  <!-- Loader -->
+  <circle cx="1120" cy="320" r="18" fill="#4f8cff" opacity="0.3"/>
+  <text x="1110" y="325" font-size="14" font-family="Arial" fill="#4f8cff">⏳</text>
+  <!-- Badge -->
+  <rect x="1120" y="360" width="60" height="28" rx="8" fill="#22c55e"/>
+  <text x="1130" y="380" font-size="14" font-family="Arial" fill="#fff">Ativo</text>
+</svg> 

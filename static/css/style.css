@@ -1,0 +1,488 @@
+/* =========================
+   Variáveis Globais
+========================= */
+:root {
+    --primary: #0057b8;
+    --primary-dark: #003e8a;
+    --success: #0a7d2c;
+    --error: #b80000;
+    --warning: #b88a00;
+    --info-bg: #eaf6ff;
+    --success-bg: #e6f9ed;
+    --error-bg: #ffeaea;
+    --shadow: 0 2px 8px rgba(0,0,0,0.07);
+    --radius: 8px;
+    --transition: 0.2s;
+    --container-max: 480px;
+    --container-padding: 32px 24px;
+    --container-padding-mobile: 16px 6px;
+    --font-main: Arial, sans-serif;
+    --border: 1px solid #ccc;
+    --border-focus: 2px solid var(--primary);
+    --border-radius: 4px;
+    --table-bg: #f0f6ff;
+    --table-error-bg: #ffeaea;
+    --table-warning-bg: #fffbe6;
+    --table-error-color: var(--error);
+    --table-warning-color: var(--warning);
+    --table-success-color: var(--success);
+    --table-wait-color: #555;
+    --toast-bg: #222;
+    --toast-color: #fff;
+    --toast-success: #0a7d2c;
+    --toast-error: #b80000;
+    --touch-size: 44px;
+    --focus-outline: 2px solid var(--primary);
+    --focus-outline-offset: 2px;
+    --disabled-bg: #f0f0f0;
+    --disabled-color: #aaa;
+    --disabled-border: 1px solid #e0e0e0;
+}
+
+/* =========================
+   Layout e Container
+========================= */
+body {
+    font-family: var(--font-main);
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: var(--container-max);
+    margin: 40px auto;
+    background: #fff;
+    padding: var(--container-padding);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+}
+@media (max-width: 600px) {
+    .container {
+        padding: var(--container-padding-mobile);
+        width: 100%;
+    }
+}
+
+/* =========================
+   Títulos e Tipografia
+========================= */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #222;
+}
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.3rem;
+    }
+}
+
+/* =========================
+   Formulários e Inputs
+========================= */
+form label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+}
+input[type="text"], textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+    transition: border var(--transition), box-shadow var(--transition);
+}
+input[type="text"]:focus-visible, textarea:focus-visible {
+    outline: none;
+    border: var(--border-focus);
+    box-shadow: 0 0 0 2px #b3d1ff;
+}
+input[type="text"].erro, textarea.erro {
+    border: 2px solid var(--error);
+    background: var(--error-bg);
+    animation: shake 0.18s 2;
+}
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
+    100% { transform: translateX(0); }
+}
+input[type="password"] {
+    letter-spacing: 0.15em;
+}
+input[aria-invalid="true"], textarea[aria-invalid="true"] {
+    border: 2px solid var(--error);
+    background: var(--error-bg);
+}
+
+/* =========================
+   Botões e Interações
+========================= */
+button[type="submit"], button[type="button"] {
+    margin-top: 1.2rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition), box-shadow var(--transition), transform 0.1s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    min-width: var(--touch-size);
+    min-height: var(--touch-size);
+    position: relative;
+}
+button[type="submit"]:hover, button[type="button"]:hover, button[type="submit"]:focus-visible, button[type="button"]:focus-visible {
+    background: var(--primary-dark);
+    outline: none;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,87,184,0.10);
+}
+button:active {
+    transform: scale(0.98);
+}
+button[aria-busy="true"]::after {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid #fff;
+    border-top: 2px solid var(--primary-dark);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+}
+@keyframes spin {
+    0% { transform: rotate(0deg) translateY(-50%); }
+    100% { transform: rotate(360deg) translateY(-50%); }
+}
+button:disabled, button[disabled] {
+    background: var(--disabled-bg);
+    color: var(--disabled-color);
+    border: var(--disabled-border);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* =========================
+   Feedbacks, Toasts e Alertas
+========================= */
+#feedback {
+    margin-top: 1rem;
+    min-height: 1.2em;
+    font-size: 1rem;
+}
+.feedback.sucesso {
+    color: var(--success);
+    background: var(--success-bg);
+    border-left: 4px solid var(--success);
+    padding: 0.5em 1em;
+    margin-top: 0.5em;
+    border-radius: var(--border-radius);
+    transition: background var(--transition);
+}
+.feedback.erro {
+    color: var(--error);
+    background: var(--error-bg);
+    border-left: 4px solid var(--error);
+    padding: 0.5em 1em;
+    margin-top: 0.5em;
+    border-radius: var(--border-radius);
+    transition: background var(--transition);
+}
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2em;
+    transform: translateX(-50%);
+    background: var(--toast-bg);
+    color: var(--toast-color);
+    padding: 1em 2em;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, bottom 0.3s;
+}
+.toast.mostrar {
+    opacity: 1;
+    pointer-events: auto;
+    bottom: 3.5em;
+}
+.toast.sucesso {
+    background: var(--toast-success);
+}
+.toast.erro {
+    background: var(--toast-error);
+}
+.alert-info {
+    background: var(--info-bg);
+    border-left: 4px solid var(--primary);
+    color: var(--primary-dark);
+    padding: 0.8em 1em;
+    margin-bottom: 1.2em;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    box-shadow: 0 1px 4px rgba(0,87,184,0.04);
+}
+
+/* =========================
+   Acessibilidade e Foco
+========================= */
+input:focus-visible, textarea:focus-visible, button:focus-visible, .remove-categoria:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+}
+input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), button:focus:not(:focus-visible), .remove-categoria:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* =========================
+   Listas, Itens e Blocos
+========================= */
+.categoria-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.3em;
+}
+.remove-categoria {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: var(--touch-size);
+    height: var(--touch-size);
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), box-shadow var(--transition);
+    box-shadow: 0 1px 2px rgba(231,76,60,0.08);
+}
+.remove-categoria:hover, .remove-categoria:focus-visible {
+    background: #c0392b;
+    outline: none;
+}
+#categorias-contador {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 0.5em;
+}
+
+/* =========================
+   Blocos de Preview e Painéis
+========================= */
+.preview-bloco, #resumo-parametros, #resumo-lote, #execucao-status {
+    background: #f8fafd;
+    border: 1px solid #dbeafe;
+    border-radius: 6px;
+    padding: 1em 1.2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size: 1em;
+    box-shadow: 0 1px 4px rgba(0,87,184,0.04);
+}
+.preview-bloco h2 {
+    font-size: 1.1em;
+    color: var(--primary);
+    margin-bottom: 0.7em;
+}
+.preview-bloco ul, #resumo-parametros ul, #resumo-lote ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.preview-bloco li, #resumo-parametros li, #resumo-lote li {
+    margin-bottom: 0.4em;
+}
+
+/* =========================
+   Checkbox e Campos
+========================= */
+.categoria-checkbox {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    font-size: 1em;
+    min-height: var(--touch-size);
+}
+@media (max-width: 600px) {
+    .categoria-checkbox {
+        display: block;
+        margin-right: 0;
+    }
+}
+.desc-campo {
+    font-size: 0.95em;
+    color: #555;
+    margin-left: 0.5em;
+}
+
+/* =========================
+   Barra de Progresso
+========================= */
+#barra-progresso, #barra-progresso-lote {
+    width: 100%;
+    background: #e0e7ef;
+    border-radius: 6px;
+    height: 18px;
+    margin-bottom: 1em;
+    overflow: hidden;
+    position: relative;
+}
+#progresso-preenchido, #progresso-preenchido-lote {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+#percentual-lote {
+    position: absolute;
+    right: 12px;
+    top: 0;
+    color: var(--primary-dark);
+    font-size: 0.95em;
+    line-height: 18px;
+}
+
+/* =========================
+   Logs
+========================= */
+.logs-lote {
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 0.7em 1em;
+    font-size: 0.97em;
+    color: #333;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 1em;
+}
+
+/* =========================
+   Tabelas e Painel
+========================= */
+.painel-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+}
+.painel-tabela th, .painel-tabela td {
+    padding: 0.5em 0.7em;
+    text-align: left;
+}
+.painel-tabela th {
+    background: var(--table-bg);
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.painel-tabela tr.erro {
+    background: var(--table-error-bg);
+    color: var(--table-error-color);
+}
+.painel-tabela tr.execucao {
+    background: var(--table-warning-bg);
+    color: var(--table-warning-color);
+}
+.status-concluído {
+    color: var(--table-success-color);
+}
+.status-erro {
+    color: var(--table-error-color);
+}
+.status-em\ execução {
+    color: var(--table-warning-color);
+}
+.status-aguardando {
+    color: var(--table-wait-color);
+}
+.falha-tooltip {
+    border-bottom: 1px dotted var(--error);
+    cursor: help;
+}
+
+/* =========================
+   Tabela Card View Mobile
+========================= */
+@media (max-width: 700px) {
+    .painel-tabela {
+        display: block;
+        overflow-x: auto;
+    }
+    .painel-tabela thead {
+        display: none;
+    }
+    .painel-tabela tr {
+        display: block;
+        margin-bottom: 1em;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        background: #fff;
+    }
+    .painel-tabela td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.7em 1em;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 1em;
+    }
+    .painel-tabela td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary-dark);
+        flex-basis: 50%;
+        text-align: left;
+    }
+    .painel-tabela tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+/* =========================
+   Paginação
+========================= */
+#painel-paginacao {
+    margin-top: 0.7em;
+    text-align: right;
+}
+#painel-paginacao button {
+    background: #e0e0e0;
+    color: #222;
+    border: 1px solid #bbb;
+    border-radius: var(--border-radius);
+    font-size: 0.95em;
+    padding: 0.3em 0.8em;
+    margin-left: 0.2em;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+    min-width: var(--touch-size);
+    min-height: var(--touch-size);
+}
+#painel-paginacao button:disabled {
+    background: var(--primary);
+    color: #fff;
+    border: 1px solid var(--primary);
+    opacity: 0.7;
+    cursor: not-allowed;
+} 

@@ -1,0 +1,367 @@
+{
+  "trigger_config": {
+    "metadata": {
+      "tracing_id": "TRIGGER_CONFIG_001_20250127",
+      "version": "1.0",
+      "created_at": "2025-01-27T00:00:00Z",
+      "description": "Configuração de triggers para sistema de documentação enterprise"
+    },
+    "sensitive_files": {
+      "patterns": [
+        "**/config/*.env",
+        "**/secrets/*.json",
+        "**/credentials/*.yml",
+        "**/.env*",
+        "**/docker-compose*.yml",
+        "**/package.json",
+        "**/requirements.txt",
+        "**/pyproject.toml",
+        "**/.gitignore",
+        "**/.editorconfig"
+      ],
+      "exact_matches": [
+        "config/database.yml",
+        "config/application.yml",
+        "config/secrets.yml",
+        "config/credentials.yml",
+        "config/master.key",
+        "config/credentials.key",
+        "config/storage.yml",
+        "config/cable.yml",
+        "config/boot.rb",
+        "config/environment.rb",
+        "config/application.rb",
+        "config/routes.rb",
+        "config/initializers/*.rb",
+        "config/locales/*.yml",
+        "config/database.yml",
+        "config/application.yml",
+        "config/secrets.yml",
+        "config/credentials.yml",
+        "config/master.key",
+        "config/credentials.key",
+        "config/storage.yml",
+        "config/cable.yml",
+        "config/boot.rb",
+        "config/environment.rb",
+        "config/application.rb",
+        "config/routes.rb",
+        "config/initializers/*.rb",
+        "config/locales/*.yml"
+      ]
+    },
+    "auto_rerun_patterns": {
+      "semantic_changes": [
+        "**/*.py",
+        "**/*.js",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.rb",
+        "**/*.java",
+        "**/*.go",
+        "**/*.rs",
+        "**/*.php"
+      ],
+      "documentation_changes": [
+        "**/*.md",
+        "**/*.rst",
+        "**/*.txt",
+        "**/*.adoc",
+        "**/*.doc",
+        "**/*.docx"
+      ],
+      "configuration_changes": [
+        "**/config/*.yml",
+        "**/config/*.yaml",
+        "**/config/*.json",
+        "**/config/*.toml",
+        "**/config/*.ini",
+        "**/config/*.conf"
+      ],
+      "test_changes": [
+        "**/test_*.py",
+        "**/*_test.py",
+        "**/tests/**/*.py",
+        "**/*.test.js",
+        "**/*.spec.js",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/test/**/*.rb",
+        "**/spec/**/*.rb"
+      ]
+    },
+    "exclusion_patterns": {
+      "build_artifacts": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/target/**",
+        "**/__pycache__/**",
+        "**/*.pyc",
+        "**/*.pyo",
+        "**/*.pyd",
+        "**/.pytest_cache/**",
+        "**/.coverage",
+        "**/htmlcov/**",
+        "**/.tox/**",
+        "**/.venv/**",
+        "**/venv/**",
+        "**/.env/**",
+        "**/vendor/**",
+        "**/tmp/**",
+        "**/temp/**",
+        "**/logs/**",
+        "**/.git/**",
+        "**/.svn/**",
+        "**/.hg/**"
+      ],
+      "generated_files": [
+        "**/*.min.js",
+        "**/*.min.css",
+        "**/*.bundle.js",
+        "**/*.chunk.js",
+        "**/*.map",
+        "**/*.generated.*",
+        "**/*.auto.*",
+        "**/generated/**",
+        "**/auto/**"
+      ],
+      "temporary_files": [
+        "**/*.tmp",
+        "**/*.temp",
+        "**/*.bak",
+        "**/*.backup",
+        "**/*.old",
+        "**/*.orig",
+        "**/*.rej",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/#*#",
+        "**/.#*"
+      ]
+    },
+    "semantic_thresholds": {
+      "similarity_threshold": 0.85,
+      "quality_threshold": 0.80,
+      "completeness_threshold": 0.90,
+      "coherence_threshold": 0.85,
+      "accuracy_threshold": 0.95,
+      "readability_threshold": 0.75
+    },
+    "rollback_config": {
+      "enabled": true,
+      "max_snapshots": 10,
+      "auto_rollback_threshold": 0.70,
+      "manual_rollback_enabled": true,
+      "rollback_triggers": [
+        "quality_drop_below_threshold",
+        "semantic_inconsistency_detected",
+        "sensitive_data_leakage",
+        "performance_degradation",
+        "cost_exceeded_limit"
+      ],
+      "rollback_actions": [
+        "restore_previous_snapshot",
+        "regenerate_documentation",
+        "notify_administrator",
+        "log_incident",
+        "update_metrics"
+      ]
+    },
+    "compliance_config": {
+      "pci_dss": {
+        "enabled": true,
+        "requirements": [
+          "encrypt_sensitive_data",
+          "mask_card_numbers",
+          "log_access_attempts",
+          "validate_input_data",
+          "secure_transmission"
+        ],
+        "validation_rules": [
+          "no_credit_card_data_in_logs",
+          "no_plain_text_passwords",
+          "encrypted_storage_required",
+          "access_control_enforced"
+        ]
+      },
+      "lgpd": {
+        "enabled": true,
+        "requirements": [
+          "anonymize_personal_data",
+          "log_data_processing",
+          "obtain_consent",
+          "data_minimization",
+          "right_to_deletion"
+        ],
+        "validation_rules": [
+          "no_cpf_cnpj_in_plain_text",
+          "no_personal_addresses",
+          "no_phone_numbers",
+          "no_email_addresses"
+        ]
+      },
+      "sox": {
+        "enabled": true,
+        "requirements": [
+          "audit_trail_maintained",
+          "access_controls_enforced",
+          "data_integrity_verified",
+          "change_management_documented"
+        ],
+        "validation_rules": [
+          "all_changes_logged",
+          "access_attempts_recorded",
+          "data_modifications_tracked",
+          "approval_workflow_enforced"
+        ]
+      }
+    },
+    "monitoring_config": {
+      "real_time_monitoring": true,
+      "alert_thresholds": {
+        "quality_drop": 0.10,
+        "performance_degradation": 0.20,
+        "cost_increase": 0.15,
+        "error_rate": 0.05
+      },
+      "notification_channels": [
+        "email",
+        "slack",
+        "webhook",
+        "sms"
+      ],
+      "escalation_rules": {
+        "level_1": {
+          "threshold": 0.05,
+          "action": "log_warning"
+        },
+        "level_2": {
+          "threshold": 0.10,
+          "action": "send_notification"
+        },
+        "level_3": {
+          "threshold": 0.20,
+          "action": "auto_rollback"
+        },
+        "level_4": {
+          "threshold": 0.30,
+          "action": "emergency_stop"
+        }
+      }
+    },
+    "performance_config": {
+      "max_generation_time": 300,
+      "max_tokens_per_request": 10000,
+      "max_cost_per_session": 0.50,
+      "max_concurrent_sessions": 5,
+      "rate_limiting": {
+        "requests_per_minute": 60,
+        "requests_per_hour": 1000,
+        "burst_limit": 10
+      },
+      "caching": {
+        "enabled": true,
+        "ttl_seconds": 3600,
+        "max_cache_size": 1000,
+        "cache_invalidation": [
+          "on_semantic_change",
+          "on_configuration_change",
+          "on_threshold_violation"
+        ]
+      }
+    },
+    "security_config": {
+      "data_encryption": {
+        "enabled": true,
+        "algorithm": "AES-256-GCM",
+        "key_rotation_days": 90
+      },
+      "access_control": {
+        "authentication_required": true,
+        "authorization_enabled": true,
+        "role_based_access": true,
+        "session_timeout_minutes": 30
+      },
+      "audit_logging": {
+        "enabled": true,
+        "log_level": "INFO",
+        "retention_days": 365,
+        "log_fields": [
+          "timestamp",
+          "user_id",
+          "action",
+          "resource",
+          "result",
+          "ip_address",
+          "user_agent"
+        ]
+      },
+      "threat_detection": {
+        "enabled": true,
+        "patterns": [
+          "sql_injection",
+          "xss_attack",
+          "path_traversal",
+          "command_injection",
+          "sensitive_data_exposure"
+        ],
+        "response_actions": [
+          "block_request",
+          "log_incident",
+          "notify_security_team",
+          "increase_monitoring"
+        ]
+      }
+    },
+    "integration_config": {
+      "ci_cd": {
+        "enabled": true,
+        "triggers": [
+          "on_commit",
+          "on_pull_request",
+          "on_tag",
+          "on_schedule"
+        ],
+        "stages": [
+          "validate_config",
+          "scan_sensitive_data",
+          "generate_documentation",
+          "run_tests",
+          "deploy_if_safe"
+        ]
+      },
+      "api_integration": {
+        "webhook_urls": [],
+        "api_keys": [],
+        "rate_limits": {
+          "requests_per_minute": 100,
+          "requests_per_hour": 1000
+        },
+        "timeout_seconds": 30,
+        "retry_attempts": 3
+      },
+      "external_services": {
+        "openai": {
+          "enabled": true,
+          "model": "gpt-4",
+          "max_tokens": 8000,
+          "temperature": 0.7
+        },
+        "anthropic": {
+          "enabled": false,
+          "model": "claude-3-sonnet",
+          "max_tokens": 8000,
+          "temperature": 0.7
+        },
+        "google": {
+          "enabled": false,
+          "model": "gemini-pro",
+          "max_tokens": 8000,
+          "temperature": 0.7
+        }
+      }
+    }
+  }
+} 

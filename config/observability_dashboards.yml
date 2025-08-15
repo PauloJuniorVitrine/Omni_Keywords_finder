@@ -1,0 +1,177 @@
+# 🎯 FASE 4 - CONFIGURAÇÃO DE DASHBOARDS DE OBSERVABILIDADE
+# Tracing ID: OBSERVABILIDADE_DASHBOARDS_001_20250127
+
+# Configuração de Dashboards Grafana
+grafana:
+  dashboards:
+    - name: "Omni Keywords Finder - Overview"
+      uid: "omni-keywords-overview"
+      description: "Dashboard principal com métricas gerais do sistema"
+      panels:
+        - title: "Taxa de Requisições"
+          type: "graph"
+          metrics:
+            - "rate(http_requests_total[5m])"
+            - "rate(http_requests_total{status=~\"5..\"}[5m])"
+        - title: "Tempo de Resposta"
+          type: "graph"
+          metrics:
+            - "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+            - "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))"
+        - title: "Taxa de Erro"
+          type: "stat"
+          metrics:
+            - "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100"
+        - title: "Execuções de Lote"
+          type: "graph"
+          metrics:
+            - "rate(lote_execucoes_total[5m])"
+            - "rate(lote_execucoes_erro_total[5m])"
+        - title: "Execuções Agendadas"
+          type: "graph"
+          metrics:
+            - "rate(agendada_execucoes_total[5m])"
+            - "rate(agendada_execucoes_erro_total[5m])"
+        - title: "Rate Limiting"
+          type: "graph"
+          metrics:
+            - "rate(rate_limit_hits_total[5m])"
+            - "rate(rate_limit_exceeded_total[5m])"
+
+    - name: "Omni Keywords Finder - Tracing"
+      uid: "omni-keywords-tracing"
+      description: "Dashboard para análise de distributed tracing"
+      panels:
+        - title: "Traces por Serviço"
+          type: "graph"
+          metrics:
+            - "rate(traces_total[5m])"
+        - title: "Span Duration"
+          type: "graph"
+          metrics:
+            - "histogram_quantile(0.95, rate(span_duration_seconds_bucket[5m]))"
+        - title: "Error Rate por Operação"
+          type: "graph"
+          metrics:
+            - "rate(span_errors_total[5m])"
+
+    - name: "Omni Keywords Finder - Anomaly Detection"
+      uid: "omni-keywords-anomalies"
+      description: "Dashboard para monitoramento de anomalias"
+      panels:
+        - title: "Anomalias Detectadas"
+          type: "graph"
+          metrics:
+            - "rate(anomaly_detections_total[5m])"
+        - title: "Algoritmos de Detecção"
+          type: "graph"
+          metrics:
+            - "rate(anomaly_detection_by_algorithm_total[5m])"
+        - title: "Alertas de Anomalia"
+          type: "graph"
+          metrics:
+            - "rate(anomaly_alerts_sent_total[5m])"
+
+    - name: "Omni Keywords Finder - Predictive Monitoring"
+      uid: "omni-keywords-predictive"
+      description: "Dashboard para monitoramento preditivo"
+      panels:
+        - title: "Predições Realizadas"
+          type: "graph"
+          metrics:
+            - "rate(predictions_made_total[5m])"
+        - title: "Acurácia das Predições"
+          type: "graph"
+          metrics:
+            - "rate(prediction_accuracy_total[5m])"
+        - title: "Alertas Preditivos"
+          type: "graph"
+          metrics:
+            - "rate(predictive_alerts_sent_total[5m])"
+
+# Configuração de Alertas
+alerts:
+  # Alertas de Performance
+  performance:
+    - name: "High Response Time"
+      condition: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2"
+      severity: "warning"
+      channels: ["slack", "email"]
+      cooldown: "5m"
+      
+    - name: "High Error Rate"
+      condition: "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m]) > 0.05"
+      severity: "critical"
+      channels: ["slack", "email", "webhook"]
+      cooldown: "2m"
+      
+    - name: "High Rate Limiting"
+      condition: "rate(rate_limit_exceeded_total[5m]) > 10"
+      severity: "warning"
+      channels: ["slack"]
+      cooldown: "10m"
+
+  # Alertas de Anomalia
+  anomaly:
+    - name: "Anomaly Detected - Response Time"
+      condition: "anomaly_detection_result{metric=\"response_time\"} > 0"
+      severity: "warning"
+      channels: ["slack", "email"]
+      cooldown: "15m"
+      
+    - name: "Anomaly Detected - Error Rate"
+      condition: "anomaly_detection_result{metric=\"error_rate\"} > 0"
+      severity: "critical"
+      channels: ["slack", "email", "webhook"]
+      cooldown: "5m"
+
+  # Alertas Preditivos
+  predictive:
+    - name: "Predicted Capacity Warning"
+      condition: "prediction_result{type=\"capacity_warning\"} > 0"
+      severity: "warning"
+      channels: ["slack", "email"]
+      cooldown: "30m"
+      
+    - name: "Predicted Performance Degradation"
+      condition: "prediction_result{type=\"performance_degradation\"} > 0"
+      severity: "critical"
+      channels: ["slack", "email", "webhook"]
+      cooldown: "10m"
+
+# Configuração de Canais de Alerta
+alert_channels:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#omni-keywords-alerts"
+    username: "Omni Keywords Alert Bot"
+    icon_emoji: ":warning:"
+    
+  email:
+    smtp_host: "${SMTP_HOST}"
+    smtp_port: "${SMTP_PORT}"
+    smtp_user: "${SMTP_USER}"
+    smtp_password: "${SMTP_PASSWORD}"
+    from_email: "alerts@omni-keywords-finder.com"
+    to_emails: ["devops@omni-keywords-finder.com", "admin@omni-keywords-finder.com"]
+    
+  webhook:
+    url: "${WEBHOOK_URL}"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer ${WEBHOOK_TOKEN}"
+
+# Configuração de Retenção de Dados
+retention:
+  metrics: "30d"
+  traces: "7d"
+  logs: "90d"
+  anomalies: "30d"
+  predictions: "30d"
+
+# Configuração de Sampling
+sampling:
+  traces: 0.1  # 10% dos traces
+  metrics: 1.0  # 100% das métricas
+  logs: 1.0    # 100% dos logs 

@@ -1,0 +1,488 @@
+{"timestamp": "2025-05-01T22:10:26.458663Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:10:26.480343Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:10:26.489503Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:10:26.523063Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:13:15.039883Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:13:15.044262Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:13:15.044262Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:13:15.059195Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:14:13.534839Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:14:13.542872Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:14:13.544866Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:14:13.558870Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:15:10.877728Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:15:10.886704Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:15:10.898878Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:15:10.928996Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:17:21.433015Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:17:21.433015Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:17:21.433015Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:17:21.453846Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:22:12.187478Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:22:12.192660Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:22:12.194656Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:22:12.207391Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:24:00.397919Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:24:00.404087Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:24:00.404087Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:24:00.415910Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:27:25.108673Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:27:25.115622Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:27:25.119998Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:27:25.132203Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:29:03.760388Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:29:03.767368Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:29:03.770141Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:29:03.783922Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:30:05.070220Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:30:05.071239Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:30:05.077402Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:30:05.089370Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:31:42.204680Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:31:42.214436Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:31:42.216487Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:31:42.229989Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:32:42.097109Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:32:42.104882Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:32:42.106657Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:32:42.118337Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:34:21.170042Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:34:21.175054Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:34:21.179570Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:34:21.183196Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:37:48.652306Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:37:48.665242Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:37:48.668234Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:37:48.683917Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:40:52.549472Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:40:52.562081Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:40:52.562081Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:40:52.585000Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:47:40.802501Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:47:40.810822Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:47:40.811818Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T22:47:40.825655Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:11:50.345383Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:11:50.348421Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:11:50.355420Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:11:50.365505Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:28:10.570663Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:28:10.580564Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:28:10.582612Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-01T23:28:10.599397Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:04:01.105035Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:04:01.119336Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:04:01.124478Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:04:01.144387Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:06:11.162932Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:06:11.175060Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:06:11.177949Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:06:11.198260Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:11:01.388757Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:11:01.399285Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:11:01.405628Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:11:01.426128Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:25:41.649156Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:25:41.660434Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:25:41.663444Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:25:41.687098Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:39:33.059262Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:39:33.069977Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:39:33.072606Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:39:33.088111Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:44:33.294592Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:44:33.307910Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:44:33.311900Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:44:33.332990Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:53:45.690823Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:53:45.704054Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:53:45.707086Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T00:53:45.726511Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T11:22:42.177089Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T11:22:42.200537Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T11:22:42.215337Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T11:22:42.259926Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:18:56.261452Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:18:56.268450Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:18:56.282156Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:18:56.306949Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:20:29.755798Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:20:29.762425Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:20:29.765657Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:20:29.780430Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:24:17.402420Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:24:17.408132Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:24:17.410294Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T12:24:17.424349Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:11:17.535554Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:11:17.551174Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:11:17.566795Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:11:17.582416Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:14:09.256112Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:14:09.266051Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:14:09.266051Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:14:09.266051Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:15:53.312929Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:15:53.328576Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:15:53.328576Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:15:53.328576Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:17:17.168046Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:17:17.183671Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:17:17.183671Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T14:17:17.183671Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:07:11.809307Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:07:11.816409Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:07:11.818405Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:07:11.829272Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:43:19.957096Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:43:19.965837Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:43:19.967828Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T16:43:20.006406Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T17:20:29.228674Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T17:20:29.236594Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T17:20:29.254246Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T17:20:29.291396Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:55:44.004610Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:55:44.010654Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:55:44.010654Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:55:44.033948Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:57:23.579544Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:57:23.591583Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:57:23.591583Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T18:57:23.599623Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:00:27.010634Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:00:27.016639Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:00:27.016639Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:00:27.016639Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:03:52.566109Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:03:52.583609Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:03:52.585607Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:03:52.588617Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:07:13.267286Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:07:13.282913Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:07:13.282913Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:07:13.297421Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:09:14.973727Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:09:14.980658Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:09:14.983652Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:09:14.995880Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:13:04.957406Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:13:04.957406Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:13:04.973033Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:13:04.992199Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:14:32.072638Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:14:32.077666Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:14:32.079662Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:14:32.089273Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:15:57.197200Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:15:57.203193Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:15:57.205178Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:15:57.214156Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:19:38.756704Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:19:38.756704Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:19:38.756704Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:19:38.773836Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:23:16.051935Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:23:16.051935Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:23:16.051935Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:23:16.073708Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:25:02.708047Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:25:02.713354Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:25:02.715349Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:25:02.727642Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:26:57.879741Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:26:57.888591Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:26:57.890585Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:26:57.902547Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:28:47.667227Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:28:47.672235Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:28:47.676823Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:28:47.686881Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:30:38.598635Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:30:38.607327Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:30:38.609323Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:30:38.621775Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:32:49.980379Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:32:49.987734Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:32:49.991240Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:32:50.002136Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:34:51.722425Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:34:51.731011Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:34:51.734002Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:34:51.746626Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:58:51.189669Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:58:51.206361Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:58:51.212965Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T19:58:51.238317Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T20:09:14.485791Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T20:09:14.494908Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T20:09:14.498628Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-02T20:09:14.517857Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:22:02.026663Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:22:02.077016Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:22:02.103188Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:22:02.151551Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:31:06.900296Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:31:06.960858Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:31:06.991147Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:31:07.029006Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:37:28.092789Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:37:28.137087Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:37:28.158319Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:37:28.204637Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:42:43.503205Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:42:43.542111Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:42:43.555226Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:42:44.366954Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:48:40.035396Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:48:40.075701Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:48:40.091171Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T00:48:40.124433Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:14:54.013328Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:14:54.652234Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:14:54.695420Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:14:54.808838Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:26:04.442403Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:26:04.512300Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:26:04.537710Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T04:26:04.593127Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:32:04.043845Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:32:04.102515Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:32:04.141528Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:32:04.192773Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:37:23.816215Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:37:23.880593Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:37:23.899814Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:37:23.932365Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:43:01.415799Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:43:01.460057Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:43:01.476026Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T05:43:01.505390Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:05:14.276352Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:05:14.334496Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:05:14.361685Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:05:14.418342Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:11:27.219378Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:11:27.263033Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:11:27.274799Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:11:27.309559Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:17:02.778981Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:17:02.819434Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:17:02.833671Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:17:02.865752Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:21:46.858310Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:21:46.899300Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:21:46.906487Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:21:46.950037Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:27:21.457049Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:27:21.497445Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:27:21.514934Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:27:21.550112Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:34:25.687184Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:34:25.732789Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:34:25.744442Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:34:25.787618Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:41:01.010617Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:41:01.058086Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:41:01.076339Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:41:01.115721Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:46:21.722981Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:46:21.763144Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:46:21.774140Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:46:21.811391Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:51:51.418360Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:51:51.463434Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:51:51.480401Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:51:51.508202Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:58:14.478128Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:58:14.530196Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:58:14.547537Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T14:58:14.581199Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:09:03.717750Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:09:03.762283Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:09:03.783805Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:09:03.817140Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:19:08.225786Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:19:08.272551Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:19:08.289258Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:19:08.315292Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:32:19.387942Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:32:19.442887Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:32:19.460025Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:32:19.494647Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:37:26.300177Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:37:26.341147Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:37:26.356022Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:37:26.386619Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:41:08.496458Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:41:08.547626Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:41:08.563621Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:41:08.599019Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:55:09.672978Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:55:10.263244Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:55:10.287124Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T15:55:10.319034Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:09:24.275788Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:09:24.915941Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:09:24.933486Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:09:24.963544Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:22:30.479258Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:22:30.546977Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:22:30.563867Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:22:30.599097Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:23:30.949919Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:23:31.068339Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:23:31.090235Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:23:31.137483Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:27:25.711511Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:27:25.764395Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:27:25.783463Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:27:25.823256Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:37:23.918224Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:37:23.973836Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:37:23.994370Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:37:24.026861Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:50:03.412498Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:50:03.471830Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:50:03.493518Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:50:03.547112Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:53:44.593440Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:53:44.641078Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:53:44.665779Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:53:44.731204Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:59:38.872750Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:59:38.917590Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:59:38.938704Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T16:59:38.977644Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:02:13.647747Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:02:13.717247Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:02:13.736819Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:02:13.775987Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:03:42.009518Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:03:42.064081Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:03:42.087643Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:03:42.128253Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:05:41.052858Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:05:41.112875Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:05:41.132876Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:05:41.280513Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:07:11.438643Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:07:11.523194Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:07:11.544134Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:07:11.584082Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:08:30.397826Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:08:30.441449Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:08:30.462775Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:08:30.502267Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:11:17.290983Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:11:17.340568Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:11:17.364750Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:11:17.417354Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:13:22.854447Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:13:22.905257Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:13:22.929659Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:13:22.974239Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:14:59.848814Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:14:59.902130Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:14:59.929719Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:14:59.966476Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:17:12.676443Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:17:12.719180Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:17:12.741772Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:17:12.775645Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:18:29.356387Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:18:29.405370Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:18:29.427278Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:18:29.472150Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:22:17.341738Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:22:17.401358Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:22:17.420725Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:22:17.482166Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:24:52.069900Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:24:52.171650Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:24:52.194475Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:24:52.234498Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:29:36.568585Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:29:36.617886Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:29:36.640803Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:29:36.671151Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:31:52.269859Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:31:52.317500Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:31:52.344129Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:31:52.387933Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:34:04.644508Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:34:04.693980Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:34:04.716476Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:34:04.777851Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:36:18.448578Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:36:18.505726Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:36:18.538167Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:36:18.588690Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:37:18.920031Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:37:18.961776Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:37:18.982804Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:37:19.018093Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:40:17.642986Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:40:17.682444Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:40:17.710102Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:40:17.751935Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:42:43.210167Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:42:43.259066Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:42:43.280984Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:42:43.315752Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:45:02.923533Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:45:03.006148Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:45:03.051014Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:45:03.116781Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:46:30.820638Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:46:30.914889Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:46:30.947341Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:46:31.011450Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:49:37.506350Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:49:37.579360Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:49:37.599555Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:49:37.636507Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:52:13.565040Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:52:13.612208Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:52:13.634906Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:52:13.673217Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:54:22.776515Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:54:22.834006Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:54:22.862660Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:54:22.902633Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:55:38.573631Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:55:38.615982Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:55:38.631853Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T17:55:38.678841Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T18:47:51.844757Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T18:47:51.891256Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T18:47:51.919262Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T18:47:51.977964Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:12:49.051815Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:12:49.112698Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:12:49.128649Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:12:49.183651Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:29:22.949737Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:29:23.003980Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:29:23.029449Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:29:23.061266Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:30:27.473831Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:30:27.507301Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:30:27.526637Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:30:27.561979Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:33:29.622020Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:33:29.672405Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:33:29.693738Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:33:29.723733Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:35:56.262022Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:35:56.290175Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:35:56.311656Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:35:56.354813Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:39:34.261179Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:39:34.311566Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:39:34.338449Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:39:34.391178Z", "dominio": "", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:43:02.857630Z", "dominio": "  novo.com  ", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:43:02.898469Z", "dominio": "a.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:43:02.937788Z", "dominio": "b.com", "ip": null, "user_agent": null}
+{"timestamp": "2025-05-31T19:43:02.985772Z", "dominio": "", "ip": null, "user_agent": null}

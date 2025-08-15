@@ -1,0 +1,474 @@
+# 🌐 **API GATEWAY CONFIGURATION - OMNİ KEYWORDS FINDER**
+
+**Tracing ID**: API_GATEWAY_CONFIG_20250127_001  
+**Data de Criação**: 2025-01-27  
+**Versão**: 1.0.0  
+**Status**: 🟡 EM DESENVOLVIMENTO  
+**Responsável**: AI Assistant
+
+---
+
+## **🔧 CONFIGURAÇÃO KONG API GATEWAY**
+
+### **Global Configuration**
+```yaml
+_format_version: "2.1"
+_transform: true
+
+# Global settings
+globals:
+  database: postgres
+  pg_host: postgres-service
+  pg_port: 5432
+  pg_database: kong_gateway
+  pg_user: kong_user
+  pg_password: ${KONG_DB_PASSWORD}
+  
+  # SSL/TLS settings
+  ssl: true
+  ssl_cert: /etc/ssl/certs/kong.crt
+  ssl_cert_key: /etc/ssl/private/kong.key
+  
+  # Rate limiting
+  rate_limiting: true
+  rate_limiting_redis_host: redis-service
+  rate_limiting_redis_port: 6379
+  
+  # Logging
+  log_level: info
+  access_log: /var/log/kong/access.log
+  error_log: /var/log/kong/error.log
+```
+
+### **Services Configuration**
+```yaml
+services:
+  # Keyword Service
+  - name: keyword-service
+    url: http://keyword-service:8000
+    protocol: http
+    host: keyword-service
+    port: 8000
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    retries: 3
+    
+  # Analytics Service
+  - name: analytics-service
+    url: http://analytics-service:8001
+    protocol: http
+    host: analytics-service
+    port: 8001
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    retries: 2
+    
+  # Crawler Service
+  - name: crawler-service
+    url: http://crawler-service:8002
+    protocol: http
+    host: crawler-service
+    port: 8002
+    connect_timeout: 120000
+    write_timeout: 120000
+    read_timeout: 120000
+    retries: 1
+    
+  # Ranking Service
+  - name: ranking-service
+    url: http://ranking-service:8003
+    protocol: http
+    host: ranking-service
+    port: 8003
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    retries: 3
+    
+  # Auth Service
+  - name: auth-service
+    url: http://auth-service:8004
+    protocol: http
+    host: auth-service
+    port: 8004
+    connect_timeout: 15000
+    write_timeout: 15000
+    read_timeout: 15000
+    retries: 5
+    
+  # Notification Service
+  - name: notification-service
+    url: http://notification-service:8005
+    protocol: http
+    host: notification-service
+    port: 8005
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    retries: 3
+    
+  # Billing Service
+  - name: billing-service
+    url: http://billing-service:8006
+    protocol: http
+    host: billing-service
+    port: 8006
+    connect_timeout: 30000
+    write_timeout: 30000
+    read_timeout: 30000
+    retries: 3
+    
+  # UI Service
+  - name: ui-service
+    url: http://ui-service:3000
+    protocol: http
+    host: ui-service
+    port: 3000
+    connect_timeout: 15000
+    write_timeout: 15000
+    read_timeout: 15000
+    retries: 2
+```
+
+### **Routes Configuration**
+```yaml
+routes:
+  # Keyword Service Routes
+  - name: keyword-routes
+    service: keyword-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/keywords"]
+    strip_path: false
+    preserve_host: true
+    
+  # Analytics Service Routes
+  - name: analytics-routes
+    service: analytics-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/analytics"]
+    strip_path: false
+    preserve_host: true
+    
+  # Crawler Service Routes
+  - name: crawler-routes
+    service: crawler-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/crawler"]
+    strip_path: false
+    preserve_host: true
+    
+  # Ranking Service Routes
+  - name: ranking-routes
+    service: ranking-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/ranking"]
+    strip_path: false
+    preserve_host: true
+    
+  # Auth Service Routes
+  - name: auth-routes
+    service: auth-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/auth"]
+    strip_path: false
+    preserve_host: true
+    
+  # Notification Service Routes
+  - name: notification-routes
+    service: notification-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/notifications"]
+    strip_path: false
+    preserve_host: true
+    
+  # Billing Service Routes
+  - name: billing-routes
+    service: billing-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/api/v1/billing"]
+    strip_path: false
+    preserve_host: true
+    
+  # UI Service Routes
+  - name: ui-routes
+    service: ui-service
+    protocols: [http, https]
+    methods: [GET, POST, PUT, DELETE]
+    paths: ["/", "/ui", "/static"]
+    strip_path: false
+    preserve_host: true
+```
+
+### **Plugins Configuration**
+```yaml
+plugins:
+  # Rate Limiting
+  - name: rate-limiting
+    config:
+      minute: 1000
+      hour: 10000
+      day: 100000
+      policy: redis
+      redis_host: redis-service
+      redis_port: 6379
+      redis_password: ${REDIS_PASSWORD}
+      fault_tolerant: true
+      hide_client_headers: false
+      
+  # CORS
+  - name: cors
+    config:
+      origins: ["*"]
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      headers: ["Content-Type", "Authorization", "X-Requested-With"]
+      exposed_headers: ["X-Total-Count"]
+      credentials: true
+      max_age: 3600
+      preflight_continue: false
+      
+  # JWT Authentication
+  - name: jwt
+    config:
+      secret_is_base64: false
+      key_claim_name: iss
+      algorithm: HS256
+      claims_to_verify: ["exp", "nbf"]
+      anonymous: null
+      run_on_preflight: true
+      
+  # Request Transformer
+  - name: request-transformer
+    config:
+      add:
+        headers: ["X-Gateway-Version: 1.0.0"]
+        querystring: ["gateway=true"]
+      remove:
+        headers: ["X-Forwarded-For"]
+        
+  # Response Transformer
+  - name: response-transformer
+    config:
+      add:
+        headers: ["X-Response-Time: ${latency}"]
+        json: ["gateway_processed: true"]
+        
+  # Prometheus Metrics
+  - name: prometheus
+    config:
+      status_codes: true
+      latency: true
+      bandwidth: true
+      upstream_health: true
+      
+  # Request Size Limiting
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 10485760  # 10MB
+      
+  # IP Restriction
+  - name: ip-restriction
+    config:
+      allow: ["0.0.0.0/0"]
+      deny: []
+      
+  # Proxy Caching
+  - name: proxy-cache
+    config:
+      response_code: [200, 301, 404]
+      content_type: ["text/plain", "application/json"]
+      cache_ttl: 300
+      strategy: memory
+      memory:
+        dictionary_name: kong_cache
+```
+
+### **Upstream Configuration**
+```yaml
+upstreams:
+  - name: keyword-upstream
+    algorithm: round-robin
+    slots: 10000
+    healthchecks:
+      active:
+        type: http
+        http_path: "/health"
+        timeout: 1
+        concurrency: 10
+        healthy:
+          interval: 0
+          successes: 0
+        unhealthy:
+          interval: 0
+          http_failures: 0
+          tcp_failures: 0
+          timeouts: 0
+      passive:
+        type: http
+        healthy:
+          http_statuses: [200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308]
+          successes: 5
+        unhealthy:
+          http_statuses: [429, 500, 503]
+          tcp_failures: 0
+          timeouts: 0
+          http_failures: 5
+    targets:
+      - target: keyword-service:8000
+        weight: 100
+```
+
+### **Security Configuration**
+```yaml
+security:
+  # SSL/TLS Configuration
+  ssl:
+    enabled: true
+    certificate: /etc/ssl/certs/kong.crt
+    private_key: /etc/ssl/private/kong.key
+    protocols: ["TLSv1.2", "TLSv1.3"]
+    ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+    
+  # Authentication
+  authentication:
+    jwt_secret: ${JWT_SECRET}
+    api_key_header: "X-API-Key"
+    api_key_query: "api_key"
+    
+  # Rate Limiting
+  rate_limiting:
+    enabled: true
+    redis_url: "redis://redis-service:6379"
+    default_limits:
+      minute: 1000
+      hour: 10000
+      day: 100000
+      
+  # CORS
+  cors:
+    enabled: true
+    allow_origin: "*"
+    allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allow_headers: ["Content-Type", "Authorization"]
+    max_age: 3600
+```
+
+### **Monitoring Configuration**
+```yaml
+monitoring:
+  # Prometheus
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+    
+  # Health Checks
+  health_checks:
+    enabled: true
+    path: "/health"
+    interval: 30
+    timeout: 5
+    
+  # Logging
+  logging:
+    level: info
+    format: json
+    access_log: "/var/log/kong/access.log"
+    error_log: "/var/log/kong/error.log"
+    
+  # Metrics
+  metrics:
+    enabled: true
+    collect:
+      - latency
+      - bandwidth
+      - status_codes
+      - upstream_health
+```
+
+### **Environment Variables**
+```yaml
+environment:
+  # Database
+  KONG_DATABASE: postgres
+  KONG_PG_HOST: postgres-service
+  KONG_PG_PORT: 5432
+  KONG_PG_DATABASE: kong_gateway
+  KONG_PG_USER: kong_user
+  KONG_PG_PASSWORD: ${KONG_DB_PASSWORD}
+  
+  # Redis
+  KONG_REDIS_HOST: redis-service
+  KONG_REDIS_PORT: 6379
+  KONG_REDIS_PASSWORD: ${REDIS_PASSWORD}
+  
+  # Security
+  KONG_JWT_SECRET: ${JWT_SECRET}
+  KONG_SSL: true
+  
+  # Logging
+  KONG_LOG_LEVEL: info
+  KONG_ACCESS_LOG: /var/log/kong/access.log
+  KONG_ERROR_LOG: /var/log/kong/error.log
+  
+  # Proxy
+  KONG_PROXY_ACCESS_LOG: /var/log/kong/proxy_access.log
+  KONG_PROXY_ERROR_LOG: /var/log/kong/proxy_error.log
+```
+
+### **Deployment Configuration**
+```yaml
+deployment:
+  # Kubernetes
+  kubernetes:
+    namespace: omni-keywords
+    replicas: 3
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+        
+  # Docker
+  docker:
+    image: kong:3.4
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    volumes:
+      - ./ssl:/etc/ssl
+      - ./logs:/var/log/kong
+      
+  # Health Check
+  health_check:
+    path: "/health"
+    port: 8001
+    initial_delay: 30
+    period: 10
+    timeout: 5
+    failure_threshold: 3
+    success_threshold: 1
+```
+
+---
+
+**🎯 STATUS**: 🟡 **CONFIGURAÇÃO CRIADA**  
+**📅 Próxima Ação**: Implementar script de migração gradual  
+**👨‍💻 Responsável**: AI Assistant  
+**📊 Progresso**: 2/5 itens da seção 4 (40%)
+
+---
+
+*Configuração salva em: `config/api_gateway.yaml`* 
