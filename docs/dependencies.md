@@ -101,14 +101,14 @@ bcrypt==4.1.2
 - **Performance**: ⭐⭐⭐⭐ (4/5)
 - **Manutenibilidade**: ⭐⭐⭐⭐⭐ (5/5)
 
-#### **cryptography 41.0.7**
+#### **cryptography 42.0.0**
 ```python
 # requirements.txt
-cryptography==41.0.7
+cryptography>=42.0.0
 ```
-- **Função**: Criptografia e operações criptográficas
-- **Justificativa**: Biblioteca mais segura e madura do Python
-- **Alternativas Consideradas**: pycryptodome (menos maduro), m2crypto (complexo)
+- **Função**: Criptografia e segurança
+- **Justificativa**: Biblioteca padrão para criptografia em Python
+- **Alternativas Consideradas**: pycryptodome (específico), pynacl (moderno)
 - **Segurança**: ✅ Sem vulnerabilidades conhecidas
 - **Performance**: ⭐⭐⭐⭐⭐ (5/5)
 - **Manutenibilidade**: ⭐⭐⭐⭐⭐ (5/5)

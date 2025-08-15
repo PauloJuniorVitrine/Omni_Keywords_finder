@@ -24,16 +24,16 @@ class TestDependencyVulnerabilities:
         self.pip_audit_output = "pip-audit-report.json"
         self.safety_output = "safety-report.json"
         
-        # Dependências críticas baseadas em código real
-        self.critical_dependencies = [
+        # Dependências críticas de segurança
+        critical_dependencies = [
+            "flask>=2.3.3",
             "werkzeug>=2.3.8",
             "jinja2>=3.1.3", 
             "pillow>=10.1.1",
-            "cryptography>=41.0.8",
+            "cryptography>=42.0.0",
             "requests>=2.32.2",
             "beautifulsoup4>=4.11,<5.0",
             "lxml>=4.9,<6.0",
-            "PyYAML>=6.0.2"
         ]
         
         # Ferramentas de segurança baseadas em código real
