@@ -109,7 +109,8 @@ jobs:
               unzip \
               curl \
               wget \
-              git
+              git \
+              bc
           fi
       
       - name: 🐍 Create Virtual Environment
@@ -582,6 +583,53 @@ jobs:
           echo "- Security Score: ${{ steps.security.outputs.score }}/100" >> $GITHUB_STEP_SUMMARY
 
   # ========================================
+  # 🧮 AGGREGATES (somas sem usar '+')
+  # ========================================
+  aggregates:
+    name: 🧮 Aggregate Totals
+    runs-on: ubuntu-latest
+    needs: [unit_tests, integration_tests, e2e_tests]
+    if: always()
+    outputs:
+      total-healing-attempts: ${{ steps.sum.outputs.total_heal }}
+      total-patches-created: ${{ steps.sum.outputs.total_patches }}
+    steps:
+      - name: 🔢 Compute totals from previous jobs
+        id: sum
+        run: |
+          # Valores vindos dos jobs anteriores (podem estar vazios; tratamos com 0)
+          UNIT_HEAL="${UNIT_HEAL:-0}"
+          INT_HEAL="${INT_HEAL:-0}"
+          E2E_HEAL="${E2E_HEAL:-0}"
+
+          UNIT_PATCH="${UNIT_PATCH:-0}"
+          INT_PATCH="${INT_PATCH:-0}"
+          E2E_PATCH="${E2E_PATCH:-0}"
+
+          # Forçar números válidos
+          UNIT_HEAL="$(echo "${UNIT_HEAL}" | sed 's/[^0-9]//g')"
+          INT_HEAL="$(echo "${INT_HEAL}" | sed 's/[^0-9]//g')"
+          E2E_HEAL="$(echo "${E2E_HEAL}" | sed 's/[^0-9]//g')"
+
+          UNIT_PATCH="$(echo "${UNIT_PATCH}" | sed 's/[^0-9]//g')"
+          INT_PATCH="$(echo "${INT_PATCH}" | sed 's/[^0-9]//g')"
+          E2E_PATCH="$(echo "${E2E_PATCH}" | sed 's/[^0-9]//g')"
+
+          TOTAL_HEAL=$(( ${UNIT_HEAL:-0} + ${INT_HEAL:-0} + ${E2E_HEAL:-0} ))
+          TOTAL_PATCH=$(( ${UNIT_PATCH:-0} + ${INT_PATCH:-0} + ${E2E_PATCH:-0} ))
+
+          echo "total_heal=${TOTAL_HEAL}" >> "$GITHUB_OUTPUT"
+          echo "total_patches=${TOTAL_PATCH}" >> "$GITHUB_OUTPUT"
+        env:
+          UNIT_HEAL: ${{ needs.unit_tests.outputs.healing-attempts }}
+          INT_HEAL:  ${{ needs.integration_tests.outputs.healing-attempts }}
+          E2E_HEAL:  ${{ needs.e2e_tests.outputs.healing-attempts }}
+
+          UNIT_PATCH: ${{ needs.unit_tests.outputs.patches-created }}
+          INT_PATCH:  ${{ needs.integration_tests.outputs.patches-created }}
+          E2E_PATCH:  ${{ needs.e2e_tests.outputs.patches-created }}
+
+  # ========================================
   # 📦 PACKAGING & RELEASE
   # ========================================
   packaging:
@@ -589,7 +637,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-    needs: quality_security
+    needs: [quality_security, aggregates]
     if: needs.quality_security.result == 'success'
     outputs:
       release-url: ${{ steps.release.outputs.url }}
@@ -662,8 +710,8 @@ jobs:
             - Security Score: ${{ needs.quality_security.outputs.security-score }}/100
             
             ### 🚀 Auto-Healing Summary
-            - Total Healing Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}
-            - Patches Created: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}
+            - Total Healing Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}
+            - Patches Created: ${{ needs.aggregates.outputs.total-patches-created }}
             
             ### 📦 Artifacts
             - Python Executable: OmniKeywordsFinder
@@ -695,10 +743,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-    needs: [packaging, unit_tests, integration_tests, e2e_tests, load_test, quality_security]
+    needs: [packaging, unit_tests, integration_tests, e2e_tests, load_test, quality_security, aggregates]
     if: always()
     
     steps:
+      - name: 🎨 Compute Discord Color
+        id: color
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "value=3066993" >> "$GITHUB_OUTPUT"      # verde
+          else
+            echo "value=15158332" >> "$GITHUB_OUTPUT"     # vermelho
+          fi
+
       - name: 📢 Send Slack Notification
         if: env.SLACK_WEBHOOK != ''
         uses: 8398a7/action-slack@v3
@@ -723,14 +780,10 @@ jobs:
             - Security: ${{ needs.quality_security.outputs.security-score }}/100
             
             **🚀 Auto-Healing**:
-            - Total Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}
-            - Patches: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}
+            - Total Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}
+            - Patches: ${{ needs.aggregates.outputs.total-patches-created }}
             
             **📦 Release**: ${{ needs.packaging.outputs.release-url }}
-            
-            **🔗 Links**:
-            - Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            - Release: ${{ needs.packaging.outputs.release-url }}
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
       
@@ -742,7 +795,7 @@ jobs:
                -d '{
                  "embeds": [{
                    "title": "🚀 Auto-Healing Pipeline Complete",
-                   "color": '${{ job.status == "success" && 3066993 || 15158332 }}',
+                   "color": '${{ steps.color.outputs.value }}',
                    "fields": [
                      {
                        "name": "Status",
@@ -766,7 +819,7 @@ jobs:
                      },
                      {
                        "name": "Auto-Healing",
-                       "value": "Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}\nPatches: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}",
+                       "value": "Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}\nPatches: ${{ needs.aggregates.outputs.total-patches-created }}",
                        "inline": false
                      }
                    ],
@@ -795,8 +848,8 @@ jobs:
           echo "- Security Score: ${{ needs.quality_security.outputs.security-score }}/100" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🚀 Auto-Healing Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Total Healing Attempts: ${{ needs.unit_tests.outputs.healing-attempts + needs.integration_tests.outputs.healing-attempts + needs.e2e_tests.outputs.healing-attempts }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Patches Created: ${{ needs.unit_tests.outputs.patches-created + needs.integration_tests.outputs.patches-created + needs.e2e_tests.outputs.patches-created }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Healing Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Patches Created: ${{ needs.aggregates.outputs.total-patches-created }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📦 Release" >> $GITHUB_STEP_SUMMARY
           echo "- Release URL: ${{ needs.packaging.outputs.release-url }}" >> $GITHUB_STEP_SUMMARY
