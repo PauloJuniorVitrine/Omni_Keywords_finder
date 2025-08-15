@@ -112,8 +112,6 @@ jobs:
             git \
             bc \
             jq
-          # gitleaks (usado na análise de segurança)
-          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/install.sh | sudo bash -s -- -b /usr/local/bin
 
       - name: 🐍 Create Virtual Environment
         run: |
@@ -532,13 +530,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deps-
 
-      - name: 🔧 Ensure jq & gitleaks available
+      - name: 🔧 Ensure jq available
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
-          if ! command -v gitleaks >/dev/null 2>&1; then
-            curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/install.sh | sudo bash -s -- -b /usr/local/bin
+
+      - name: 🧰 Install Gitleaks (binário oficial)
+        run: |
+          set -euo pipefail
+          GITLEAKS_VERSION="$(curl -fsSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r '.tag_name' | sed 's/^v//')" || true
+          if [ -z "${GITLEAKS_VERSION:-}" ] || [ "${GITLEAKS_VERSION}" = "null" ]; then
+            GITLEAKS_VERSION="8.25.3"
           fi
+          wget -qO gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
+          sudo chmod +x /usr/local/bin/gitleaks
+          gitleaks version
 
       - name: 🧪 Run Coverage Analysis
         id: coverage
@@ -558,7 +566,8 @@ jobs:
           source venv/bin/activate
           bandit -r . -f json -o bandit-results.json || true
           safety check --json --output safety-results.json || true
-          gitleaks detect --source . --report-format json --report-path gitleaks-results.json || true
+          # Novo comando do gitleaks (modo git, mais atual)
+          gitleaks git -v --report-format json --report-path gitleaks-results.json .
 
           SECURITY_SCORE=100
           if [ -f "bandit-results.json" ]; then
@@ -778,7 +787,7 @@ jobs:
       - name: 📢 Send Discord Notification
         if: env.DISCORD_WEBHOOK != ''
         run: |
-          curl -H "Content-Type: application/json" \
+          curl -fS -H "Content-Type: application/json" \
                -X POST \
                -d '{
                  "embeds": [{
@@ -794,7 +803,8 @@ jobs:
                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                  }]
                }' \
-               ${{ env.DISCORD_WEBHOOK }}
+               ${{ env.DISCORD_WEBHOOK }} \
+            || echo "Discord webhook retornou não-2xx (talvez 404). Prosseguindo sem falhar."
 
       - name: 📋 Generate Final Summary
         run: |
