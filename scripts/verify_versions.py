@@ -36,7 +36,7 @@ class VersionVerifier:
             'werkzeug': '2.3.8',
             'jinja2': '3.1.3',
             'pillow': '10.1.1',
-            'cryptography': '41.0.8',
+            'cryptography': '42.0.0',
             'requests': '2.32.2',
             'beautifulsoup4': '4.11.0',
             'lxml': '4.9.0',

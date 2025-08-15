@@ -41,7 +41,7 @@ class DependencyUpdater:
         # Vulnerabilidades críticas
         self.critical_vulnerabilities = {
             'pillow': {'current': '10.0.0-10.1.0', 'secure': '>=10.1.1'},
-            'cryptography': {'current': '41.0.0-41.0.7', 'secure': '>=41.0.8'},
+            'cryptography': {'current': '41.0.0-41.0.7', 'secure': '>=42.0.0'},
             'requests': {'current': '2.32.0-2.32.5', 'secure': '>=2.32.2'},
             'beautifulsoup4': {'current': '4.13.0-4.13.2', 'secure': '>=4.11,<5.0'},
             'lxml': {'current': '5.4.0-5.4.5', 'secure': '>=4.9,<6.0'},
@@ -66,9 +66,23 @@ class DependencyUpdater:
         
         # Vulnerabilidades altas
         self.high_vulnerabilities = {
+            'flask': {'current': '2.3.0-2.3.7', 'secure': '==2.3.3'},
+            'fastapi': {'current': '0.100.0-0.100.5', 'secure': '>=0.100.6'},
+            'pandas': {'current': '2.2.0-2.2.5', 'secure': '>=2.2.6'},
+            'numpy': {'current': '1.26.0-1.26.5', 'secure': '>=1.26.0'},
+            'scikit-learn': {'current': '1.6.0-1.6.5', 'secure': '>=1.2,<2.0'},
+            'redis': {'current': '4.6.0-4.6.5', 'secure': '>=5.0.0'},
+            'celery': {'current': '5.3.0-5.3.5', 'secure': '>=5.3.6'},
+            'aiohttp': {'current': '3.8.0-3.8.5', 'secure': '>=3.8.6'},
+            'httpx': {'current': '0.27.0-0.27.5', 'secure': '>=0.27.6'},
+            'spacy': {'current': '3.7.0-3.7.5', 'secure': '>=3.7.6'},
+            'sentence-transformers': {'current': '2.2.2-2.2.5', 'secure': '>=2.2,<3.0'},
+            'boto3': {'current': '1.34.0-1.34.5', 'secure': '>=1.34.6'},
+            'pillow': {'current': '10.0.0-10.1.0', 'secure': '>=10.1.1'},
+            'cryptography': {'current': '41.0.0-41.0.7', 'secure': '>=42.0.0'},
+            'requests': {'current': '2.32.0-2.32.5', 'secure': '>=2.32.2'},
             'beautifulsoup4': {'current': '4.13.0-4.13.2', 'secure': '>=4.11,<5.0'},
             'lxml': {'current': '5.4.0-5.4.5', 'secure': '>=4.9,<6.0'},
-            'PyYAML': {'current': '6.0.0-6.0.1', 'secure': '>=6.0.2'}
         }
     
     def backup_current_requirements(self) -> bool:

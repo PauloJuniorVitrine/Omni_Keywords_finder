@@ -581,8 +581,9 @@ flake8>=6.0.0
 mypy>=1.5.0
 
 # Segurança
-cryptography>=41.0.0
+cryptography>=42.0.0
 bcrypt>=4.0.0
+passlib[bcrypt]>=1.7.0
 
 # Utilitários
 python-dotenv>=1.0.0

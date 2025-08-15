@@ -69,7 +69,7 @@ class CriticalDependencyUpdater:
             "sentence-transformers": ">=2.2,<3.0",
             
             # Autenticação e Segurança - Crítico
-            "cryptography": ">=41.0.8,<42.0.0",
+            "cryptography": ">=42.0.0",
             "python-jose[cryptography]": ">=3.3.0,<4.0.0",
             
             # Cache e Filas - Vulnerabilidades conhecidas
@@ -257,7 +257,7 @@ Flask-JWT-Extended>=4.6.0,<5.0.0
 python-jose[cryptography]>=3.3.0,<4.0.0
 passlib[bcrypt]>=1.7.4,<2.0.0
 authlib>=1.2.0,<2.0.0
-cryptography>=41.0.8,<42.0.0
+cryptography>=42.0.0
 
 # ============================================================================
 # CACHE AND QUEUE - ATUALIZADO
@@ -546,7 +546,7 @@ class TestCriticalDependencyUpdate:
         assert "Flask==2.3.3" in content
         assert "Werkzeug>=2.3.8" in content
         assert "requests>=2.32.2" in content
-        assert "cryptography>=41.0.8" in content
+        assert "cryptography>=42.0.0" in content
         assert "bandit>=1.7.0" in content
         assert "semgrep>=1.0.0" in content
     
