@@ -29,7 +29,7 @@ factory-boy>=3.3.0,<4.0.0
 responses>=0.24.1,<1.0.0
 httpretty>=1.1.4,<2.0.0
 coverage>=7.3.2,<8.0.0
-coverage-badge>=1.1.0,<2.0.0
+coverage-badge>=1.1.0,<1.0.0
 pytest-json-report>=1.5.0,<2.0.0
 pytest-metadata>=3.0.0,<4.0.0
 pytest-benchmark>=4.0.0,<5.0.0
@@ -37,8 +37,6 @@ pytest-timeout>=2.2.0,<3.0.0
 pytest-mock>=3.12.0,<4.0.0
 pytest-repeat>=0.9.1,<1.0.0
 pytest-randomly>=3.15.0,<4.0.0
-pytest-parametrize>=0.1.0,<1.0.0
-unittest-mock>=1.0.1,<2.0.0
 
 # ============================================================================
 # MUTATION TESTING - COMPLETO
@@ -62,7 +60,6 @@ chaostoolkit-kubernetes>=0.26.0,<1.0.0
 # HYPOTHESIS TESTING - COMPLETO
 # ============================================================================
 hypothesis>=6.88.3,<7.0.0
-pytest-hypothesis>=6.88.3,<7.0.0
 
 # ============================================================================
 # TEST REPORTING - COMPLETO
@@ -76,7 +73,6 @@ pytest-metadata>=3.0.0,<4.0.0
 # ============================================================================
 pytest-env>=1.1.3,<2.0.0
 pytest-freezegun>=0.4.2,<1.0.0
-pytest-tmpdir>=0.1.0,<1.0.0
 pytest-socket>=0.6.0,<1.0.0
 pytest-memray>=1.4.0,<2.0.0
 pytest-profiling>=1.7.0,<2.0.0
@@ -101,7 +97,7 @@ memory-profiler>=0.61.0,<1.0.0
 line-profiler>=4.1.0,<5.0.0
 py-spy>=0.3.0,<1.0.0
 pyinstrument>=4.0.0,<5.0.0
-scalene>=1.5.0,<2.0.0
+scalene>=1.5.0,<1.0.0
 
 # ============================================================================
 # DOCUMENTATION - COMPLETO
@@ -134,12 +130,14 @@ pytest-benchmark>=4.0.0,<5.0.0
 # ============================================================================
 # NOTAS IMPORTANTES - DESENVOLVIMENTO
 # ============================================================================
-# 1. Este arquivo inclui todas as dependências de produção + desenvolvimento
-# 2. Use apenas em ambiente de desenvolvimento
-# 3. Para instalar: pip install -r requirements-dev.txt
-# 4. Para produção, use apenas: pip install -r requirements-prod.txt
-# 5. Execute testes após instalação: pytest tests/ -v
-# 6. Execute auditoria de segurança: pip-audit && safety check
-# 7. Execute formatação de código: black . && isort .
-# 8. Execute verificação de tipos: mypy .
+# 1. Flask fixado em 2.3.3 para compatibilidade com Python 3.11
+# 2. Este arquivo inclui todas as dependências de produção + desenvolvimento
+# 3. Pacotes inválidos removidos: unittest-mock, pytest-parametrize, pytest-tmpdir, pytest-hypothesis
+# 4. Use apenas em ambiente de desenvolvimento
+# 5. Para instalar: pip install -r requirements-dev.txt
+# 6. Para produção, use apenas: pip install -r requirements-prod.txt
+# 7. Execute testes após instalação: pytest tests/ -v
+# 8. Execute auditoria de segurança: pip-audit && safety check
+# 9. Execute formatação de código: black . && isort .
+# 10. Execute verificação de tipos: mypy .
 # ============================================================================ 

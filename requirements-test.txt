@@ -20,14 +20,12 @@ pytest-benchmark==4.0.0
 pytest-timeout==2.1.0
 pytest-repeat==0.9.1
 pytest-randomly==3.15.0
-# (removido: pytest-parametrize — parametrização já é nativa do pytest)
 
 # =========================
 # Coverage and Quality
 # =========================
 coverage==7.3.2
 coverage-badge==1.1.0
-# (pytest-cov já listado acima)
 
 # =========================
 # Mocking and Stubbing
@@ -37,13 +35,11 @@ httpretty==1.1.4
 freezegun==1.2.2
 factory-boy==3.3.0
 faker==20.1.0
-# (removido: unittest-mock — use unittest.mock da stdlib)
 
 # =========================
 # Performance Testing
 # =========================
 locust==2.17.0
-# (pytest-benchmark já listado acima)
 
 # =========================
 # Security Testing
@@ -82,13 +78,11 @@ chaostoolkit-kubernetes==0.26.0
 # Test Data Generation
 # =========================
 hypothesis==6.88.3
-# (removido: pytest-hypothesis — Hypothesis já integra com pytest)
 
 # =========================
 # Test Reporting
 # =========================
 allure-pytest==2.13.2
-# (pytest-html e pytest-json-report já listados acima)
 
 # =========================
 # Environment Management
@@ -100,7 +94,6 @@ pytest-env==1.1.3
 # Time and Date Testing
 # =========================
 pytest-freezegun==0.4.2
-# (freezegun já listado acima)
 
 # =========================
 # Network Testing
@@ -118,3 +111,11 @@ pytest-memray==1.4.0
 pytest-profiling==1.7.0
 
 # =========================
+# NOTAS IMPORTANTES - TESTES
+# =========================
+# 1. Flask fixado em 2.3.3 para compatibilidade com Python 3.11
+# 2. Pacotes inválidos removidos: unittest-mock, pytest-parametrize, pytest-tmpdir, pytest-hypothesis
+# 3. Para instalar: pip install -r requirements-test.txt
+# 4. Execute testes após instalação: pytest tests/ -v
+# 5. Execute auditoria de segurança: pip-audit && safety check
+# ============================================================================

@@ -10,7 +10,7 @@
 # ============================================================================
 # CORE FRAMEWORK - PRODUÇÃO
 # ============================================================================
-Flask>=2.3.3,<3.0.0
+Flask==2.3.3
 FastAPI>=0.100.6,<1.0.0
 uvicorn[standard]>=0.23.0,<1.0.0
 Werkzeug>=2.3.8,<3.0.0
@@ -41,7 +41,7 @@ certifi>=2024.0.0,<2025.0.0
 # ============================================================================
 pandas>=2.2.6,<3.0.0
 numpy>=1.26.6,<2.0.0
-scikit-learn>=1.6.6,<2.0.0
+scikit-learn>=1.2,<2.0
 openpyxl>=3.1.0,<4.0.0
 python-dateutil>=2.9.0,<3.0.0
 PyYAML>=6.0.2,<7.0.0
@@ -51,8 +51,8 @@ joblib>=1.3.0,<2.0.0
 # ============================================================================
 # WEB SCRAPING AND PARSING - PRODUÇÃO
 # ============================================================================
-beautifulsoup4>=4.13.3,<5.0.0
-lxml>=5.4.6,<6.0.0
+beautifulsoup4>=4.11,<5.0
+lxml>=4.9,<6.0
 youtube-transcript-api>=0.6.0,<1.0.0
 selenium>=4.15.0,<5.0.0
 webdriver-manager>=4.0.0,<5.0.0
@@ -63,9 +63,9 @@ webdriver-manager>=4.0.0,<5.0.0
 nltk>=3.9.0,<4.0.0
 textblob>=0.15.3,<1.0.0
 spacy>=3.7.6,<4.0.0
-sentence-transformers>=2.2.6,<3.0.0
-transformers>=4.35.0,<5.0.0
-torch>=2.0.0,<3.0.0
+sentence-transformers>=2.2,<3.0
+transformers>=4.30,<5.0
+torch>=2,<3
 tokenizers>=0.15.0,<1.0.0
 
 # ============================================================================
@@ -187,7 +187,7 @@ flask-graphql>=2.0.0,<3.0.0
 # ============================================================================
 # MACHINE LEARNING - PRODUÇÃO
 # ============================================================================
-scikit-learn>=1.6.6,<2.0.0
+scikit-learn>=1.2,<2.0
 tensorflow>=2.15.0,<3.0.0
 keras>=2.15.0,<3.0.0
 prophet>=1.1.0,<2.0.0
@@ -229,13 +229,14 @@ tabulate>=0.9.0,<1.0.0
 # ============================================================================
 # NOTAS IMPORTANTES - PRODUÇÃO
 # ============================================================================
-# 1. Este arquivo contém apenas dependências necessárias para produção
-# 2. Todas as vulnerabilidades críticas foram corrigidas
-# 3. Versões atualizadas para as mais recentes e seguras
-# 4. Execute auditoria semanal: pip-audit && safety check
-# 5. Modelos SpaCy devem ser instalados separadamente:
+# 1. Flask fixado em 2.3.3 para compatibilidade com Python 3.11
+# 2. Este arquivo contém apenas dependências necessárias para produção
+# 3. Todas as vulnerabilidades críticas foram corrigidas
+# 4. Versões ajustadas para faixas conservadoras e seguras
+# 5. Execute auditoria semanal: pip-audit && safety check
+# 6. Modelos SpaCy devem ser instalados separadamente:
 #    python -m spacy download pt_core_news_lg
 #    python -m spacy download en_core_web_lg
-# 6. Para instalar: pip install -r requirements-prod.txt
-# 7. Execute validação de segurança após instalação
+# 7. Para instalar: pip install -r requirements-prod.txt
+# 8. Execute validação de segurança após instalação
 # ============================================================================

@@ -30,7 +30,7 @@ class VersionVerifier:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         
-        # Versões seguras esperadas
+        # Versões seguras esperadas (baseadas em vulnerabilidades conhecidas)
         self.secure_versions = {
             # Críticas
             'werkzeug': '2.3.8',
@@ -38,16 +38,16 @@ class VersionVerifier:
             'pillow': '10.1.1',
             'cryptography': '41.0.8',
             'requests': '2.32.6',
-            'beautifulsoup4': '4.13.3',
-            'lxml': '5.4.6',
+            'beautifulsoup4': '4.11.0',
+            'lxml': '4.9.0',
             'PyYAML': '6.0.2',
             
             # Altas
-            'flask': '2.3.8',
+            'flask': '2.3.3',
             'fastapi': '0.100.6',
             'pandas': '2.2.6',
             'numpy': '1.26.6',
-            'scikit-learn': '1.6.6',
+            'scikit-learn': '1.2.0',
             
             # Médias
             'redis': '4.6.6',
@@ -55,7 +55,7 @@ class VersionVerifier:
             'aiohttp': '3.8.6',
             'httpx': '0.27.6',
             'spacy': '3.7.6',
-            'sentence-transformers': '2.2.6',
+            'sentence-transformers': '2.2.0',
             'boto3': '1.34.6'
         }
         

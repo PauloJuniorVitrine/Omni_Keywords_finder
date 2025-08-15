@@ -45,7 +45,7 @@ class CriticalDependencyUpdater:
         # Dependências críticas identificadas no código real
         self.critical_python_deps = {
             # Framework Core - Vulnerabilidades críticas conhecidas
-            "Flask": ">=2.3.8,<3.0.0",
+            "Flask": "==2.3.3",
             "Werkzeug": ">=2.3.8,<3.0.0",
             "Jinja2": ">=3.1.3,<4.0.0",
             
@@ -57,16 +57,16 @@ class CriticalDependencyUpdater:
             # Processamento de Dados - Vulnerabilidades críticas
             "pandas": ">=2.2.6,<3.0.0",
             "numpy": ">=1.26.6,<2.0.0",
-            "scikit-learn": ">=1.6.6,<2.0.0",
+            "scikit-learn": ">=1.2,<2.0",
             "PyYAML": ">=6.0.2,<7.0.0",
             
             # Web Scraping - Vulnerabilidades de segurança
-            "beautifulsoup4": ">=4.13.3,<5.0.0",
-            "lxml": ">=5.4.6,<6.0.0",
+            "beautifulsoup4": ">=4.11,<5.0",
+            "lxml": ">=4.9,<6.0",
             
             # NLP - Vulnerabilidades críticas
             "spacy": ">=3.7.6,<4.0.0",
-            "sentence-transformers": ">=2.2.6,<3.0.0",
+            "sentence-transformers": ">=2.2,<3.0",
             
             # Autenticação e Segurança - Crítico
             "cryptography": ">=41.0.8,<42.0.0",
@@ -201,7 +201,7 @@ class CriticalDependencyUpdater:
 # ============================================================================
 # CORE FRAMEWORK - ATUALIZADO
 # ============================================================================
-Flask>=2.3.8,<3.0.0
+Flask==2.3.3
 FastAPI>=0.100.6,<1.0.0
 uvicorn[standard]>=0.23.0,<1.0.0
 Werkzeug>=2.3.8,<3.0.0
@@ -223,7 +223,7 @@ requests-oauthlib>=2.0.0,<3.0.0
 # ============================================================================
 pandas>=2.2.6,<3.0.0
 numpy>=1.26.6,<2.0.0
-scikit-learn>=1.6.6,<2.0.0
+scikit-learn>=1.2,<2.0
 openpyxl>=3.1.0,<4.0.0
 python-dateutil>=2.9.0,<3.0.0
 PyYAML>=6.0.2,<7.0.0
@@ -231,8 +231,8 @@ PyYAML>=6.0.2,<7.0.0
 # ============================================================================
 # WEB SCRAPING AND PARSING - ATUALIZADO
 # ============================================================================
-beautifulsoup4>=4.13.3,<5.0.0
-lxml>=5.4.6,<6.0.0
+beautifulsoup4>=4.11,<5.0
+lxml>=4.9,<6.0
 youtube-transcript-api>=0.6.0,<1.0.0
 
 # ============================================================================
@@ -241,7 +241,7 @@ youtube-transcript-api>=0.6.0,<1.0.0
 nltk>=3.9.0,<4.0.0
 textblob>=0.15.3,<1.0.0
 spacy>=3.7.6,<4.0.0
-sentence-transformers>=2.2.6,<3.0.0
+sentence-transformers>=2.2,<3.0
 
 # ============================================================================
 # DATABASE AND ORM
@@ -544,7 +544,7 @@ class TestCriticalDependencyUpdate:
         content = updater._generate_updated_requirements()
         
         # Verificar se contém dependências críticas
-        assert "Flask>=2.3.8" in content
+        assert "Flask==2.3.3" in content
         assert "Werkzeug>=2.3.8" in content
         assert "requests>=2.32.6" in content
         assert "cryptography>=41.0.8" in content
