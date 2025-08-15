@@ -158,7 +158,7 @@ class TestClass:
         # Criar requirements.txt
         requirements_file = temp_project_dir / "requirements.txt"
         with open(requirements_file, 'w') as f:
-            f.write("flask>=2.3.0\nrequests>=2.32.0")
+            f.write("flask>=2.3.0\nrequests>=2.32.2")
         
         result = integrity_validator._validate_dependencies()
         

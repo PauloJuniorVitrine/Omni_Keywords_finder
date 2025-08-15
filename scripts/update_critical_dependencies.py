@@ -56,7 +56,7 @@ class CriticalDependencyUpdater:
             
             # Processamento de Dados - Vulnerabilidades críticas
             "pandas": ">=2.2.6,<3.0.0",
-            "numpy": ">=1.26.6,<2.0.0",
+            "numpy": ">=1.26.0,<2.0.0",
             "scikit-learn": ">=1.2,<2.0",
             "PyYAML": ">=6.0.2,<7.0.0",
             
@@ -222,7 +222,7 @@ requests-oauthlib>=2.0.0,<3.0.0
 # DATA PROCESSING - ATUALIZADO
 # ============================================================================
 pandas>=2.2.6,<3.0.0
-numpy>=1.26.6,<2.0.0
+numpy>=1.26.0,<2.0.0
 scikit-learn>=1.2,<2.0
 openpyxl>=3.1.0,<4.0.0
 python-dateutil>=2.9.0,<3.0.0

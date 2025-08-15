@@ -177,10 +177,10 @@ scikit-learn==1.3.2
 - **Performance**: ⭐⭐⭐⭐⭐ (5/5)
 - **Manutenibilidade**: ⭐⭐⭐⭐⭐ (5/5)
 
-#### **numpy 1.24.3**
+#### **numpy 1.26.0**
 ```python
 # requirements.txt
-numpy==1.24.3
+numpy>=1.26.0,<2.0.0
 ```
 - **Função**: Computação numérica e arrays
 - **Justificativa**: Base para ML, otimizado em C, padrão da indústria
@@ -191,10 +191,10 @@ numpy==1.24.3
 
 ### **🌐 HTTP e APIs**
 
-#### **requests 2.31.0**
+#### **requests 2.32.2**
 ```python
 # requirements.txt
-requests==2.31.0
+requests>=2.32.2,<3.0.0
 ```
 - **Função**: Cliente HTTP para APIs externas
 - **Justificativa**: Padrão da indústria, API simples, bem documentado

@@ -586,7 +586,7 @@ bcrypt>=4.0.0
 
 # Utilitários
 python-dotenv>=1.0.0
-requests>=2.31.0
+requests>=2.32.2
 aiohttp>=3.8.0
 asyncio-mqtt>=0.11.0
 

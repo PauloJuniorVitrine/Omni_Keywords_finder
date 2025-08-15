@@ -107,7 +107,7 @@ O **Omni Keywords Finder** é um sistema enterprise completo para análise, otim
 
 #### **Processamento de Dados**
 - **Pandas 2.2.6**: Manipulação de dados
-- **NumPy 1.26.6**: Computação numérica
+- **NumPy 1.26.0**: Computação numérica
 - **Scikit-learn 1.6.6**: Machine Learning
 - **SpaCy 3.7.6**: Processamento de linguagem natural
 - **Transformers 4.35.0**: Modelos de linguagem

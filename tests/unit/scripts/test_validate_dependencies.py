@@ -302,7 +302,7 @@ def api_call():
             # Requirements.txt
             (test_dir / "requirements.txt").write_text("""
 os==1.0.0
-requests==2.0.0
+requests>=2.32.2,<3.0.0
 unused_package==1.0.0
 """)
             

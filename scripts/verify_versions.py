@@ -46,7 +46,7 @@ class VersionVerifier:
             'flask': '2.3.3',
             'fastapi': '0.100.6',
             'pandas': '2.2.6',
-            'numpy': '1.26.6',
+            'numpy': '1.26.0',
             'scikit-learn': '1.2.0',
             
             # Médias
