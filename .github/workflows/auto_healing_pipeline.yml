@@ -11,13 +11,13 @@ name: 🚀 Auto-Healing Enterprise Pipeline
 # =============================================================================
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, master ]     # <-- incluído master
     paths-ignore:
       - '**.md'
       - 'docs/**'
       - '.github/workflows/auto_healing_pipeline.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, master ]     # <-- incluído master
   workflow_dispatch:
     inputs:
       stage:
@@ -672,18 +672,11 @@ jobs:
         id: package
         run: |
           source venv/bin/activate
-          
-          # Criar executável Python
           pyinstaller --onefile --name OmniKeywordsFinder backend/app/main.py
-          
-          # Empacotar plugin WordPress (se existir)
           if [ -d "wp-plugin" ]; then
             zip -r wordpress-plugin.zip wp-plugin/
           fi
-          
-          # Gerar changelog
           python scripts/generate_changelog.py
-          
           echo "artifacts=dist/OmniKeywordsFinder,wordpress-plugin.zip,CHANGELOG.md" >> $GITHUB_OUTPUT
       
       - name: 🏷️ Create GitHub Release
@@ -724,7 +717,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
-          path: |
+        path: |
             dist/
             wordpress-plugin.zip
             CHANGELOG.md
