@@ -7,7 +7,6 @@
  */
 
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 
 // Tipos para configuração
 interface ErrorTrackingConfig {
@@ -37,7 +36,7 @@ const getErrorTrackingConfig = (): ErrorTrackingConfig => {
     release: process.env.REACT_APP_VERSION || '1.0.0',
     tracesSampleRate: environment === 'production' ? 0.1 : 1.0,
     integrations: [
-      new BrowserTracing({
+      Sentry.browserTracingIntegration({
         tracingOrigins: ['localhost', 'omni-keywords-finder.com'],
       }),
     ],
