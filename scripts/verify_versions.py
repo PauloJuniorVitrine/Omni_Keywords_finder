@@ -50,7 +50,7 @@ class VersionVerifier:
             'scikit-learn': '1.2.0',
             
             # Médias
-            'redis': '4.6.6',
+            'redis': '5.0.0',
             'celery': '5.3.6',
             'aiohttp': '3.8.6',
             'httpx': '0.27.6',

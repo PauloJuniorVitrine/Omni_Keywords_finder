@@ -55,7 +55,7 @@ class DependencyUpdater:
             'pandas': {'current': '2.2.0-2.2.5', 'secure': '>=2.2.6'},
             'numpy': {'current': '1.26.0-1.26.5', 'secure': '>=1.26.0'},
             'scikit-learn': {'current': '1.6.0-1.6.5', 'secure': '>=1.2,<2.0'},
-            'redis': {'current': '4.6.0-4.6.5', 'secure': '>=4.6.6'},
+            'redis': {'current': '4.6.0-4.6.5', 'secure': '>=5.0.0'},
             'celery': {'current': '5.3.0-5.3.5', 'secure': '>=5.3.6'},
             'aiohttp': {'current': '3.8.0-3.8.5', 'secure': '>=3.8.6'},
             'httpx': {'current': '0.27.0-0.27.5', 'secure': '>=0.27.6'},

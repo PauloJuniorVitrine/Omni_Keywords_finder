@@ -73,7 +73,7 @@ class CriticalDependencyUpdater:
             "python-jose[cryptography]": ">=3.3.0,<4.0.0",
             
             # Cache e Filas - Vulnerabilidades conhecidas
-            "redis": ">=4.6.6,<5.0.0",
+            "redis": ">=5.0.0",
             "celery": ">=5.3.6,<6.0.0",
             
             # Backup e Storage - Vulnerabilidades críticas
@@ -262,8 +262,7 @@ cryptography>=41.0.8,<42.0.0
 # ============================================================================
 # CACHE AND QUEUE - ATUALIZADO
 # ============================================================================
-redis>=4.6.6,<5.0.0
-aioredis>=2.0.0,<3.0.0
+redis>=5.0.0
 celery>=5.3.6,<6.0.0
 
 # ============================================================================
