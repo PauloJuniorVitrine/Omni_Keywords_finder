@@ -37,7 +37,7 @@ defaults:
 
 env:
   PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
+  NODE_VERSION: '18'
   COVERAGE_THRESHOLD: 80
   MAX_HEALING_ATTEMPTS: 8
   OPENAI_MODEL: 'code-davinci-002'
@@ -81,6 +81,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: 🧹 Clean npm cache
+        run: npm cache clean --force
+
       - name: 🔧 Install System Dependencies
         run: |
           sudo apt-get update
@@ -116,6 +119,7 @@ jobs:
       - name: 📦 Install Node.js Dependencies
         if: hashFiles('package.json') != ''
         run: |
+          npm cache clean --force
           if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
             npm ci
           else

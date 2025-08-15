@@ -60,7 +60,7 @@
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.4.1",
     "babel-jest": "^30.0.0-beta.3",
-    "cypress": "^14.3.2",
+    "cypress": "^13.0.0",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.0.0",
@@ -80,7 +80,8 @@
     "source-map": "^0.7.4",
     "source-map-support": "^0.5.21",
     "vite": "^6.3.4",
-    "which": "^4.0.0"
+    "which": "^4.0.0",
+    "sshpk": "^1.17.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
