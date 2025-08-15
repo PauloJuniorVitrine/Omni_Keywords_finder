@@ -37,7 +37,7 @@ class VersionVerifier:
             'jinja2': '3.1.3',
             'pillow': '10.1.1',
             'cryptography': '41.0.8',
-            'requests': '2.32.6',
+            'requests': '2.32.2',
             'beautifulsoup4': '4.11.0',
             'lxml': '4.9.0',
             'PyYAML': '6.0.2',

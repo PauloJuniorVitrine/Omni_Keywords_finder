@@ -50,7 +50,7 @@ class CriticalDependencyUpdater:
             "Jinja2": ">=3.1.3,<4.0.0",
             
             # HTTP e Networking - Vulnerabilidades de segurança
-            "requests": ">=2.32.6,<3.0.0",
+            "requests": ">=2.32.2,<3.0.0",
             "aiohttp": ">=3.8.6,<4.0.0",
             "httpx": ">=0.27.6,<1.0.0",
             
@@ -213,7 +213,7 @@ python-dotenv>=1.0.0,<2.0.0
 # ============================================================================
 # HTTP AND NETWORKING - ATUALIZADO
 # ============================================================================
-requests>=2.32.6,<3.0.0
+requests>=2.32.2,<3.0.0
 aiohttp>=3.8.6,<4.0.0
 httpx>=0.27.6,<1.0.0
 requests-oauthlib>=2.0.0,<3.0.0
@@ -546,7 +546,7 @@ class TestCriticalDependencyUpdate:
         # Verificar se contém dependências críticas
         assert "Flask==2.3.3" in content
         assert "Werkzeug>=2.3.8" in content
-        assert "requests>=2.32.6" in content
+        assert "requests>=2.32.2" in content
         assert "cryptography>=41.0.8" in content
         assert "bandit>=1.7.0" in content
         assert "semgrep>=1.0.0" in content

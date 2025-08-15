@@ -42,7 +42,7 @@ class DependencyUpdater:
         self.critical_vulnerabilities = {
             'pillow': {'current': '10.0.0-10.1.0', 'secure': '>=10.1.1'},
             'cryptography': {'current': '41.0.0-41.0.7', 'secure': '>=41.0.8'},
-            'requests': {'current': '2.32.0-2.32.5', 'secure': '>=2.32.6'},
+            'requests': {'current': '2.32.0-2.32.5', 'secure': '>=2.32.2'},
             'beautifulsoup4': {'current': '4.13.0-4.13.2', 'secure': '>=4.11,<5.0'},
             'lxml': {'current': '5.4.0-5.4.5', 'secure': '>=4.9,<6.0'},
             'PyYAML': {'current': '6.0.0-6.0.1', 'secure': '>=6.0.2'}
