@@ -26,7 +26,7 @@ on:
         type: choice
         options: [all, unit_tests, integration_tests, e2e_tests, load_test, quality_security, packaging]
 
-# Permissões mínimas necessárias (release precisa escrever em contents)
+# Permissões (release precisa escrever em contents)
 permissions:
   contents: write
   actions: read
@@ -37,7 +37,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Defaults para shell consistente
+# Shell padrão
 defaults:
   run:
     shell: bash
@@ -66,7 +66,7 @@ jobs:
     name: 🏗️ Build Environment
     runs-on: ubuntu-latest
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # <— espelha secret no env do job
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # espelha secret no env do job
     outputs:
       build-status: ${{ job.status }}
       cache-key: ${{ steps.cache-key.outputs.value }}
@@ -77,7 +77,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🔑 Setup SSH for Auto-PRs
-        if: ${{ env.SSH_PRIVATE_KEY != '' }}            # <— checa via env
+        if: ${{ env.SSH_PRIVATE_KEY != '' }}
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
@@ -112,7 +112,7 @@ jobs:
             git \
             bc \
             jq
-          # Instalar gitleaks (usado na análise de segurança)
+          # gitleaks (usado na análise de segurança)
           curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/install.sh | sudo bash -s -- -b /usr/local/bin
 
       - name: 🐍 Create Virtual Environment
@@ -141,7 +141,7 @@ jobs:
           postgresql password: 'test_password'
 
       - name: 🔴 Setup Redis
-        uses: supercharge/redis-github-action@v1.4.6
+        uses: supercharge/redis-github-action@v1.8.0
         with:
           redis-version: '7-alpine'
 
@@ -170,7 +170,7 @@ jobs:
     needs: build
     if: needs.build.result == 'success'
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # <— espelha secret no env do job
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     outputs:
       unit-status: ${{ steps.collect.outputs.status || 'unknown' }}
       healing-attempts: ${{ steps.collect.outputs.attempts || 0 }}
@@ -181,7 +181,7 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: 🔑 Setup SSH for Auto-PRs
-        if: ${{ env.SSH_PRIVATE_KEY != '' }}            # <— checa via env
+        if: ${{ env.SSH_PRIVATE_KEY != '' }}
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
@@ -245,6 +245,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: unit-test-results
+        # paths podem não existir; o uploader ignora ausentes
           path: |
             logs/unit_tests_healing_report.json
             patches/unit_tests/
@@ -268,7 +269,7 @@ jobs:
     needs: unit_tests
     if: needs.unit_tests.result == 'success'
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # <— espelha secret no env do job
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     outputs:
       integration-status: ${{ steps.collect.outputs.status || 'unknown' }}
       healing-attempts: ${{ steps.collect.outputs.attempts || 0 }}
@@ -279,7 +280,7 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: 🔑 Setup SSH for Auto-PRs
-        if: ${{ env.SSH_PRIVATE_KEY != '' }}            # <— checa via env
+        if: ${{ env.SSH_PRIVATE_KEY != '' }}
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
@@ -366,7 +367,7 @@ jobs:
     needs: integration_tests
     if: needs.integration_tests.result == 'success'
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # <— espelha secret no env do job
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     outputs:
       e2e-status: ${{ steps.collect.outputs.status || 'unknown' }}
       healing-attempts: ${{ steps.collect.outputs.attempts || 0 }}
@@ -377,7 +378,7 @@ jobs:
         with: { fetch-depth: 0 }
 
       - name: 🔑 Setup SSH for Auto-PRs
-        if: ${{ env.SSH_PRIVATE_KEY != '' }}            # <— checa via env
+        if: ${{ env.SSH_PRIVATE_KEY != '' }}
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
