@@ -141,7 +141,7 @@ jobs:
           postgresql password: 'test_password'
 
       - name: 🔴 Setup Redis
-        uses: supercharge/redis-github-action@v1.8.0
+        uses: supercharge/redis-github-action@1.8.0
         with:
           redis-version: '7-alpine'
 
@@ -245,7 +245,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: unit-test-results
-        # paths podem não existir; o uploader ignora ausentes
           path: |
             logs/unit_tests_healing_report.json
             patches/unit_tests/
@@ -639,7 +638,7 @@ jobs:
   packaging:
     name: 📦 Packaging & Release
     runs-on: ubuntu-latest
-    needs: [quality_security, aggregates]
+    needs: [quality_security, aggregates, unit_tests, integration_tests, e2e_tests, load_test]
     if: needs.quality_security.result == 'success'
     outputs:
       release-url: ${{ steps.release.outputs.url }}
