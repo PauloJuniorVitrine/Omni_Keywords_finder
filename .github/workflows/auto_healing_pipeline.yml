@@ -717,7 +717,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
-        path: |
+          path: |
             dist/
             wordpress-plugin.zip
             CHANGELOG.md
@@ -838,7 +838,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔒 Quality Gates" >> $GITHUB_STEP_SUMMARY
           echo "- Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
-          echo "- Security Score: ${{ needs.quality_security.outputs.security-score }}/100" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Score: ${{ needs.security.outputs.score }}/100" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🚀 Auto-Healing Summary" >> $GITHUB_STEP_SUMMARY
           echo "- Total Healing Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}" >> $GITHUB_STEP_SUMMARY
