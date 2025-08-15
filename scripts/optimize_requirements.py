@@ -280,7 +280,7 @@ class RequirementsOptimizer:
             "memory-profiler": "DEVELOPMENT_TOOLS",
             "line-profiler": "DEVELOPMENT_TOOLS",
             "pre-commit": "DEVELOPMENT_TOOLS",
-            "nodemon": "DEVELOPMENT_TOOLS",
+
             
             # Documentation
             "sphinx": "DOCUMENTATION",
