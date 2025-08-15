@@ -113,7 +113,7 @@ O **Omni Keywords Finder** é um sistema enterprise completo para análise, otim
 - **Transformers 4.35.0**: Modelos de linguagem
 
 #### **Infraestrutura**
-- **Redis 4.6.6**: Cache e sessões
+- **Redis 5.0.0**: Cache e sessões
 - **Celery 5.3.6**: Processamento assíncrono
 - **PostgreSQL**: Banco de dados principal
 - **Prometheus**: Métricas e monitoramento

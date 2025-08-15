@@ -115,10 +115,10 @@ cryptography==41.0.7
 
 ### **🔄 Cache e Filas**
 
-#### **Redis 5.0.1**
+#### **Redis 5.0.0**
 ```python
 # requirements.txt
-redis==5.0.1
+redis>=5.0.0
 ```
 - **Função**: Cliente Redis para cache e filas
 - **Justificativa**: Cache em memória rápido, suporte a estruturas complexas
