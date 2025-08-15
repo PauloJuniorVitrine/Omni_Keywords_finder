@@ -6,9 +6,6 @@
 
 name: 🚀 Auto-Healing Enterprise Pipeline
 
-# =============================================================================
-# 🔧 CONFIGURAÇÕES GLOBAIS
-# =============================================================================
 on:
   push:
     branches: [ main, develop, master ]
@@ -26,25 +23,19 @@ on:
         type: choice
         options: [all, unit_tests, integration_tests, e2e_tests, load_test, quality_security, packaging]
 
-# Permissões (release precisa escrever em contents)
 permissions:
   contents: write
   actions: read
   checks: read
 
-# Evita execuções paralelas no mesmo branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Shell padrão
 defaults:
   run:
     shell: bash
 
-# =============================================================================
-# 🔧 VARIÁVEIS DE AMBIENTE
-# =============================================================================
 env:
   PYTHON_VERSION: '3.11'
   NODE_VERSION: '20'
@@ -55,18 +46,12 @@ env:
   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-# =============================================================================
-# 🔧 JOBS PRINCIPAIS
-# =============================================================================
 jobs:
-  # ========================================
-  # 🏗️ BUILD - PREPARAÇÃO DO AMBIENTE
-  # ========================================
   build:
     name: 🏗️ Build Environment
     runs-on: ubuntu-latest
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}   # espelha secret no env do job
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     outputs:
       build-status: ${{ job.status }}
       cache-key: ${{ steps.cache-key.outputs.value }}
@@ -122,13 +107,20 @@ jobs:
       - name: 📦 Install Python Dependencies
         run: |
           source venv/bin/activate
-          pip install -r requirements.txt || true
+          # Falha imediatamente se houver faixa inválida (ex.: Flask)
+          pip install -r requirements.txt
           pip install pytest pyinstaller coverage safety bandit openai
           pip install pytest-cov pytest-html pytest-xdist
 
       - name: 📦 Install Node.js Dependencies
         if: hashFiles('package.json') != ''
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          else
+            echo "::warning::Sem package-lock.json/npm-shrinkwrap.json. Executando npm install."
+            npm install
+          fi
 
       - name: 🗄️ Setup PostgreSQL
         uses: Harmon758/postgresql-action@v1.0.0
@@ -159,9 +151,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deps-
 
-  # ========================================
-  # 🧪 UNIT TESTS + HEALING
-  # ========================================
   unit_tests:
     name: 🧪 Unit Tests + Auto-Healing
     runs-on: ubuntu-latest
@@ -257,9 +246,6 @@ jobs:
           echo "- Healing Attempts: ${{ steps.collect.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
           echo "- Patches Created: ${{ steps.collect.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 🔗 INTEGRATION TESTS + HEALING
-  # ========================================
   integration_tests:
     name: 🔗 Integration Tests + Auto-Healing
     runs-on: ubuntu-latest
@@ -341,7 +327,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: integration-test-results
-          path: |
+        path: |
             logs/integration_tests_healing_report.json
             patches/integration_tests/
             test-results/integration.xml
@@ -355,9 +341,6 @@ jobs:
           echo "- Healing Attempts: ${{ steps.collect.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
           echo "- Patches Created: ${{ steps.collect.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 🌐 E2E TESTS + HEALING
-  # ========================================
   e2e_tests:
     name: 🌐 E2E Tests + Auto-Healing
     runs-on: ubuntu-latest
@@ -453,9 +436,6 @@ jobs:
           echo "- Healing Attempts: ${{ steps.collect.outputs.attempts }}" >> $GITHUB_STEP_SUMMARY
           echo "- Patches Created: ${{ steps.collect.outputs.patches }}" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 📈 LOAD TESTS
-  # ========================================
   load_test:
     name: 📈 Load Tests
     runs-on: ubuntu-latest
@@ -495,9 +475,6 @@ jobs:
           echo "- Average Response Time: ${{ steps.k6.outputs.metrics }}ms" >> $GITHUB_STEP_SUMMARY
           echo "- Results saved to: k6-results.json" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 🔒 QUALITY & SECURITY
-  # ========================================
   quality_security:
     name: 🔒 Quality & Security Gates
     runs-on: ubuntu-latest
@@ -566,7 +543,6 @@ jobs:
           source venv/bin/activate
           bandit -r . -f json -o bandit-results.json || true
           safety check --json --output safety-results.json || true
-          # Novo comando do gitleaks (modo git, mais atual)
           gitleaks git -v --report-format json --report-path gitleaks-results.json .
 
           SECURITY_SCORE=100
@@ -606,9 +582,6 @@ jobs:
           echo "- Coverage: ${{ steps.coverage.outputs.percentage }}%" >> $GITHUB_STEP_SUMMARY
           echo "- Security Score: ${{ steps.security.outputs.score }}/100" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 🧮 AGGREGATES (somas sem usar '+')
-  # ========================================
   aggregates:
     name: 🧮 Aggregate Totals
     runs-on: ubuntu-latest
@@ -641,9 +614,6 @@ jobs:
           INT_PATCH:  ${{ needs.integration_tests.outputs.patches-created }}
           E2E_PATCH:  ${{ needs.e2e_tests.outputs.patches-created }}
 
-  # ========================================
-  # 📦 PACKAGING & RELEASE
-  # ========================================
   packaging:
     name: 📦 Packaging & Release
     runs-on: ubuntu-latest
@@ -735,9 +705,6 @@ jobs:
           echo "- Release URL: ${{ steps.release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "- Artifacts: ${{ steps.package.outputs.artifacts }}" >> $GITHUB_STEP_SUMMARY
 
-  # ========================================
-  # 📢 NOTIFICATION
-  # ========================================
   notify:
     name: 📢 Notify Team
     runs-on: ubuntu-latest
@@ -748,9 +715,9 @@ jobs:
         id: color
         run: |
           if [ "${{ job.status }}" = "success" ]; then
-            echo "value=3066993" >> "$GITHUB_OUTPUT"      # verde
+            echo "value=3066993" >> "$GITHUB_OUTPUT"
           else
-            echo "value=15158332" >> "$GITHUB_OUTPUT"     # vermelho
+            echo "value=15158332" >> "$GITHUB_OUTPUT"
           fi
 
       - name: 📢 Send Slack Notification
@@ -809,29 +776,29 @@ jobs:
       - name: 📋 Generate Final Summary
         run: |
           echo "## 🚀 Auto-Healing Pipeline Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 📊 Final Status" >> $GITHUB_STEP_SUMMARY
           echo "- **Overall Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
           echo "- Unit Tests: ${{ needs.unit_tests.outputs.unit-status }}" >> $GITHUB_STEP_SUMMARY
           echo "- Integration Tests: ${{ needs.integration_tests.outputs.integration-status }}" >> $GITHUB_STEP_SUMMARY
           echo "- E2E Tests: ${{ needs.e2e_tests.outputs.e2e-status }}" >> $GITHUB_STEP_SUMMARY
           echo "- Load Tests: ${{ needs.load_test.outputs.load-status }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 🔒 Quality Gates" >> $GITHUB_STEP_SUMMARY
           echo "- Coverage: ${{ needs.quality_security.outputs.coverage-percentage }}%" >> $GITHUB_STEP_SUMMARY
           echo "- Security Score: ${{ needs.quality_security.outputs.security-score }}/100" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 🚀 Auto-Healing Summary" >> $GITHUB_STEP_SUMMARY
           echo "- Total Healing Attempts: ${{ needs.aggregates.outputs.total-healing-attempts }}" >> $GITHUB_STEP_SUMMARY
           echo "- Patches Created: ${{ needs.aggregates.outputs.total-patches-created }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 📦 Release" >> $GITHUB_STEP_SUMMARY
           echo "- Release URL: ${{ needs.packaging.outputs.release-url }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo ""
           echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
           echo "- [Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
           echo "- [Release](${{ needs.packaging.outputs.release-url }})" >> $GITHUB_STEP_SUMMARY
